@@ -1,4 +1,7 @@
+import importlib
+import pkgutil
 from logging.config import fileConfig
+from pathlib import Path
 
 from sqlalchemy import pool
 
@@ -13,9 +16,24 @@ config = context.config
 if config.config_file_name is not None:
     fileConfig(config.config_file_name)
 
-from src.users.models import user
+
+def import_all_models():
+    app_dir = Path(__file__).parent.parent / "src"
+
+    for module_info in pkgutil.walk_packages([str(app_dir)]):
+        if module_info.ispkg:
+            models_path = app_dir / module_info.name / "models"
+            if any([
+                models_path.is_file() and models_path.suffix == '.py',
+                models_path.is_dir() and (models_path / "__init__.py").exists()
+            ]):
+                importlib.import_module(f"src.{module_info.name}.models")
+
+
+import_all_models()
 
 from src.core.db import Base
+
 target_metadata = Base.metadata
 
 # other values from the config, defined by the needs of env.py,
@@ -25,9 +43,10 @@ target_metadata = Base.metadata
 
 from dotenv import load_dotenv
 from os import getenv as env
+
 load_dotenv()
 
-DATABASE_URL = f"postgresql+asyncpg://{env('DB_USER')}:{env('DB_PASSWORD')}@{env('DB_HOST')}:{env('DB_PORT')}/{env('DB_NAME')}"
+DATABASE_URL = f"postgresql://{env('DB_USER')}:{env('DB_PASSWORD')}@{env('DB_HOST')}:{env('DB_PORT')}/{env('DB_NAME')}"
 
 
 def run_migrations_offline() -> None:
@@ -56,9 +75,10 @@ def run_migrations_offline() -> None:
 
 from sqlalchemy import create_engine
 
+
 def run_migrations_online() -> None:
     connectable = create_engine(
-        DATABASE_URL.replace("+asyncpg", ""),
+        DATABASE_URL,
         poolclass=pool.NullPool,
     )
 

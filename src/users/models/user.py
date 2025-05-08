@@ -1,14 +1,8 @@
-import enum
 from sqlalchemy import Enum, BigInteger
 from sqlalchemy.orm import Mapped, mapped_column
 
 from src.core.db import Base
-
-
-class UserRoleEnum(str, enum.Enum):
-    BUILDER = "Builder"
-    USER = "User"
-    ADMIN = "Admin"
+from src.users.enums import UserRoleEnum
 
 
 class UserModel(Base):
