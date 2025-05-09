@@ -4,6 +4,7 @@ from dishka import make_async_container
 from dishka.integrations.fastapi import setup_dishka
 
 from src.auth.handlers import auth_router
+from src.core.exception_handlers import setup_exception_handlers
 from src.core.config import Config
 
 from src.auth.ioc import AuthProvider
@@ -22,5 +23,6 @@ container = make_async_container(
     context={Config: config})
 
 setup_dishka(container=container, app=app)
+setup_exception_handlers(app)
 
 app.include_router(auth_router)

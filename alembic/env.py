@@ -20,21 +20,18 @@ if config.config_file_name is not None:
 def import_all_models():
     app_dir = Path(__file__).parent.parent / "src"
 
-    for module_info in pkgutil.walk_packages([str(app_dir)]):
-        if module_info.ispkg:
-            models_path = app_dir / module_info.name / "models"
-            if any([
-                models_path.is_file() and models_path.suffix == '.py',
-                models_path.is_dir() and (models_path / "__init__.py").exists()
-            ]):
-                importlib.import_module(f"src.{module_info.name}.models")
-
-
-import_all_models()
+    for module_info in pkgutil.iter_modules([str(app_dir)]):
+        models_module = f"src.{module_info.name}.models"
+        try:
+            importlib.import_module(models_module)
+        except ModuleNotFoundError:
+            continue
 
 from src.core.db import Base
 
 target_metadata = Base.metadata
+
+import_all_models()
 
 # other values from the config, defined by the needs of env.py,
 # can be acquired:
