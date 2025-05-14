@@ -1,7 +1,18 @@
-from dishka import Provider, Scope, provide
+from typing import Iterator
 
-from src.auth.services import AuthService
+from config import Config
+
+import dishka as di
+
+from src.auth import services as s
 
 
-class AuthProvider(Provider):
-    auth_service = provide(AuthService, scope=Scope.REQUEST)
+class AuthProvider(di.Provider):
+    @di.provide(scope=di.Scope.REQUEST)
+    def provide_jwt_service(
+            self,
+            config: Config,
+    ) -> Iterator[s.JwtService]:
+        yield s.JwtService(config=config)
+
+__all__ = ["AuthProvider"]

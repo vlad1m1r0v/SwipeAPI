@@ -1,31 +1,35 @@
 from typing import AsyncIterator
 
-from dishka import Provider, from_context, Scope, provide
-from sqlalchemy.ext.asyncio import create_async_engine, AsyncEngine, AsyncSession, async_sessionmaker
+import dishka as di
+from sqlalchemy.ext import asyncio as sa
 
-from src.core.config import Config
+from config import Config
 
 
-class CoreProvider(Provider):
-    config = from_context(provides=Config, scope=Scope.APP)
+class ConfigProvider(di.Provider):
+    config = di.from_context(provides=Config, scope=di.Scope.APP)
 
-    @provide(scope=Scope.APP)
-    def get_engine(self, config: Config) -> AsyncEngine:
-        return create_async_engine(config.db.url)
 
-    @provide(scope=Scope.APP)
-    def get_session_maker(self, engine: AsyncEngine) -> async_sessionmaker[AsyncSession]:
-        return async_sessionmaker(bind=engine, expire_on_commit=False)
+class SessionProvider(di.Provider):
+    @di.provide(scope=di.Scope.APP)
+    def provide_engine(self, config: Config) -> sa.AsyncEngine:
+        return sa.create_async_engine(config.db.url(is_async=True))
 
-    @provide(scope=Scope.REQUEST)
-    async def provide_db_session(
-        self,
-        sessionmaker: async_sessionmaker[AsyncSession],
-    ) -> AsyncIterator[AsyncSession]:
-        async with sessionmaker() as session:
+    @di.provide(scope=di.Scope.APP)
+    def provide_session_maker(self, engine: sa.AsyncEngine) -> sa.async_sessionmaker[sa.AsyncSession]:
+        return sa.async_sessionmaker(bind=engine, expire_on_commit=False)
+
+    @di.provide(scope=di.Scope.REQUEST)
+    async def provide_session(
+            self,
+            session_maker: sa.async_sessionmaker[sa.AsyncSession],
+    ) -> AsyncIterator[sa.AsyncSession]:
+        async with session_maker() as session:
             try:
                 yield session
                 await session.commit()
             except Exception:
                 await session.rollback()
                 raise
+
+__all__ = ["ConfigProvider", "SessionProvider"]

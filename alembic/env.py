@@ -1,11 +1,10 @@
-import importlib
-import pkgutil
 from logging.config import fileConfig
-from pathlib import Path
-
-from sqlalchemy import pool
 
 from alembic import context
+from sqlalchemy import create_engine
+
+from src.users.models import METADATA
+from config import config as app_config
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
@@ -16,34 +15,8 @@ config = context.config
 if config.config_file_name is not None:
     fileConfig(config.config_file_name)
 
-
-def import_all_models():
-    app_dir = Path(__file__).parent.parent / "src"
-
-    for module_info in pkgutil.iter_modules([str(app_dir)]):
-        models_module = f"src.{module_info.name}.models"
-        try:
-            importlib.import_module(models_module)
-        except ModuleNotFoundError:
-            continue
-
-from src.core.db import Base
-
-target_metadata = Base.metadata
-
-import_all_models()
-
-# other values from the config, defined by the needs of env.py,
-# can be acquired:
-# my_important_option = config.get_main_option("my_important_option")
-# ... etc.
-
-from dotenv import load_dotenv
-from os import getenv as env
-
-load_dotenv()
-
-DATABASE_URL = f"postgresql://{env('DB_USER')}:{env('DB_PASSWORD')}@{env('DB_HOST')}:{env('DB_PORT')}/{env('DB_NAME')}"
+# add your model's MetaData object here for 'autogenerate' support
+target_metadata = METADATA
 
 
 def run_migrations_offline() -> None:
@@ -56,11 +29,9 @@ def run_migrations_offline() -> None:
 
     Calls to context.execute() here emit the given string to the
     script output.
-
     """
-    url = DATABASE_URL
     context.configure(
-        url=url,
+        url=app_config.db.url(is_async=False),
         target_metadata=target_metadata,
         literal_binds=True,
         dialect_opts={"paramstyle": "named"},
@@ -70,21 +41,16 @@ def run_migrations_offline() -> None:
         context.run_migrations()
 
 
-from sqlalchemy import create_engine
-
-
 def run_migrations_online() -> None:
-    connectable = create_engine(
-        DATABASE_URL,
-        poolclass=pool.NullPool,
-    )
+    """Run migrations in 'online' mode.
+
+    In this scenario we need to create an Engine and associate a
+    connection with the context.
+    """
+    connectable = create_engine(app_config.db.url(is_async=False))
 
     with connectable.connect() as connection:
-        context.configure(
-            connection=connection,
-            target_metadata=target_metadata,
-            compare_type=True,
-        )
+        context.configure(connection=connection, target_metadata=target_metadata)
 
         with context.begin_transaction():
             context.run_migrations()
