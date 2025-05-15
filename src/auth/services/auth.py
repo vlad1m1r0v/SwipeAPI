@@ -1,15 +1,22 @@
-from src.auth.schemas import TokensSchema
+from src.auth.schemas import (
+    RegisterSchema,
+    LoginSchema,
+    BasePayloadSchema,
+    TokensSchema
+)
+from src.users.enums import UserRoleEnum
 from src.auth.services.jwt import JwtService
 
-from src.users.exceptions import UserAlreadyExistsException
+from src.users.exceptions import (
+    UserAlreadyExistsException,
+    InvalidRoleException
+)
 from src.users.schemas import (
-    CreateUserSchema,
     CreateContactSchema,
     CreateAgentContactSchema,
     CreateBalanceSchema,
     CreateSubscriptionSchema,
     CreateNotificationSettingsSchema,
-    UserPayloadSchema
 )
 from src.users.services import (
     UserService,
@@ -40,7 +47,7 @@ class AuthService:
         self._notification_settings_service = notification_settings_service
         self._balance_service = balance_service
 
-    async def register_user(self, data: CreateUserSchema) -> TokensSchema:
+    async def register_user(self, data: RegisterSchema) -> TokensSchema:
         if await self._user_service.exists(email=data.email):
             raise UserAlreadyExistsException()
 
@@ -61,14 +68,28 @@ class AuthService:
         balance = CreateBalanceSchema(user_id=user.id)
         await self._balance_service.create(balance)
 
-        user_payload = self._user_service.to_schema(data=user, schema_type=UserPayloadSchema)
-        access_token = self._jwt_service.create_access_token(user_payload=user_payload)
-        refresh_token = self._jwt_service.create_refresh_token(user_payload=user_payload)
+        base_payload = self._user_service.to_schema(data=user, schema_type=BasePayloadSchema)
+        access_token = self._jwt_service.create_access_token(base_payload=base_payload)
+        refresh_token = self._jwt_service.create_refresh_token(base_payload=base_payload)
 
         return TokensSchema(
             access_token=access_token,
             refresh_token=refresh_token
         )
 
+    async def login_user(self, data: LoginSchema) -> TokensSchema:
+        user = await self._user_service.authenticate(data)
 
-__all__ = ['AuthService']
+        if user.role != UserRoleEnum.USER:
+            raise InvalidRoleException()
+
+        base_payload = self._user_service.to_schema(data=user, schema_type=BasePayloadSchema)
+        access_token = self._jwt_service.create_access_token(base_payload=base_payload)
+        refresh_token = self._jwt_service.create_refresh_token(base_payload=base_payload)
+
+        return TokensSchema(
+            access_token=access_token,
+            refresh_token=refresh_token
+        )
+
+    __all__ = ['AuthService']

@@ -5,8 +5,11 @@ import jwt
 
 from config import Config
 from src.auth.enums import TokenTypeEnum
-from src.auth.schemas import CreateTokenPayloadSchema, TokenPayloadSchema
-from src.users.schemas import UserPayloadSchema
+from src.auth.schemas import (
+    BasePayloadSchema,
+    PayloadWithTypeSchema,
+    PayloadWithExpDateSchema
+)
 
 
 class JwtService:
@@ -17,24 +20,24 @@ class JwtService:
         self._expire_minutes: int = config.jwt.access_token_expire_minutes
         self._expire_days = timedelta(days=config.jwt.refresh_token_expire_days)
 
-    def create_access_token(self, user_payload: UserPayloadSchema) -> str:
-        payload = CreateTokenPayloadSchema(
+    def create_access_token(self, base_payload: BasePayloadSchema) -> str:
+        payload = PayloadWithTypeSchema(
             type=TokenTypeEnum.ACCESS_TOKEN,
-            sub=user_payload.id,
-            name=user_payload.name,
-            email=user_payload.email,
-            role=user_payload.role,
+            sub=base_payload.id,
+            name=base_payload.name,
+            email=base_payload.email,
+            role=base_payload.role,
         )
 
         return self._encode_jwt(payload=payload, expire_minutes=self._expire_minutes)
 
-    def create_refresh_token(self, user_payload: UserPayloadSchema) -> str:
-        payload = CreateTokenPayloadSchema(
-            type=TokenTypeEnum.ACCESS_TOKEN,
-            sub=user_payload.id,
-            name=user_payload.name,
-            email=user_payload.email,
-            role=user_payload.role,
+    def create_refresh_token(self, base_payload: BasePayloadSchema) -> str:
+        payload = PayloadWithTypeSchema(
+            type=TokenTypeEnum.REFRESH_TOKEN,
+            sub=base_payload.id,
+            name=base_payload.name,
+            email=base_payload.email,
+            role=base_payload.role,
         )
 
         return self._encode_jwt(
@@ -45,7 +48,7 @@ class JwtService:
 
     def _encode_jwt(
             self,
-            payload: CreateTokenPayloadSchema,
+            payload: PayloadWithTypeSchema,
             expire_minutes: int,
             expire_timedelta: timedelta | None = None
     ):
@@ -56,7 +59,7 @@ class JwtService:
         else:
             expire = now + timedelta(minutes=expire_minutes)
 
-        to_encode: TokenPayloadSchema = TokenPayloadSchema(
+        to_encode: PayloadWithExpDateSchema = PayloadWithExpDateSchema(
             **payload.model_dump(mode='json'),
             exp=expire,
             iat=now,
@@ -70,7 +73,7 @@ class JwtService:
         )
         return encoded
 
-    def _decode_jwt(self, token: str | bytes) -> TokenPayloadSchema:
+    def _decode_jwt(self, token: str | bytes) -> PayloadWithExpDateSchema:
         decoded = jwt.decode(
             token=token,
             key=self._public_key,

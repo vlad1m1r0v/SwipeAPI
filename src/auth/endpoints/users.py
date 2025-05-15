@@ -8,8 +8,9 @@ from dishka.integrations.fastapi import inject
 from src.auth.services import AuthService
 from src.auth.schemas import TokensSchema
 
-from src.users.schemas import (
-    CreateUserSchema
+from src.auth.schemas import (
+    RegisterSchema,
+    LoginSchema
 )
 
 router = APIRouter(prefix="/users", tags=["users"])
@@ -18,7 +19,16 @@ router = APIRouter(prefix="/users", tags=["users"])
 @router.post("/register/", response_model=TokensSchema)
 @inject
 async def register_user(
-        data: Annotated[CreateUserSchema, Form()],
+        data: Annotated[RegisterSchema, Form()],
         auth_service: FromDishka[AuthService],
 ):
     return await auth_service.register_user(data=data)
+
+
+@router.post("/login/", response_model=TokensSchema)
+@inject
+async def login_user(
+        data: Annotated[LoginSchema, Form()],
+        auth_service: FromDishka[AuthService],
+):
+    return await auth_service.login_user(data=data)

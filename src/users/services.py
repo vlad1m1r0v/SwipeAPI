@@ -1,10 +1,11 @@
 from advanced_alchemy.service import SQLAlchemyAsyncRepositoryService, ModelDictT
 
-from src.auth.utils import hash_password
+from src.auth.utils import hash_password, validate_password
 
 import src.users.models as m
 import src.users.repositories as r
 import src.users.enums as e
+import src.users.exceptions as ex
 
 
 class UserService(SQLAlchemyAsyncRepositoryService[m.User, r.UserRepository]):
@@ -13,6 +14,17 @@ class UserService(SQLAlchemyAsyncRepositoryService[m.User, r.UserRepository]):
     async def create_user(self, data: ModelDictT) -> m.User:
         data = data.model_dump(mode='json')
         return await super().create(data={**data, 'role': e.UserRoleEnum.USER})
+
+    async def authenticate(self, data: ModelDictT) -> m.User:
+        user = await self.get_one_or_none(email=data.email)
+
+        if not user:
+            raise ex.UserDoesNotExistException()
+
+        if not validate_password(data.password, user.password.encode()):
+            raise ex.IncorrectPasswordException()
+
+        return user
 
     async def to_model(self, data: ModelDictT, operation: str | None = None) -> m.User:
         if isinstance(data, dict) and "password" in data:
