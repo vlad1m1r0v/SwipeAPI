@@ -16,7 +16,7 @@ def create_exception_handler(
     return exception_handler
 
 
-def setup_error_handlers(app: FastAPI) -> None:
+def setup_exception_handlers(app: FastAPI) -> None:
     app.add_exception_handler(
         UserAlreadyExistsException,
         create_exception_handler(
@@ -28,4 +28,5 @@ def setup_error_handlers(app: FastAPI) -> None:
         ),
     )
 
-__all__ = "setup_error_handlers"
+
+__all__ = "setup_exception_handlers"

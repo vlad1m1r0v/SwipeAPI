@@ -1,14 +1,14 @@
 import uvicorn
 
 from advanced_alchemy.types.file_object import storages
-from advanced_alchemy.types.file_object.backends.obstore import ObstoreBackend
 
 import dishka as di
 from dishka.integrations.fastapi import setup_dishka
 
 from config import Config, config
 
-from src.core.errors import setup_error_handlers
+from src.core.errors import setup_exception_handlers
+from src.core.storage_backend import local_storage
 
 from src.core.ioc import ConfigProvider, SessionProvider
 from src.auth.ioc import AuthProvider
@@ -36,17 +36,12 @@ def setup_routers(app: FastAPI) -> None:
 
 
 def setup_file_storage() -> None:
-    from pathlib import Path
-
-    storages.register_backend(ObstoreBackend(
-        key="local",
-        fs=f"file:///{Path(__file__).parent}/uploads",
-    ))
+    storages.register_backend(local_storage)
 
 
 def setup(app: FastAPI) -> None:
     setup_file_storage()
-    setup_error_handlers(app)
+    setup_exception_handlers(app)
     setup_containers(app)
     setup_routers(app)
 

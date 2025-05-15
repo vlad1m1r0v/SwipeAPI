@@ -1,14 +1,12 @@
 from os import environ as env
 from dotenv import load_dotenv
 
-from pathlib import Path
-
 from pydantic import BaseModel, Field
 
 from config.db import DBConfig
 from config.jwt import JWTConfig
 
-BASE_DIR = Path(__file__).parent.parent
+from src.core.constants import BASE_DIR
 
 load_dotenv(dotenv_path=BASE_DIR / '.env')
 

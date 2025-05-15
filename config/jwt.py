@@ -1,7 +1,7 @@
 from pathlib import Path
 from pydantic import BaseModel
 
-BASE_DIR = Path(__file__).parent.parent
+from src.core.constants import BASE_DIR
 
 
 class JWTConfig(BaseModel):

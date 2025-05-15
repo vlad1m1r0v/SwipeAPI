@@ -4,7 +4,8 @@ from config import Config
 
 import dishka as di
 
-from src.auth import services as s
+from src.auth.services import *
+from src.users.services import *
 
 
 class AuthProvider(di.Provider):
@@ -12,7 +13,29 @@ class AuthProvider(di.Provider):
     def provide_jwt_service(
             self,
             config: Config,
-    ) -> Iterator[s.JwtService]:
-        yield s.JwtService(config=config)
+    ) -> Iterator[JwtService]:
+        yield JwtService(config=config)
+
+    @di.provide(scope=di.Scope.REQUEST)
+    def provide_auth_service(
+            self,
+            jwt_service: JwtService,
+            user_service: UserService,
+            contact_service: ContactService,
+            agent_contact_service: AgentContactService,
+            subscription_service: SubscriptionService,
+            notification_settings_service: NotificationSettingsService,
+            balance_service: BalanceService,
+    ) -> Iterator[AuthService]:
+        yield AuthService(
+            jwt_service=jwt_service,
+            user_service=user_service,
+            contact_service=contact_service,
+            agent_contact_service=agent_contact_service,
+            subscription_service=subscription_service,
+            notification_settings_service=notification_settings_service,
+            balance_service=balance_service,
+        )
+
 
 __all__ = ["AuthProvider"]

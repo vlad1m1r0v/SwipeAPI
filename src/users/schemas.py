@@ -56,7 +56,6 @@ class CreateAgentContactSchema(BaseModel):
 
 class CreateBalanceSchema(BaseModel):
     user_id: int
-    value: Decimal | None
 
 
 class CreateSubscriptionSchema(BaseModel):
