@@ -1,10 +1,16 @@
+import re
 from decimal import Decimal
 
 from fastapi import Form
-from pydantic import BaseModel, EmailStr, Field, field_validator
-import re
+from pydantic import (
+    BaseModel,
+    EmailStr,
+    Field,
+    field_validator
+)
 
 from src.users.enums import UserRoleEnum
+from src.users.constants import DEFAULT_BALANCE
 
 
 class CreateUserSchema(BaseModel):
@@ -56,6 +62,7 @@ class CreateAgentContactSchema(BaseModel):
 
 class CreateBalanceSchema(BaseModel):
     user_id: int
+    value: Decimal = DEFAULT_BALANCE
 
 
 class CreateSubscriptionSchema(BaseModel):

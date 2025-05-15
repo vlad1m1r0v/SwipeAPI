@@ -44,10 +44,6 @@ class BalanceService(
     SQLAlchemyAsyncRepositoryService[m.Balance, r.BalanceRepository]):
     repository_type = r.BalanceRepository
 
-    async def create(self, data: ModelDictT, **kwargs) -> m.Balance:
-        print(f"DATA: {data}")
-        return await super().create(data=data)
-
 
 __all__ = [
     "UserService",

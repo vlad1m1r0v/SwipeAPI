@@ -13,7 +13,7 @@ class ConfigProvider(di.Provider):
 class SessionProvider(di.Provider):
     @di.provide(scope=di.Scope.APP)
     def provide_engine(self, config: Config) -> sa.AsyncEngine:
-        return sa.create_async_engine(config.db.url(is_async=True))
+        return sa.create_async_engine(config.db.url(is_async=True), echo=True)
 
     @di.provide(scope=di.Scope.APP)
     def provide_session_maker(self, engine: sa.AsyncEngine) -> sa.async_sessionmaker[sa.AsyncSession]:

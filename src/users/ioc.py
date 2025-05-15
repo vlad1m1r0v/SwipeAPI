@@ -52,5 +52,5 @@ class UsersProvider(di.Provider):
             self,
             session: sa.AsyncSession,
     ) -> AsyncIterator[s.BalanceService]:
-        async with s.UserService.new(session=session) as service:
+        async with s.BalanceService.new(session=session) as service:
             yield service
