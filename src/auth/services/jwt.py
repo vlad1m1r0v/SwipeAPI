@@ -23,30 +23,30 @@ class JwtService:
     def create_access_token(self, base_payload: BasePayloadSchema) -> str:
         payload = PayloadWithTypeSchema(
             type=TokenTypeEnum.ACCESS_TOKEN,
-            sub=base_payload.id,
+            sub=str(base_payload.id),
             name=base_payload.name,
             email=base_payload.email,
             role=base_payload.role,
         )
 
-        return self._encode_jwt(payload=payload, expire_minutes=self._expire_minutes)
+        return self.encode_jwt(payload=payload, expire_minutes=self._expire_minutes)
 
     def create_refresh_token(self, base_payload: BasePayloadSchema) -> str:
         payload = PayloadWithTypeSchema(
             type=TokenTypeEnum.REFRESH_TOKEN,
-            sub=base_payload.id,
+            sub=str(base_payload.id),
             name=base_payload.name,
             email=base_payload.email,
             role=base_payload.role,
         )
 
-        return self._encode_jwt(
+        return self.encode_jwt(
             payload=payload,
             expire_minutes=self._expire_minutes,
             expire_timedelta=self._expire_days,
         )
 
-    def _encode_jwt(
+    def encode_jwt(
             self,
             payload: PayloadWithTypeSchema,
             expire_minutes: int,
@@ -61,8 +61,8 @@ class JwtService:
 
         to_encode: PayloadWithExpDateSchema = PayloadWithExpDateSchema(
             **payload.model_dump(mode='json'),
-            exp=expire,
-            iat=now,
+            exp=int(expire.timestamp()),
+            iat=int(now.timestamp()),
             jti=str(uuid.uuid4()),
         )
 
@@ -73,9 +73,9 @@ class JwtService:
         )
         return encoded
 
-    def _decode_jwt(self, token: str | bytes) -> PayloadWithExpDateSchema:
+    def decode_jwt(self, token: str | bytes) -> dict:
         decoded = jwt.decode(
-            token=token,
+            jwt=token,
             key=self._public_key,
             algorithms=[self._algorithm],
         )

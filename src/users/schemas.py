@@ -1,8 +1,18 @@
 from decimal import Decimal
+from typing import Optional
 
-from pydantic import BaseModel
+from advanced_alchemy.types import FileObject
+
+from fastapi import UploadFile
+
+from pydantic import (
+    BaseModel,
+    Field,
+    EmailStr
+)
 
 from src.users.constants import DEFAULT_BALANCE
+from src.users.enums import UserRoleEnum
 
 
 class CreateContactSchema(BaseModel):
@@ -27,6 +37,24 @@ class CreateSubscriptionSchema(BaseModel):
 class CreateNotificationSettingsSchema(BaseModel):
     user_id: int
 
+class GetUserSchema(BaseModel):
+    id: int
+    name: str
+    email: str
+    phone: str
+    role: UserRoleEnum
+    photo:  Optional[FileObject]
+
+
+class UpdateUserSchema(
+    BaseModel
+):
+    name: Optional[str] = Field(min_length=3, max_length=100)
+    email: Optional[EmailStr]
+    phone: Optional[str] = Field(pattern=r'^\+380\d{9}$')
+    photo: Optional[UploadFile] = Field(default=None, exclude=True)
+
+
 
 __all__ = [
     "CreateContactSchema",
@@ -34,4 +62,6 @@ __all__ = [
     "CreateBalanceSchema",
     "CreateSubscriptionSchema",
     "CreateNotificationSettingsSchema",
+    "GetUserSchema",
+    "UpdateUserSchema",
 ]

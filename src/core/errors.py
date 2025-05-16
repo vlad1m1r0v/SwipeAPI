@@ -4,6 +4,12 @@ from fastapi import FastAPI, Request
 from starlette import status
 from starlette.responses import JSONResponse
 
+from jwt import InvalidTokenError
+from src.auth.exceptions import (
+    InvalidTokenTypeException,
+    UnauthorizedException
+)
+
 from src.users.exceptions import (
     UserAlreadyExistsException,
     UserDoesNotExistException,
@@ -22,6 +28,39 @@ def create_exception_handler(
 
 
 def setup_exception_handlers(app: FastAPI) -> None:
+    app.add_exception_handler(
+        UnauthorizedException,
+        create_exception_handler(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            initial_detail={
+                "message": "Unauthorized request",
+                "error_code": "unauthorized_request",
+            },
+        )
+    )
+
+    app.add_exception_handler(
+        InvalidTokenError,
+        create_exception_handler(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            initial_detail={
+                "message": "Invalid token",
+                "error_code": "invalid_token",
+            },
+        )
+    )
+
+    app.add_exception_handler(
+        InvalidTokenTypeException,
+        create_exception_handler(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            initial_detail={
+                "message": "Invalid token type",
+                "error_code": "invalid_token_type",
+            },
+        ),
+    )
+
     app.add_exception_handler(
         UserAlreadyExistsException,
         create_exception_handler(
@@ -66,5 +105,4 @@ def setup_exception_handlers(app: FastAPI) -> None:
         ),
     )
 
-
-__all__ = "setup_exception_handlers"
+    __all__ = "setup_exception_handlers"

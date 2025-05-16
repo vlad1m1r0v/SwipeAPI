@@ -15,6 +15,7 @@ from src.auth.ioc import AuthProvider
 from src.users.ioc import UsersProvider
 
 from src.auth.endpoints import router as auth_router
+from src.users.endpoints import router as users_router
 
 from fastapi import FastAPI
 
@@ -33,6 +34,7 @@ def setup_containers(app: FastAPI) -> None:
 
 def setup_routers(app: FastAPI) -> None:
     app.include_router(auth_router)
+    app.include_router(users_router)
 
 
 def setup_file_storage() -> None:

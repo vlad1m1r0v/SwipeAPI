@@ -1,6 +1,9 @@
 from typing import Annotated
 
-from fastapi import APIRouter, Form
+from fastapi import (
+    APIRouter,
+    Form
+)
 
 from dishka import FromDishka
 from dishka.integrations.fastapi import inject
@@ -16,7 +19,7 @@ from src.auth.schemas import (
 router = APIRouter(prefix="/users", tags=["users"])
 
 
-@router.post("/register/", response_model=TokensSchema)
+@router.post("/register", response_model=TokensSchema)
 @inject
 async def register_user(
         data: Annotated[RegisterSchema, Form()],
@@ -25,7 +28,7 @@ async def register_user(
     return await auth_service.register_user(data=data)
 
 
-@router.post("/login/", response_model=TokensSchema)
+@router.post("/login", response_model=TokensSchema)
 @inject
 async def login_user(
         data: Annotated[LoginSchema, Form()],

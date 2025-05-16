@@ -1,7 +1,4 @@
 import re
-from datetime import datetime
-
-from fastapi import Form
 
 from pydantic import (
     BaseModel,
@@ -43,16 +40,6 @@ class RegisterSchema(
     name: str = Field(min_length=3, max_length=100)
     phone: str = Field(pattern=r'^\+380\d{9}$')
 
-    @classmethod
-    def as_form(
-            cls,
-            name: str = Form(...),
-            email: EmailStr = Form(...),
-            phone: str = Form(...),
-            password: str = Form(...),
-    ):
-        return cls(name=name, email=email, phone=phone, password=password)
-
 
 class LoginSchema(
     BaseModel,
@@ -70,7 +57,7 @@ class BasePayloadSchema(BaseModel):
 
 
 class PayloadWithTypeSchema(BaseModel):
-    sub: int
+    sub: str
     type: TokenTypeEnum
     name: str
     email: str
@@ -78,8 +65,8 @@ class PayloadWithTypeSchema(BaseModel):
 
 
 class PayloadWithExpDateSchema(PayloadWithTypeSchema):
-    exp: datetime
-    iat: datetime
+    exp: int
+    iat: int
     jti: str
 
 
