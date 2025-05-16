@@ -52,7 +52,7 @@ class UpdateUserSchema(
     name: Optional[str] = Field(min_length=3, max_length=100)
     email: Optional[EmailStr]
     phone: Optional[str] = Field(pattern=r'^\+380\d{9}$')
-    photo: Optional[UploadFile] = Field(default=None, exclude=True)
+    photo: Optional[FileObject] = Field(default=None, exclude=True)
 
 
 

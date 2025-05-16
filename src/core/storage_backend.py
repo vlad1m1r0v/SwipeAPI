@@ -4,7 +4,7 @@ from src.core.constants import BASE_DIR
 
 local_storage = ObstoreBackend(
     key="local",
-    fs=f"file:///{BASE_DIR}/uploads",
+    fs=f"file:///{BASE_DIR}/media/",
 )
 
 __all__ = ["local_storage"]
