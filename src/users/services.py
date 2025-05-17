@@ -13,7 +13,7 @@ class UserService(SQLAlchemyAsyncRepositoryService[m.User, r.UserRepository]):
 
     async def create_user(self, data: ModelDictT) -> m.User:
         data = data.model_dump(mode='json')
-        return await super().create(data={**data, 'role': e.UserRoleEnum.USER})
+        return await super().create(data={**data, 'role': e.ROLE.USER})
 
     async def authenticate(self, data: ModelDictT) -> m.User:
         user = await self.get_one_or_none(email=data.email)

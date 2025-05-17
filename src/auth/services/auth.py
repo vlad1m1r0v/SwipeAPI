@@ -4,20 +4,14 @@ from src.auth.schemas import (
     BasePayloadSchema,
     TokensSchema
 )
-from src.users.enums import UserRoleEnum
+from src.users.enums import ROLE
 from src.auth.services.jwt import JwtService
 
 from src.users.exceptions import (
     UserAlreadyExistsException,
     InvalidRoleException
 )
-from src.users.schemas import (
-    CreateContactSchema,
-    CreateAgentContactSchema,
-    CreateBalanceSchema,
-    CreateSubscriptionSchema,
-    CreateNotificationSettingsSchema,
-)
+
 from src.users.services import (
     UserService,
     ContactService,
@@ -53,20 +47,29 @@ class AuthService:
 
         user = await self._user_service.create_user(data)
 
-        contact = CreateContactSchema(user_id=user.id, email=user.email, phone=user.phone)
-        await self._contact_service.create(contact)
+        await self._contact_service.create(
+            {
+                'user_id': user.id,
+                'email': user.email,
+                'phone': user.phone
+            }
+        )
 
-        agent_contact = CreateAgentContactSchema(user_id=user.id)
-        await self._agent_contact_service.create(agent_contact)
+        await self._agent_contact_service.create({
+            'user_id': user.id
+        })
 
-        subscription = CreateSubscriptionSchema(user_id=user.id)
-        await self._subscription_service.create(subscription)
+        await self._subscription_service.create({
+            'user_id': user.id
+        })
 
-        notification_settings = CreateNotificationSettingsSchema(user_id=user.id)
-        await self._notification_settings_service.create(notification_settings)
+        await self._notification_settings_service.create({
+            'user_id': user.id
+        })
 
-        balance = CreateBalanceSchema(user_id=user.id)
-        await self._balance_service.create(balance)
+        await self._balance_service.create({
+            'user_id': user.id
+        })
 
         base_payload = self._user_service.to_schema(data=user, schema_type=BasePayloadSchema)
         access_token = self._jwt_service.create_access_token(base_payload=base_payload)
@@ -80,7 +83,7 @@ class AuthService:
     async def login_user(self, data: LoginSchema) -> TokensSchema:
         user = await self._user_service.authenticate(data)
 
-        if user.role != UserRoleEnum.USER:
+        if user.role != ROLE.USER:
             raise InvalidRoleException()
 
         base_payload = self._user_service.to_schema(data=user, schema_type=BasePayloadSchema)

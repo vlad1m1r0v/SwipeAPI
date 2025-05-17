@@ -28,6 +28,7 @@ def create_exception_handler(
 
 
 def setup_exception_handlers(app: FastAPI) -> None:
+    #region auth
     app.add_exception_handler(
         UnauthorizedException,
         create_exception_handler(
@@ -60,7 +61,9 @@ def setup_exception_handlers(app: FastAPI) -> None:
             },
         ),
     )
+    #endregion auth
 
+    #region users
     app.add_exception_handler(
         UserAlreadyExistsException,
         create_exception_handler(
@@ -104,5 +107,6 @@ def setup_exception_handlers(app: FastAPI) -> None:
             },
         ),
     )
+    #endregion users
 
     __all__ = "setup_exception_handlers"

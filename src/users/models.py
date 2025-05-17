@@ -5,9 +5,10 @@ from sqlalchemy import orm
 import sqlalchemy as sa
 
 from advanced_alchemy.base import BigIntAuditBase
-from advanced_alchemy.types import FileObject
 
-from src.core.models import LocalStoredObject
+from sqlalchemy_file import FileField
+
+from src.core.enums import STORAGE_CONTAINER
 
 import src.users.enums as enums
 import src.users.constants as constants
@@ -67,10 +68,10 @@ class NotificationSettings(BigIntAuditBase):
         unique=True
     )
     redirect_notifications_to_agent: orm.Mapped[bool] = orm.mapped_column(sa.Boolean, default=False)
-    notification_type: orm.Mapped[enums.NotificationTypeEnum] = orm.mapped_column(
-        sa.Enum(enums.NotificationTypeEnum, name="notification_type_enum"),
+    notification_type: orm.Mapped[enums.NOTIFICATION_TYPE] = orm.mapped_column(
+        sa.Enum(enums.NOTIFICATION_TYPE, name="notification_type_enum"),
         nullable=False,
-        default=enums.NotificationTypeEnum.DISABLED,
+        default=enums.NOTIFICATION_TYPE.DISABLED,
     )
 
     user: orm.Mapped["User"] = orm.relationship(back_populates="notification_settings")
@@ -95,13 +96,17 @@ class User(BigIntAuditBase):
     __tablename__ = "users"
 
     name: orm.Mapped[str]
-    photo: orm.Mapped[FileObject | None] = orm.mapped_column(LocalStoredObject)
+    photo = sa.Column(
+        FileField(
+            upload_storage=STORAGE_CONTAINER.IMAGES,
+        )
+    )
     email: orm.Mapped[str]
     phone: orm.Mapped[str]
-    role: orm.Mapped[enums.UserRoleEnum] = orm.mapped_column(
-        sa.Enum(enums.UserRoleEnum, name="user_role_enum"),
+    role: orm.Mapped[enums.ROLE] = orm.mapped_column(
+        sa.Enum(enums.ROLE, name="user_role_enum"),
         nullable=False,
-        default=enums.UserRoleEnum.USER
+        default=enums.ROLE.USER
     )
     password: orm.Mapped[str]
 
@@ -133,10 +138,10 @@ class User(BigIntAuditBase):
 
 
 __all__ = [
+    'User',
     'Contact',
     'AgentContact',
     'Subscription',
     'NotificationSettings',
-    'Balance',
-    'User'
+    'Balance'
 ]

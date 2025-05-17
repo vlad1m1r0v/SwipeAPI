@@ -13,7 +13,7 @@ from src.auth.services import JwtService
 from src.auth.exceptions import (
     InvalidTokenTypeException
 )
-from src.auth.enums import TokenTypeEnum
+from src.auth.enums import TOKEN_TYPE
 
 from src.users.services import UserService
 from src.users.exceptions import (
@@ -21,7 +21,7 @@ from src.users.exceptions import (
     InvalidRoleException
 )
 from src.users.schemas import GetUserSchema
-from src.users.enums import UserRoleEnum
+from src.users.enums import ROLE
 
 http_bearer = HTTPBearer(auto_error=False)
 
@@ -36,7 +36,7 @@ async def user_from_token(
     token = auth_credentials.credentials
     payload = jwt_service.decode_jwt(token)
 
-    if payload['type'] != TokenTypeEnum.ACCESS_TOKEN:
+    if payload['type'] != TOKEN_TYPE.ACCESS_TOKEN:
         raise InvalidTokenTypeException()
 
     user = await user_service.get_one_or_none(id=int(payload['sub']))
@@ -44,7 +44,7 @@ async def user_from_token(
     if not user:
         raise UserDoesNotExistException()
 
-    if user.role != UserRoleEnum.USER:
+    if user.role != ROLE.USER:
         raise InvalidRoleException()
 
     return user_service.to_schema(data=user, schema_type=GetUserSchema)
