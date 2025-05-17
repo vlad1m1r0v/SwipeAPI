@@ -61,6 +61,29 @@ def setup_exception_handlers(app: FastAPI) -> None:
             },
         ),
     )
+
+
+    app.add_exception_handler(
+        IncorrectPasswordException,
+        create_exception_handler(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            initial_detail={
+                "message": "Password is incorrect",
+                "error_code": "incorrect_password",
+            },
+        ),
+    )
+
+    app.add_exception_handler(
+        InvalidRoleException,
+        create_exception_handler(
+            status_code=status.HTTP_403_FORBIDDEN,
+            initial_detail={
+                "message": "You do not have permission to perform this action",
+                "error_code": "invalid_role",
+            },
+        ),
+    )
     #endregion auth
 
     #region users
@@ -82,28 +105,6 @@ def setup_exception_handlers(app: FastAPI) -> None:
             initial_detail={
                 "message": "User with given email does not exist",
                 "error_code": "user_does_not_exist",
-            },
-        ),
-    )
-
-    app.add_exception_handler(
-        IncorrectPasswordException,
-        create_exception_handler(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            initial_detail={
-                "message": "Password is incorrect",
-                "error_code": "incorrect_password",
-            },
-        ),
-    )
-
-    app.add_exception_handler(
-        InvalidRoleException,
-        create_exception_handler(
-            status_code=status.HTTP_403_FORBIDDEN,
-            initial_detail={
-                "message": "You do not have permission to perform this action",
-                "error_code": "invalid_role",
             },
         ),
     )
