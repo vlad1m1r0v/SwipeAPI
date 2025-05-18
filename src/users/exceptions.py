@@ -10,3 +10,6 @@ class IncorrectPasswordException(Exception):
 class InvalidRoleException(Exception):
     pass
 
+class BalanceNotFoundException(Exception):
+    pass
+

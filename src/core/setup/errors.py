@@ -14,7 +14,8 @@ from src.users.exceptions import (
     UserAlreadyExistsException,
     UserDoesNotExistException,
     IncorrectPasswordException,
-    InvalidRoleException
+    InvalidRoleException,
+    BalanceNotFoundException
 )
 
 
@@ -34,7 +35,7 @@ def setup_exception_handlers(app: FastAPI) -> None:
         create_exception_handler(
             status_code=status.HTTP_401_UNAUTHORIZED,
             initial_detail={
-                "message": "Unauthorized request",
+                "message": "Unauthorized request.",
                 "error_code": "unauthorized_request",
             },
         )
@@ -45,7 +46,7 @@ def setup_exception_handlers(app: FastAPI) -> None:
         create_exception_handler(
             status_code=status.HTTP_401_UNAUTHORIZED,
             initial_detail={
-                "message": "Invalid token",
+                "message": "Invalid token.",
                 "error_code": "invalid_token",
             },
         )
@@ -56,7 +57,7 @@ def setup_exception_handlers(app: FastAPI) -> None:
         create_exception_handler(
             status_code=status.HTTP_401_UNAUTHORIZED,
             initial_detail={
-                "message": "Invalid token type",
+                "message": "Invalid token type.",
                 "error_code": "invalid_token_type",
             },
         ),
@@ -68,7 +69,7 @@ def setup_exception_handlers(app: FastAPI) -> None:
         create_exception_handler(
             status_code=status.HTTP_401_UNAUTHORIZED,
             initial_detail={
-                "message": "Password is incorrect",
+                "message": "Password is incorrect.",
                 "error_code": "incorrect_password",
             },
         ),
@@ -79,7 +80,7 @@ def setup_exception_handlers(app: FastAPI) -> None:
         create_exception_handler(
             status_code=status.HTTP_403_FORBIDDEN,
             initial_detail={
-                "message": "You do not have permission to perform this action",
+                "message": "You do not have permission to perform this action.",
                 "error_code": "invalid_role",
             },
         ),
@@ -92,7 +93,7 @@ def setup_exception_handlers(app: FastAPI) -> None:
         create_exception_handler(
             status_code=status.HTTP_409_CONFLICT,
             initial_detail={
-                "message": "User with given email already exists",
+                "message": "User with given email already exists.",
                 "error_code": "user_exists",
             },
         ),
@@ -103,7 +104,18 @@ def setup_exception_handlers(app: FastAPI) -> None:
         create_exception_handler(
             status_code=status.HTTP_404_NOT_FOUND,
             initial_detail={
-                "message": "User with given email does not exist",
+                "message": "User with given email does not exist.",
+                "error_code": "user_does_not_exist",
+            },
+        ),
+    )
+
+    app.add_exception_handler(
+        BalanceNotFoundException,
+        create_exception_handler(
+            status_code=status.HTTP_404_NOT_FOUND,
+            initial_detail={
+                "message": "Balance not found.",
                 "error_code": "user_does_not_exist",
             },
         ),

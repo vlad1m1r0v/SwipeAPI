@@ -1,3 +1,5 @@
+from decimal import Decimal
+
 from sqlalchemy import orm
 
 from advanced_alchemy.service import SQLAlchemyAsyncRepositoryService, ModelDictT
@@ -40,8 +42,8 @@ class UserService(SQLAlchemyAsyncRepositoryService[m.User, r.UserRepository]):
 
         return user
 
-    async def update_password(self, data: ModelDictT) -> None:
-        user = await self.get_one_or_none(id=data['id'])
+    async def update_password(self, item_id: int, data: ModelDictT) -> None:
+        user = await self.get_one_or_none(id=item_id)
 
         if not user:
             raise ex.UserDoesNotExistException()
@@ -80,6 +82,17 @@ class NotificationSettingsService(
 class BalanceService(
     SQLAlchemyAsyncRepositoryService[m.Balance, r.BalanceRepository]):
     repository_type = r.BalanceRepository
+
+    async def deposit_money(self, item_id: int, amount: float) -> None:
+        balance = await self.get_one_or_none(id=item_id)
+
+        if not balance:
+            raise ex.BalanceNotFoundException()
+
+        await self.update(
+            data={'value': balance.value + Decimal(amount)},
+            item_id=item_id
+        )
 
 
 __all__ = [
