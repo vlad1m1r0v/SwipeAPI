@@ -8,46 +8,42 @@ from pydantic import (
 )
 from pydantic_core.core_schema import ValidationInfo
 
+from src.core.utils.validation import (
+    UPPERCASE_LETTER,
+    SPECIAL_CHARACTER,
+    PHONE_NUMBER,
+    DIGIT
+)
+
 from src.users.enums import ROLE
 from src.auth.enums import TOKEN_TYPE
 
 
-class RegisterSchema(BaseModel):
+class PasswordMixin:
+    password: str
+
+    @field_validator('password')
+    @classmethod
+    def validate_password(cls, value: str) -> str:
+        if len(value) < 8:
+            raise ValueError("Password must be at least 8 characters long.")
+        if not re.search(UPPERCASE_LETTER, value):
+            raise ValueError("Password must contain at least one uppercase letter.")
+        if not re.search(DIGIT, value):
+            raise ValueError("Password must contain at least one number.")
+        if not re.search(SPECIAL_CHARACTER, value):
+            raise ValueError("Password must contain at least one special character.")
+        return value
+
+
+class RegisterSchema(BaseModel, PasswordMixin):
     name: str = Field(min_length=3, max_length=100)
-    phone: str = Field(pattern=r'^\+380\d{9}$')
+    phone: str = Field(pattern=PHONE_NUMBER)
     email: EmailStr
-    password: str
-
-    @field_validator('password')
-    @classmethod
-    def validate_password(cls, value: str) -> str:
-        if len(value) < 8:
-            raise ValueError("Password must be at least 8 characters long.")
-        if not re.search(r'[A-Z]', value):
-            raise ValueError("Password must contain at least one uppercase letter.")
-        if not re.search(r'\d', value):
-            raise ValueError("Password must contain at least one number.")
-        if not re.search(r'[!@#$%^&*(),.?\":{}|<>]', value):
-            raise ValueError("Password must contain at least one special character.")
-        return value
 
 
-class LoginSchema(BaseModel):
+class LoginSchema(BaseModel, PasswordMixin):
     email: EmailStr
-    password: str
-
-    @field_validator('password')
-    @classmethod
-    def validate_password(cls, value: str) -> str:
-        if len(value) < 8:
-            raise ValueError("Password must be at least 8 characters long.")
-        if not re.search(r'[A-Z]', value):
-            raise ValueError("Password must contain at least one uppercase letter.")
-        if not re.search(r'\d', value):
-            raise ValueError("Password must contain at least one number.")
-        if not re.search(r'[!@#$%^&*(),.?\":{}|<>]', value):
-            raise ValueError("Password must contain at least one special character.")
-        return value
 
 
 class UpdatePasswordSchema(BaseModel):
@@ -55,16 +51,16 @@ class UpdatePasswordSchema(BaseModel):
     new_password: str
     confirm_password: str
 
-    @field_validator('new_password')
+    @field_validator('old_password', 'new_password')
     @classmethod
-    def validate_new_password(cls, value: str) -> str:
+    def validate_password(cls, value: str) -> str:
         if len(value) < 8:
             raise ValueError("Password must be at least 8 characters long.")
-        if not re.search(r'[A-Z]', value):
+        if not re.search(UPPERCASE_LETTER, value):
             raise ValueError("Password must contain at least one uppercase letter.")
-        if not re.search(r'\d', value):
+        if not re.search(DIGIT, value):
             raise ValueError("Password must contain at least one number.")
-        if not re.search(r'[!@#$%^&*(),.?\":{}|<>]', value):
+        if not re.search(SPECIAL_CHARACTER, value):
             raise ValueError("Password must contain at least one special character.")
         return value
 

@@ -1,3 +1,5 @@
+from sqlalchemy import orm
+
 from advanced_alchemy.service import SQLAlchemyAsyncRepositoryService, ModelDictT
 
 from src.auth.utils import hash_password, validate_password
@@ -10,6 +12,18 @@ import src.users.exceptions as ex
 
 class UserService(SQLAlchemyAsyncRepositoryService[m.User, r.UserRepository]):
     repository_type = r.UserRepository
+
+    async def get_user_profile(self, item_id: int) -> m.User:
+        return await self.get(
+            item_id=item_id,
+            load=[
+                orm.joinedload(m.User.contact),
+                orm.joinedload(m.User.agent_contact),
+                orm.joinedload(m.User.subscription),
+                orm.joinedload(m.User.notification_settings),
+                orm.joinedload(m.User.balance)
+            ]
+        )
 
     async def create_user(self, data: ModelDictT) -> m.User:
         data = data.model_dump(mode='json')
@@ -35,7 +49,7 @@ class UserService(SQLAlchemyAsyncRepositoryService[m.User, r.UserRepository]):
         if not validate_password(data['old_password'], user.password.encode()):
             raise ex.IncorrectPasswordException()
 
-        await self.update(data={'password': data['new_password']},item_id=user.id)
+        await self.update(data={'password': data['new_password']}, item_id=user.id)
 
     async def to_model(self, data: ModelDictT, operation: str | None = None) -> m.User:
         if isinstance(data, dict) and "password" in data:

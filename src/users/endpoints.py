@@ -21,10 +21,16 @@ from src.auth.schemas import (
     UpdatePasswordSchema
 )
 
-from src.users.services import UserService
+from src.users.services import (
+    UserService,
+    ContactService,
+    AgentContactService
+)
 from src.users.schemas import (
+    GetUserSchema,
     UpdateUserSchema,
-    GetUserSchema
+    UpdateContactSchema,
+    UpdateAgentContactSchema
 )
 
 router = APIRouter(prefix="/users", tags=["users"])
@@ -51,8 +57,9 @@ async def update_account(
     if photo:
         data["photo"] = photo
 
-    updated_user = await user_service.update(data=data, item_id=user.id)
-    return user_service.to_schema(data=updated_user, schema_type=GetUserSchema)
+    await user_service.update(data=data, item_id=user.id)
+    profile = await user_service.get_user_profile(item_id=user.id)
+    return user_service.to_schema(data=profile, schema_type=GetUserSchema)
 
 
 @router.post("/update-password")
@@ -66,3 +73,29 @@ async def update_password(
     return SuccessfulMessageSchema(
         message="Password was updated successfully."
     )
+
+
+@router.patch("/contact")
+@inject
+async def update_contact(
+        contact_service: FromDishka[ContactService],
+        user_service: FromDishka[UserService],
+        data: Annotated[UpdateContactSchema, Form()],
+        user: GetUserSchema = Depends(user_from_token)
+) -> GetUserSchema:
+    await contact_service.update(data=data, item_id=user.contact.id)
+    profile = await user_service.get_user_profile(item_id=user.id)
+    return user_service.to_schema(data=profile, schema_type=GetUserSchema)
+
+
+@router.patch("/agent-contact")
+@inject
+async def update_contact(
+        agent_contact_service: FromDishka[AgentContactService],
+        user_service: FromDishka[UserService],
+        data: Annotated[UpdateAgentContactSchema, Form()],
+        user: GetUserSchema = Depends(user_from_token)
+) -> GetUserSchema:
+    await agent_contact_service.update(data=data, item_id=user.contact.id)
+    profile = await user_service.get_user_profile(item_id=user.id)
+    return user_service.to_schema(data=profile, schema_type=GetUserSchema)

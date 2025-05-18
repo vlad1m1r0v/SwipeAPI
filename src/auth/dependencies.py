@@ -16,12 +16,12 @@ from src.auth.exceptions import (
 from src.auth.enums import TOKEN_TYPE
 
 from src.users.services import UserService
+from src.users.schemas import GetUserSchema
+from src.users.enums import ROLE
 from src.users.exceptions import (
     UserDoesNotExistException,
     InvalidRoleException
 )
-from src.users.schemas import GetUserSchema
-from src.users.enums import ROLE
 
 http_bearer = HTTPBearer(auto_error=False)
 
@@ -39,7 +39,7 @@ async def user_from_token(
     if payload['type'] != TOKEN_TYPE.ACCESS_TOKEN:
         raise InvalidTokenTypeException()
 
-    user = await user_service.get_one_or_none(id=int(payload['sub']))
+    user = await user_service.get_user_profile(item_id=int(payload['sub']))
 
     if not user:
         raise UserDoesNotExistException()
