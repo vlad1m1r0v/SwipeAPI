@@ -25,7 +25,6 @@ class UpdateUserSchema(BaseModel):
     phone: Optional[str] = Field(pattern=r'^\+380\d{9}$')
     email: Optional[EmailStr]
 
-
 __all__ = [
     "GetUserSchema",
     "UpdateUserSchema",

@@ -26,6 +26,17 @@ class UserService(SQLAlchemyAsyncRepositoryService[m.User, r.UserRepository]):
 
         return user
 
+    async def update_password(self, data: ModelDictT) -> None:
+        user = await self.get_one_or_none(id=data['id'])
+
+        if not user:
+            raise ex.UserDoesNotExistException()
+
+        if not validate_password(data['old_password'], user.password.encode()):
+            raise ex.IncorrectPasswordException()
+
+        await self.update(data={'password': data['new_password']},item_id=user.id)
+
     async def to_model(self, data: ModelDictT, operation: str | None = None) -> m.User:
         if isinstance(data, dict) and "password" in data:
             password: bytes | str | None = data.pop("password", None)
