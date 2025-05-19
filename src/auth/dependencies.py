@@ -26,28 +26,27 @@ from src.users.exceptions import (
 http_bearer = HTTPBearer(auto_error=False)
 
 
-@inject
-async def user_from_token(
+def user_from_token(token_type: TOKEN_TYPE = TOKEN_TYPE.ACCESS_TOKEN):
+    @inject
+    async def _user_from_token(
         jwt_service: FromDishka[JwtService],
         user_service: FromDishka[UserService],
-        auth_credentials: Optional[HTTPAuthorizationCredentials] = Depends(http_bearer)
+        auth_credentials: Optional[HTTPAuthorizationCredentials] = Depends(http_bearer),
+    ) -> GetUserSchema:
+        token = auth_credentials.credentials
+        payload = jwt_service.decode_jwt(token)
 
-) -> GetUserSchema:
-    token = auth_credentials.credentials
-    payload = jwt_service.decode_jwt(token)
+        if payload["type"] != token_type:
+            raise InvalidTokenTypeException()
 
-    if payload['type'] != TOKEN_TYPE.ACCESS_TOKEN:
-        raise InvalidTokenTypeException()
+        user = await user_service.get_user_profile(item_id=int(payload["sub"]))
 
-    user = await user_service.get_user_profile(item_id=int(payload['sub']))
+        if not user:
+            raise UserDoesNotExistException()
 
-    if not user:
-        raise UserDoesNotExistException()
+        if user.role != ROLE.USER:
+            raise InvalidRoleException()
 
-    if user.role != ROLE.USER:
-        raise InvalidRoleException()
+        return user_service.to_schema(data=user, schema_type=GetUserSchema)
 
-    return user_service.to_schema(data=user, schema_type=GetUserSchema)
-
-
-__all__ = ["user_from_token"]
+    return _user_from_token
