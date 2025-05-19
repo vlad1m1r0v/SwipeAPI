@@ -7,8 +7,6 @@ from src.auth.schemas import (
 
 from src.auth.services.jwt import JwtService
 
-from src.users.models import User
-
 from src.users.enums import ROLE
 
 from src.users.schemas import GetUserSchema
@@ -77,7 +75,8 @@ class AuthService:
             'user_id': user.id
         })
 
-        return self.generate_tokens(user)
+        user_schema = self._user_service.to_schema(data=user, schema_type=GetUserSchema)
+        return self.generate_tokens(user_schema)
 
     async def login_user(self, data: LoginSchema) -> TokensSchema:
         user = await self._user_service.authenticate(data)
@@ -85,13 +84,11 @@ class AuthService:
         if user.role != ROLE.USER:
             raise InvalidRoleException()
 
-        return self.generate_tokens(user)
+        user_schema = self._user_service.to_schema(data=user, schema_type=GetUserSchema)
+        return self.generate_tokens(user_schema)
 
-    def generate_tokens(self, user: User | GetUserSchema) -> TokensSchema:
-        if isinstance(user, GetUserSchema):
-            base_payload = BasePayloadSchema(**user.model_dump())
-        else:
-            base_payload = self._user_service.to_schema(data=user, schema_type=BasePayloadSchema)
+    def generate_tokens(self, user: GetUserSchema) -> TokensSchema:
+        base_payload = BasePayloadSchema(**user.model_dump())
 
         access_token = self._jwt_service.create_access_token(base_payload=base_payload)
         refresh_token = self._jwt_service.create_refresh_token(base_payload=base_payload)
