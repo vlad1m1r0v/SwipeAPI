@@ -3,6 +3,8 @@ from typing import (
     Annotated
 )
 
+from pydantic import conint
+
 from dishka import FromDishka
 from dishka.integrations.fastapi import inject
 
@@ -14,14 +16,7 @@ from fastapi import (
     File
 )
 
-from pydantic import conint
-
-from src.core.schemas import SuccessfulMessageSchema
-
 from src.auth.dependencies import user_from_token
-from src.auth.schemas import (
-    UpdatePasswordSchema
-)
 
 from src.users.services import (
     UserService,
@@ -42,6 +37,14 @@ from src.users.schemas import (
 router = APIRouter(prefix="/users", tags=["users"])
 
 
+@router.get("/profile")
+@inject
+def get_profile(
+        user: GetUserSchema = Depends(user_from_token)
+) -> GetUserSchema:
+    return user
+
+
 @router.patch("/account")
 @inject
 async def update_account(
@@ -50,7 +53,7 @@ async def update_account(
         name: Optional[str] = Form(default=None),
         phone: Optional[str] = Form(default=None),
         photo: Optional[UploadFile] = File(default=None),
-        user: GetUserSchema = Depends(user_from_token())
+        user: GetUserSchema = Depends(user_from_token)
 ) -> GetUserSchema:
     fields = UpdateUserSchema(
         email=email,
@@ -74,7 +77,7 @@ async def update_contact(
         contact_service: FromDishka[ContactService],
         user_service: FromDishka[UserService],
         data: Annotated[UpdateContactSchema, Form()],
-        user: GetUserSchema = Depends(user_from_token())
+        user: GetUserSchema = Depends(user_from_token)
 ) -> GetUserSchema:
     await contact_service.update(data=data, item_id=user.contact.id)
     profile = await user_service.get_user_profile(item_id=user.id)
@@ -87,7 +90,7 @@ async def update_agent_contact(
         agent_contact_service: FromDishka[AgentContactService],
         user_service: FromDishka[UserService],
         data: Annotated[UpdateAgentContactSchema, Form()],
-        user: GetUserSchema = Depends(user_from_token())
+        user: GetUserSchema = Depends(user_from_token)
 ) -> GetUserSchema:
     await agent_contact_service.update(data=data, item_id=user.contact.id)
     profile = await user_service.get_user_profile(item_id=user.id)
@@ -100,7 +103,7 @@ async def update_subscription(
         user_service: FromDishka[UserService],
         subscription_service: FromDishka[SubscriptionService],
         is_auto_renewal: bool = Form(default=False),
-        user: GetUserSchema = Depends(user_from_token()),
+        user: GetUserSchema = Depends(user_from_token),
 ):
     await subscription_service.update(
         item_id=user.subscription.id,
@@ -116,7 +119,7 @@ async def deposit_money(
         amount: Annotated[conint(le=9999), Form()],
         user_service: FromDishka[UserService],
         balance_service: FromDishka[BalanceService],
-        user: GetUserSchema = Depends(user_from_token()),
+        user: GetUserSchema = Depends(user_from_token),
 ):
     await balance_service.deposit_money(item_id=user.balance.id, amount=amount)
     profile = await user_service.get_user_profile(item_id=user.id)
@@ -129,7 +132,7 @@ async def update_notification_settings(
         notification_settings_service: FromDishka[NotificationSettingsService],
         user_service: FromDishka[UserService],
         data: Annotated[UpdateNotificationSettingsSchema, Form()],
-        user: GetUserSchema = Depends(user_from_token())
+        user: GetUserSchema = Depends(user_from_token)
 ) -> GetUserSchema:
     await notification_settings_service.update(
         item_id=user.notification_settings.id,
@@ -137,16 +140,3 @@ async def update_notification_settings(
     )
     profile = await user_service.get_user_profile(item_id=user.id)
     return user_service.to_schema(data=profile, schema_type=GetUserSchema)
-
-
-@router.post("/password/update")
-@inject
-async def update_password(
-        user_service: FromDishka[UserService],
-        data: Annotated[UpdatePasswordSchema, Form()],
-        user: GetUserSchema = Depends(user_from_token())
-) -> SuccessfulMessageSchema:
-    await user_service.update_password(item_id=user.id, data=data.model_dump())
-    return SuccessfulMessageSchema(
-        message="Password was updated successfully."
-    )

@@ -6,6 +6,7 @@ from starlette.responses import JSONResponse
 
 from jwt import InvalidTokenError
 from src.auth.exceptions import (
+    TokenNotProvidedException,
     InvalidTokenTypeException,
     UnauthorizedException
 )
@@ -29,15 +30,20 @@ def create_exception_handler(
 
 
 def setup_exception_handlers(app: FastAPI) -> None:
-    #region auth
+    # region auth
     app.add_exception_handler(
         UnauthorizedException,
         create_exception_handler(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            initial_detail={
-                "message": "Unauthorized request.",
-                "error_code": "unauthorized_request",
-            },
+            initial_detail={"message": "Unauthorized request."},
+        )
+    )
+
+    app.add_exception_handler(
+        TokenNotProvidedException,
+        create_exception_handler(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            initial_detail={"message": "Token was not provided."},
         )
     )
 
@@ -45,10 +51,7 @@ def setup_exception_handlers(app: FastAPI) -> None:
         InvalidTokenError,
         create_exception_handler(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            initial_detail={
-                "message": "Invalid token.",
-                "error_code": "invalid_token",
-            },
+            initial_detail={"message": "Invalid token."},
         )
     )
 
@@ -56,22 +59,15 @@ def setup_exception_handlers(app: FastAPI) -> None:
         InvalidTokenTypeException,
         create_exception_handler(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            initial_detail={
-                "message": "Invalid token type.",
-                "error_code": "invalid_token_type",
-            },
+            initial_detail={"message": "Invalid token type."},
         ),
     )
-
 
     app.add_exception_handler(
         IncorrectPasswordException,
         create_exception_handler(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            initial_detail={
-                "message": "Password is incorrect.",
-                "error_code": "incorrect_password",
-            },
+            initial_detail={"message": "Password is incorrect."},
         ),
     )
 
@@ -79,23 +75,18 @@ def setup_exception_handlers(app: FastAPI) -> None:
         InvalidRoleException,
         create_exception_handler(
             status_code=status.HTTP_403_FORBIDDEN,
-            initial_detail={
-                "message": "You do not have permission to perform this action.",
-                "error_code": "invalid_role",
-            },
+            initial_detail={"message": "You do not have permission to perform this action."},
         ),
     )
-    #endregion auth
+    # endregion auth
 
-    #region users
+    # region users
     app.add_exception_handler(
         UserAlreadyExistsException,
         create_exception_handler(
             status_code=status.HTTP_409_CONFLICT,
             initial_detail={
-                "message": "User with given email already exists.",
-                "error_code": "user_exists",
-            },
+                "message": "User with given email already exists."},
         ),
     )
 
@@ -103,10 +94,7 @@ def setup_exception_handlers(app: FastAPI) -> None:
         UserDoesNotExistException,
         create_exception_handler(
             status_code=status.HTTP_404_NOT_FOUND,
-            initial_detail={
-                "message": "User with given email does not exist.",
-                "error_code": "user_does_not_exist",
-            },
+            initial_detail={"message": "User with given email does not exist."},
         ),
     )
 
@@ -114,12 +102,9 @@ def setup_exception_handlers(app: FastAPI) -> None:
         BalanceNotFoundException,
         create_exception_handler(
             status_code=status.HTTP_404_NOT_FOUND,
-            initial_detail={
-                "message": "Balance not found.",
-                "error_code": "user_does_not_exist",
-            },
+            initial_detail={"message": "Balance not found."},
         ),
     )
-    #endregion users
+    # endregion users
 
     __all__ = "setup_exception_handlers"

@@ -1,3 +1,7 @@
+class TokenNotProvidedException(Exception):
+    pass
+
+
 class InvalidTokenTypeException(Exception):
     pass
 

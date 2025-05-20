@@ -9,8 +9,6 @@ from src.auth.services.jwt import JwtService
 
 from src.users.enums import ROLE
 
-from src.users.schemas import GetUserSchema
-
 from src.users.exceptions import (
     UserAlreadyExistsException,
     InvalidRoleException
@@ -75,8 +73,17 @@ class AuthService:
             'user_id': user.id
         })
 
-        user_schema = self._user_service.to_schema(data=user, schema_type=GetUserSchema)
+        user_schema = self._user_service.to_schema(data=user, schema_type=BasePayloadSchema)
         return self.generate_tokens(user_schema)
+
+    async def register_admin(self, data: RegisterSchema) -> TokensSchema:
+        if await self._user_service.exists(email=data.email):
+            raise UserAlreadyExistsException()
+
+        admin = await self._user_service.create_admin(data)
+
+        admin_schema = self._user_service.to_schema(data=admin, schema_type=BasePayloadSchema)
+        return self.generate_tokens(admin_schema)
 
     async def login_user(self, data: LoginSchema) -> TokensSchema:
         user = await self._user_service.authenticate(data)
@@ -84,12 +91,19 @@ class AuthService:
         if user.role != ROLE.USER:
             raise InvalidRoleException()
 
-        user_schema = self._user_service.to_schema(data=user, schema_type=GetUserSchema)
+        user_schema = self._user_service.to_schema(data=user, schema_type=BasePayloadSchema)
         return self.generate_tokens(user_schema)
 
-    def generate_tokens(self, user: GetUserSchema) -> TokensSchema:
-        base_payload = BasePayloadSchema(**user.model_dump())
+    async def login_admin(self, data: LoginSchema) -> TokensSchema:
+        admin = await self._user_service.authenticate(data)
 
+        if admin.role != ROLE.ADMIN:
+            raise InvalidRoleException()
+
+        admin_schema = self._user_service.to_schema(data=admin, schema_type=BasePayloadSchema)
+        return self.generate_tokens(admin_schema)
+
+    def generate_tokens(self, base_payload: BasePayloadSchema) -> TokensSchema:
         access_token = self._jwt_service.create_access_token(base_payload=base_payload)
         refresh_token = self._jwt_service.create_refresh_token(base_payload=base_payload)
 
@@ -98,4 +112,5 @@ class AuthService:
             refresh_token=refresh_token
         )
 
-    __all__ = ['AuthService']
+
+__all__ = ['AuthService']

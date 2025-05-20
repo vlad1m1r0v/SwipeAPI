@@ -1,7 +1,53 @@
-from fastapi import APIRouter
+from typing import Annotated
+
+from dishka import FromDishka
+from dishka.integrations.fastapi import inject
+
+from fastapi import (
+    APIRouter,
+    Depends,
+    Form
+)
+
+from src.core.schemas import SuccessfulMessageSchema
+
+from src.auth.dependencies import payload_from_token
+from src.auth.schemas import (
+    TokensSchema,
+    BasePayloadSchema,
+    UpdatePasswordSchema
+)
+from src.auth.services import AuthService
+from src.auth.enums import TOKEN_TYPE
 
 from src.auth.endpoints.users import router as user_router
+from src.auth.endpoints.admins import router as admin_router
+
+from src.users.services import UserService
 
 router = APIRouter(prefix="/auth", tags=["auth"])
 
 router.include_router(user_router)
+router.include_router(admin_router)
+
+
+@router.post('/tokens/refresh', response_model=TokensSchema)
+@inject
+def refresh_tokens(
+        auth_service: FromDishka[AuthService],
+        payload: BasePayloadSchema = Depends(payload_from_token(TOKEN_TYPE.REFRESH_TOKEN)),
+):
+    return auth_service.generate_tokens(payload)
+
+
+@router.post("/password/update")
+@inject
+async def update_password(
+        user_service: FromDishka[UserService],
+        data: Annotated[UpdatePasswordSchema, Form()],
+        payload: BasePayloadSchema = Depends(payload_from_token(TOKEN_TYPE.ACCESS_TOKEN))
+) -> SuccessfulMessageSchema:
+    await user_service.update_password(item_id=payload.id, data=data.model_dump())
+    return SuccessfulMessageSchema(
+        message="Password was updated successfully."
+    )

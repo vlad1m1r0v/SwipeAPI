@@ -15,22 +15,22 @@ from src.auth.schemas import (
     LoginSchema
 )
 
-router = APIRouter(prefix="/users")
+router = APIRouter(prefix="/admins")
 
 
 @router.post("/register", response_model=TokensSchema)
 @inject
-async def register_user(
+async def register_admin(
         data: Annotated[RegisterSchema, Form()],
         auth_service: FromDishka[AuthService],
 ):
-    return await auth_service.register_user(data=data)
+    return await auth_service.register_admin(data=data)
 
 
 @router.post("/login", response_model=TokensSchema)
 @inject
-async def login_user(
+async def login_admin(
         data: Annotated[LoginSchema, Form()],
         auth_service: FromDishka[AuthService],
 ):
-    return await auth_service.login_user(data=data)
+    return await auth_service.login_admin(data=data)
