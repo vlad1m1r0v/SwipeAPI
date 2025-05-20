@@ -1,3 +1,5 @@
+from datetime import date
+
 from src.auth.schemas import (
     RegisterSchema,
     LoginSchema,
@@ -11,7 +13,9 @@ from src.users.enums import ROLE
 
 from src.users.exceptions import (
     UserAlreadyExistsException,
-    InvalidRoleException
+    InvalidRoleException,
+    SubscriptionExpiredException,
+    UserBlacklistedException
 )
 
 from src.users.services import (
@@ -23,12 +27,14 @@ from src.users.services import (
     BalanceService
 )
 
+from src.admins.services import BlacklistService
 
 class AuthService:
     def __init__(
             self,
             jwt_service: JwtService,
             user_service: UserService,
+            blacklist_service: BlacklistService,
             contact_service: ContactService,
             agent_contact_service: AgentContactService,
             subscription_service: SubscriptionService,
@@ -37,6 +43,7 @@ class AuthService:
     ):
         self._jwt_service = jwt_service
         self._user_service = user_service
+        self._blacklist_service = blacklist_service
         self._contact_service = contact_service
         self._agent_contact_service = agent_contact_service
         self._subscription_service = subscription_service
@@ -90,6 +97,14 @@ class AuthService:
 
         if user.role != ROLE.USER:
             raise InvalidRoleException()
+
+        subscription = await self._subscription_service.get_one_or_none(user_id=user.id)
+
+        if subscription.expiry_date.date() <= date.today():
+            raise SubscriptionExpiredException()
+
+        if await self._blacklist_service.get_one_or_none(user_id=user.id):
+            raise UserBlacklistedException()
 
         user_schema = self._user_service.to_schema(data=user, schema_type=BasePayloadSchema)
         return self.generate_tokens(user_schema)

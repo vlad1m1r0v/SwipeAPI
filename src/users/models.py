@@ -1,5 +1,7 @@
+from typing import TYPE_CHECKING
 from datetime import datetime, UTC, timedelta
 from decimal import Decimal
+
 
 from sqlalchemy import orm
 import sqlalchemy as sa
@@ -12,6 +14,9 @@ from src.core.enums import STORAGE_CONTAINER
 
 import src.users.enums as enums
 import src.users.constants as constants
+
+if TYPE_CHECKING:
+    from src.admins.models import Blacklist
 
 
 class Contact(BigIntAuditBase):
@@ -131,6 +136,11 @@ class User(BigIntAuditBase):
         cascade="all, delete-orphan"
     )
     balance: orm.Mapped["Balance"] = orm.relationship(
+        back_populates="user",
+        uselist=False,
+        cascade="all, delete-orphan"
+    )
+    blacklist: orm.Mapped["Blacklist"] = orm.relationship(
         back_populates="user",
         uselist=False,
         cascade="all, delete-orphan"

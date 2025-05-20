@@ -14,6 +14,7 @@ from src.core.ioc import (
 )
 from src.auth.ioc import AuthProvider
 from src.users.ioc import UsersProvider
+from src.admins.ioc import AdminsProvider
 
 
 def setup_containers(app: FastAPI) -> None:
@@ -22,6 +23,7 @@ def setup_containers(app: FastAPI) -> None:
         SessionProvider(),
         AuthProvider(),
         UsersProvider(),
+        AdminsProvider(),
         context={Config: config},
     )
 

@@ -13,3 +13,9 @@ class InvalidRoleException(Exception):
 class BalanceNotFoundException(Exception):
     pass
 
+class SubscriptionExpiredException(Exception):
+    pass
+
+class UserBlacklistedException(Exception):
+    pass
+

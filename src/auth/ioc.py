@@ -6,6 +6,7 @@ import dishka as di
 
 from src.auth.services import *
 from src.users.services import *
+from src.admins.services import *
 
 
 class AuthProvider(di.Provider):
@@ -21,6 +22,7 @@ class AuthProvider(di.Provider):
             self,
             jwt_service: JwtService,
             user_service: UserService,
+            blacklist_service: BlacklistService,
             contact_service: ContactService,
             agent_contact_service: AgentContactService,
             subscription_service: SubscriptionService,
@@ -30,6 +32,7 @@ class AuthProvider(di.Provider):
         yield AuthService(
             jwt_service=jwt_service,
             user_service=user_service,
+            blacklist_service=blacklist_service,
             contact_service=contact_service,
             agent_contact_service=agent_contact_service,
             subscription_service=subscription_service,

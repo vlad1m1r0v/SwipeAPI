@@ -1,5 +1,7 @@
 from typing import Optional
 
+from datetime import date
+
 from dishka import FromDishka
 from dishka.integrations.fastapi import inject
 
@@ -22,10 +24,13 @@ from src.users.schemas import GetUserSchema
 from src.users.enums import ROLE
 from src.users.exceptions import (
     UserDoesNotExistException,
-    InvalidRoleException
+    InvalidRoleException,
+    SubscriptionExpiredException,
+    UserBlacklistedException
 )
 
 from src.admins.schemas import GetAdminSchema
+from src.admins.services import BlacklistService
 
 http_bearer = HTTPBearer(auto_error=False)
 
@@ -35,8 +40,8 @@ def payload_from_token(token_type: TOKEN_TYPE):
     async def _payload_from_token(
             jwt_service: FromDishka[JwtService],
             user_service: FromDishka[UserService],
-            auth_credentials: Optional[HTTPAuthorizationCredentials] = Depends(http_bearer),
-    ):
+            auth_credentials: Optional[HTTPAuthorizationCredentials] = Depends(http_bearer)
+    ) -> BasePayloadSchema:
         if not auth_credentials:
             raise TokenNotProvidedException()
 
@@ -60,7 +65,8 @@ def payload_from_token(token_type: TOKEN_TYPE):
 async def user_from_token(
         jwt_service: FromDishka[JwtService],
         user_service: FromDishka[UserService],
-        auth_credentials: Optional[HTTPAuthorizationCredentials] = Depends(http_bearer),
+        blacklist_service: FromDishka[BlacklistService],
+        auth_credentials: Optional[HTTPAuthorizationCredentials] = Depends(http_bearer)
 ) -> GetUserSchema:
     if not auth_credentials:
         raise TokenNotProvidedException()
@@ -79,8 +85,11 @@ async def user_from_token(
     if user.role != ROLE.USER:
         raise InvalidRoleException()
 
-    # TODO: check if users subscription is active
-    # TODO: check if user is not blacklisted
+    if user.subscription.expiry_date.date() <= date.today():
+        raise SubscriptionExpiredException()
+
+    if await blacklist_service.get_one_or_none(user_id=user.id):
+        raise UserBlacklistedException()
 
     return user_service.to_schema(data=user, schema_type=GetUserSchema)
 
@@ -100,7 +109,7 @@ async def admin_from_token(
     if payload["type"] != TOKEN_TYPE.ACCESS_TOKEN:
         raise InvalidTokenTypeException()
 
-    admin = await user_service.get_one_or_none(item_id=int(payload["sub"]))
+    admin = await user_service.get_one_or_none(id=int(payload["sub"]))
 
     if not admin:
         raise UserDoesNotExistException()

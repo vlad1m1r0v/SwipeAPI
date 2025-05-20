@@ -4,7 +4,14 @@ from fastapi import FastAPI, Request
 from starlette import status
 from starlette.responses import JSONResponse
 
+from advanced_alchemy.exceptions import (
+    IntegrityError,
+    DuplicateKeyError,
+    NotFoundError
+)
+
 from jwt import InvalidTokenError
+
 from src.auth.exceptions import (
     TokenNotProvidedException,
     InvalidTokenTypeException,
@@ -16,7 +23,10 @@ from src.users.exceptions import (
     UserDoesNotExistException,
     IncorrectPasswordException,
     InvalidRoleException,
-    BalanceNotFoundException
+    BalanceNotFoundException,
+    UserDoesNotExistException,
+    SubscriptionExpiredException,
+    UserBlacklistedException
 )
 
 
@@ -30,6 +40,32 @@ def create_exception_handler(
 
 
 def setup_exception_handlers(app: FastAPI) -> None:
+    # region database
+    app.add_exception_handler(
+        IntegrityError,
+        create_exception_handler(
+            status_code=status.HTTP_409_CONFLICT,
+            initial_detail={"message": "Unable to complete request because of integrity error."},
+        )
+    )
+
+    app.add_exception_handler(
+        DuplicateKeyError,
+        create_exception_handler(
+            status_code=status.HTTP_409_CONFLICT,
+            initial_detail={"message": " A record matching the supplied data already exists."},
+        )
+    )
+
+    app.add_exception_handler(
+        NotFoundError,
+        create_exception_handler(
+            status_code=status.HTTP_409_CONFLICT,
+            initial_detail={"message": " The requested resource was not found."},
+        )
+    )
+    # endregion database
+
     # region auth
     app.add_exception_handler(
         UnauthorizedException,
@@ -102,7 +138,23 @@ def setup_exception_handlers(app: FastAPI) -> None:
         BalanceNotFoundException,
         create_exception_handler(
             status_code=status.HTTP_404_NOT_FOUND,
-            initial_detail={"message": "Balance not found."},
+            initial_detail={"message": "Balance was not found."},
+        ),
+    )
+
+    app.add_exception_handler(
+        SubscriptionExpiredException,
+        create_exception_handler(
+            status_code=status.HTTP_404_NOT_FOUND,
+            initial_detail={"message": "Subscription is expired."},
+        ),
+    )
+
+    app.add_exception_handler(
+        UserBlacklistedException,
+        create_exception_handler(
+            status_code=status.HTTP_404_NOT_FOUND,
+            initial_detail={"message": "User is blacklisted by moderation."},
         ),
     )
     # endregion users
