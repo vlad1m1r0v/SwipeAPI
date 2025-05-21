@@ -12,7 +12,8 @@ from advanced_alchemy.service import (
 )
 
 from advanced_alchemy.filters import (
-    LimitOffset
+    LimitOffset,
+    SearchFilter,
 )
 
 from src.auth.utils import (
@@ -26,6 +27,7 @@ import src.users.enums as e
 import src.users.exceptions as ex
 
 from src.admins.models import Blacklist
+
 
 class UserService(SQLAlchemyAsyncRepositoryService[m.User, r.UserRepository]):
     repository_type = r.UserRepository
@@ -50,12 +52,13 @@ class UserService(SQLAlchemyAsyncRepositoryService[m.User, r.UserRepository]):
         data = data.model_dump()
         return await super().create(data={**data, 'role': e.ROLE.ADMIN})
 
-    async def get_blacklisted_users(
-            self,
-            limit: int = 20,
-            offset: int = 0
-    ) -> tuple[Sequence[m.User], int]:
+    async def get_blacklisted_users(self, limit: int, offset: int, search: str) -> tuple[Sequence[m.User], int]:
         limit_offset = LimitOffset(limit=limit, offset=offset)
+        search_filter = SearchFilter(
+            field_name={'name', 'email', 'phone'},
+            value=search,
+            ignore_case=True,
+        )
 
         stmt = (
             select(m.User)
@@ -64,6 +67,7 @@ class UserService(SQLAlchemyAsyncRepositoryService[m.User, r.UserRepository]):
 
         results, total = await self.list_and_count(
             limit_offset,
+            search_filter,
             statement=stmt.options(orm.joinedload(m.User.blacklist)),
         )
 

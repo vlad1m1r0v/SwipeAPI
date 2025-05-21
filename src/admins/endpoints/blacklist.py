@@ -2,7 +2,7 @@ from fastapi import (
     APIRouter,
     Form,
     Query,
-    Depends
+    Depends,
 )
 
 from dishka import FromDishka
@@ -31,10 +31,16 @@ async def get_blacklist(
         user_service: FromDishka[UserService],
         limit: int = Query(default=20),
         offset: int = Query(default=0),
+        search: str = Query(default=""),
+
         _: GetAdminSchema = Depends(admin_from_token)
 
 ) -> OffsetPagination[GetUserAccountSchema]:
-    results, total = await user_service.get_blacklisted_users(limit=limit, offset=offset)
+    results, total = await user_service.get_blacklisted_users(
+        limit=limit,
+        offset=offset,
+        search=search
+    )
     return user_service.to_schema(results, total, schema_type=GetUserAccountSchema)
 
 
