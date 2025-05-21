@@ -1,11 +1,14 @@
 from fastapi import (
     APIRouter,
     Form,
+    Query,
     Depends
 )
 
 from dishka import FromDishka
 from dishka.integrations.fastapi import inject
+
+from advanced_alchemy.service import OffsetPagination
 
 from src.core.schemas import (
     SuccessfulMessageSchema
@@ -14,9 +17,25 @@ from src.core.schemas import (
 from src.admins.schemas import GetAdminSchema
 from src.admins.services import BlacklistService
 
+from src.users.schemas import GetUserAccountSchema
+from src.users.services import UserService
+
 from src.auth.dependencies import admin_from_token
 
 router = APIRouter(prefix="/blacklist")
+
+
+@router.get("", response_model=OffsetPagination[GetUserAccountSchema])
+@inject
+async def get_blacklist(
+        user_service: FromDishka[UserService],
+        limit: int = Query(default=20),
+        offset: int = Query(default=0),
+        _: GetAdminSchema = Depends(admin_from_token)
+
+) -> OffsetPagination[GetUserAccountSchema]:
+    results, total = await user_service.get_blacklisted_users(limit=limit, offset=offset)
+    return user_service.to_schema(results, total, schema_type=GetUserAccountSchema)
 
 
 @router.post("", response_model=SuccessfulMessageSchema)

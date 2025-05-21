@@ -1,16 +1,31 @@
 from decimal import Decimal
+from typing import Sequence
 
-from sqlalchemy import orm
+from sqlalchemy import (
+    orm,
+    select
+)
 
-from advanced_alchemy.service import SQLAlchemyAsyncRepositoryService, ModelDictT
+from advanced_alchemy.service import (
+    SQLAlchemyAsyncRepositoryService,
+    ModelDictT
+)
 
-from src.auth.utils import hash_password, validate_password
+from advanced_alchemy.filters import (
+    LimitOffset
+)
+
+from src.auth.utils import (
+    hash_password,
+    validate_password
+)
 
 import src.users.models as m
 import src.users.repositories as r
 import src.users.enums as e
 import src.users.exceptions as ex
 
+from src.admins.models import Blacklist
 
 class UserService(SQLAlchemyAsyncRepositoryService[m.User, r.UserRepository]):
     repository_type = r.UserRepository
@@ -34,6 +49,25 @@ class UserService(SQLAlchemyAsyncRepositoryService[m.User, r.UserRepository]):
     async def create_admin(self, data: ModelDictT) -> m.User:
         data = data.model_dump()
         return await super().create(data={**data, 'role': e.ROLE.ADMIN})
+
+    async def get_blacklisted_users(
+            self,
+            limit: int = 20,
+            offset: int = 0
+    ) -> tuple[Sequence[m.User], int]:
+        limit_offset = LimitOffset(limit=limit, offset=offset)
+
+        stmt = (
+            select(m.User)
+            .join(Blacklist, m.User.id == Blacklist.user_id)
+        )
+
+        results, total = await self.list_and_count(
+            limit_offset,
+            statement=stmt.options(orm.joinedload(m.User.blacklist)),
+        )
+
+        return results, total
 
     async def authenticate(self, data: ModelDictT) -> m.User:
         user = await self.get_one_or_none(email=data.email)

@@ -16,6 +16,15 @@ from src.users.enums import (
 )
 
 
+class GetUserAccountSchema(BaseModel):
+    id: int
+    name: str
+    phone: str
+    email: EmailStr
+    role: ROLE
+    photo: Optional[FileInfo]
+
+
 class UpdateContactSchema(BaseModel):
     first_name: Optional[str] = Field(min_length=3, max_length=100, default=None)
     last_name: Optional[str] = Field(min_length=3, max_length=100, default=None)
@@ -39,10 +48,12 @@ class GetBalanceSchema(BaseModel):
     id: int
     value: float
 
+
 class GetSubscriptionSchema(BaseModel):
     id: int
     is_auto_renewal: bool
     expiry_date: datetime
+
 
 class UpdateNotificationSettingsSchema(BaseModel):
     redirect_notifications_to_agent: Optional[bool] = Field(default=None)
@@ -51,6 +62,7 @@ class UpdateNotificationSettingsSchema(BaseModel):
 
 class GetNotificationSettingsSchema(UpdateNotificationSettingsSchema):
     id: int
+
 
 class UpdateUserSchema(BaseModel):
     name: Optional[str] = Field(min_length=3, max_length=100)
@@ -74,5 +86,6 @@ __all__ = [
     "UpdateAgentContactSchema",
     "UpdateNotificationSettingsSchema",
     "UpdateUserSchema",
-    "GetUserSchema"
+    "GetUserSchema",
+    "GetUserAccountSchema"
 ]
