@@ -8,15 +8,12 @@ from pydantic import (
 )
 from pydantic_core.core_schema import ValidationInfo
 
-from src.core.utils.validation import (
+from src.core.constants import (
     UPPERCASE_LETTER,
     SPECIAL_CHARACTER,
     PHONE_NUMBER,
     DIGIT
 )
-
-from src.users.enums import ROLE
-from src.auth.enums import TOKEN_TYPE
 
 
 class PasswordMixin:
@@ -71,40 +68,3 @@ class UpdatePasswordSchema(BaseModel):
         if new_password and value != new_password:
             raise ValueError("Passwords do not match.")
         return value
-
-
-class BasePayloadSchema(BaseModel):
-    id: int
-    name: str
-    email: str
-    role: ROLE
-
-
-class PayloadWithTypeSchema(BaseModel):
-    sub: str
-    type: TOKEN_TYPE
-    name: str
-    email: str
-    role: ROLE
-
-
-class PayloadWithExpDateSchema(PayloadWithTypeSchema):
-    exp: int
-    iat: int
-    jti: str
-
-
-class TokensSchema(BaseModel):
-    access_token: str
-    refresh_token: str
-
-
-__all__ = [
-    "RegisterSchema",
-    "LoginSchema",
-    "UpdatePasswordSchema",
-    "BasePayloadSchema",
-    "PayloadWithTypeSchema",
-    "PayloadWithExpDateSchema",
-    "TokensSchema"
-]

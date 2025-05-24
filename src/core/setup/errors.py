@@ -20,7 +20,6 @@ from src.auth.exceptions import (
 
 from src.users.exceptions import (
     UserAlreadyExistsException,
-    UserDoesNotExistException,
     IncorrectPasswordException,
     InvalidRoleException,
     BalanceNotFoundException,

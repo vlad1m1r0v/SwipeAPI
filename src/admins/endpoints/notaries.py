@@ -9,6 +9,7 @@ from dishka.integrations.fastapi import inject
 
 from fastapi import (
     APIRouter,
+    Request,
     Depends,
     Form,
     UploadFile,
@@ -19,6 +20,10 @@ from fastapi import (
 from advanced_alchemy.service import OffsetPagination
 
 from src.core.schemas import SuccessfulMessageSchema
+from src.core.utils import (
+    save_file,
+    delete_file
+)
 
 from src.auth.dependencies import admin_from_token
 
@@ -51,6 +56,7 @@ async def get_notaries(
 @router.post("", response_model=GetNotarySchema)
 @inject
 async def create_notary(
+        request: Request,
         notary_service: FromDishka[NotaryService],
         _: GetAdminSchema = Depends(admin_from_token),
         first_name: str = Form(),
@@ -63,20 +69,18 @@ async def create_notary(
         first_name=first_name,
         last_name=last_name,
         email=email,
-        phone=phone
+        phone=phone,
+        photo=save_file(request=request, file=photo),
     )
 
-    data = {**fields.model_dump()}
-
-    if photo:
-        data["photo"] = photo
-
-    notary = await notary_service.create(data=data)
+    notary = await notary_service.create(data={**fields.model_dump()})
     return notary_service.to_schema(data=notary, schema_type=GetNotarySchema)
+
 
 @router.patch("/{notary_id}", response_model=GetNotarySchema)
 @inject
-async def create_notary(
+async def update_notary(
+        request: Request,
         notary_id: int,
         notary_service: FromDishka[NotaryService],
         _: GetAdminSchema = Depends(admin_from_token),
@@ -86,20 +90,22 @@ async def create_notary(
         phone: Optional[str] = Form(default=None),
         photo: Optional[UploadFile] = File(default=None),
 ) -> GetNotarySchema:
+    notary_from_db = await notary_service.get(item_id=notary_id)
+
+    if notary_from_db.photo is not None:
+        delete_file(notary_from_db.photo['content_path'])
+
     fields = UpdateNotarySchema(
         first_name=first_name,
         last_name=last_name,
         email=email,
-        phone=phone
+        phone=phone,
+        photo=save_file(request=request, file=photo)
     )
 
-    data = {**fields.model_dump(exclude_none=True)}
-
-    if photo:
-        data["photo"] = photo
-
-    notary = await notary_service.update(item_id=notary_id, data=data)
+    notary = await notary_service.update(item_id=notary_id, data={**fields.model_dump(exclude_none=True)})
     return notary_service.to_schema(data=notary, schema_type=GetNotarySchema)
+
 
 @router.delete("/{notary_id}", response_model=SuccessfulMessageSchema)
 @inject
@@ -108,7 +114,9 @@ async def delete_notary(
         notary_id: int,
         _: GetAdminSchema = Depends(admin_from_token),
 ):
-    await notary_service.delete(item_id=notary_id)
+    record = await notary_service.delete(item_id=notary_id)
+    delete_file(record.photo['content_path'])
+
     return SuccessfulMessageSchema(
         message="Notary has been deleted.",
     )

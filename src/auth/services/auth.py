@@ -9,7 +9,7 @@ from src.auth.schemas import (
 
 from src.auth.services.jwt import JwtService
 
-from src.users.enums import ROLE
+from src.users.enums import Role
 
 from src.users.exceptions import (
     UserAlreadyExistsException,
@@ -28,6 +28,7 @@ from src.users.services import (
 )
 
 from src.admins.services import BlacklistService
+
 
 class AuthService:
     def __init__(
@@ -64,21 +65,13 @@ class AuthService:
             }
         )
 
-        await self._agent_contact_service.create({
-            'user_id': user.id
-        })
+        await self._agent_contact_service.create({'user_id': user.id})
 
-        await self._subscription_service.create({
-            'user_id': user.id
-        })
+        await self._subscription_service.create({'user_id': user.id})
 
-        await self._notification_settings_service.create({
-            'user_id': user.id
-        })
+        await self._notification_settings_service.create({'user_id': user.id})
 
-        await self._balance_service.create({
-            'user_id': user.id
-        })
+        await self._balance_service.create({'user_id': user.id})
 
         user_schema = self._user_service.to_schema(data=user, schema_type=BasePayloadSchema)
         return self.generate_tokens(user_schema)
@@ -95,7 +88,7 @@ class AuthService:
     async def login_user(self, data: LoginSchema) -> TokensSchema:
         user = await self._user_service.authenticate(data)
 
-        if user.role != ROLE.USER:
+        if user.role != Role.USER:
             raise InvalidRoleException()
 
         subscription = await self._subscription_service.get_one_or_none(user_id=user.id)
@@ -112,7 +105,7 @@ class AuthService:
     async def login_admin(self, data: LoginSchema) -> TokensSchema:
         admin = await self._user_service.authenticate(data)
 
-        if admin.role != ROLE.ADMIN:
+        if admin.role != Role.ADMIN:
             raise InvalidRoleException()
 
         admin_schema = self._user_service.to_schema(data=admin, schema_type=BasePayloadSchema)

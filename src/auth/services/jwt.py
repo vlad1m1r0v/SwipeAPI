@@ -4,7 +4,7 @@ from datetime import timedelta, datetime, UTC
 import jwt
 
 from config import Config
-from src.auth.enums import TOKEN_TYPE
+from src.auth.enums import TokenType
 from src.auth.schemas import (
     BasePayloadSchema,
     PayloadWithTypeSchema,
@@ -22,7 +22,7 @@ class JwtService:
 
     def create_access_token(self, base_payload: BasePayloadSchema) -> str:
         payload = PayloadWithTypeSchema(
-            type=TOKEN_TYPE.ACCESS_TOKEN,
+            type=TokenType.ACCESS_TOKEN,
             sub=str(base_payload.id),
             name=base_payload.name,
             email=base_payload.email,
@@ -33,7 +33,7 @@ class JwtService:
 
     def create_refresh_token(self, base_payload: BasePayloadSchema) -> str:
         payload = PayloadWithTypeSchema(
-            type=TOKEN_TYPE.REFRESH_TOKEN,
+            type=TokenType.REFRESH_TOKEN,
             sub=str(base_payload.id),
             name=base_payload.name,
             email=base_payload.email,

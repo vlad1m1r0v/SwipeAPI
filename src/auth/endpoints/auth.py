@@ -18,7 +18,7 @@ from src.auth.schemas import (
     UpdatePasswordSchema
 )
 from src.auth.services import AuthService
-from src.auth.enums import TOKEN_TYPE
+from src.auth.enums import TokenType
 
 from src.auth.endpoints.users import router as user_router
 from src.auth.endpoints.admins import router as admin_router
@@ -35,7 +35,7 @@ router.include_router(admin_router)
 @inject
 def refresh_tokens(
         auth_service: FromDishka[AuthService],
-        payload: BasePayloadSchema = Depends(payload_from_token(TOKEN_TYPE.REFRESH_TOKEN)),
+        payload: BasePayloadSchema = Depends(payload_from_token(TokenType.REFRESH_TOKEN)),
 ):
     return auth_service.generate_tokens(payload)
 
@@ -45,7 +45,7 @@ def refresh_tokens(
 async def update_password(
         user_service: FromDishka[UserService],
         data: Annotated[UpdatePasswordSchema, Form()],
-        payload: BasePayloadSchema = Depends(payload_from_token(TOKEN_TYPE.ACCESS_TOKEN))
+        payload: BasePayloadSchema = Depends(payload_from_token(TokenType.ACCESS_TOKEN))
 ) -> SuccessfulMessageSchema:
     await user_service.update_password(item_id=payload.id, data=data.model_dump())
     return SuccessfulMessageSchema(
