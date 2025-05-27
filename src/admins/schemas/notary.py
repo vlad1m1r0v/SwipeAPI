@@ -3,7 +3,8 @@ from typing import Optional
 from pydantic import (
     BaseModel,
     Field,
-    EmailStr
+    EmailStr,
+    computed_field
 )
 
 from src.core.schemas import FileInfo
@@ -32,4 +33,13 @@ class GetNotarySchema(BaseModel):
     last_name: str
     phone: str
     email: EmailStr
-    photo: Optional[FileInfo]
+    photo: Optional[FileInfo] = Field(exclude=True)
+
+    @computed_field
+    @property
+    def photo_url(self) -> Optional[str]:
+        return self.photo.url if self.photo.url else None
+
+    class Config:
+        from_attributes = True
+

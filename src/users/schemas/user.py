@@ -3,7 +3,8 @@ from typing import Optional
 from pydantic import (
     BaseModel,
     EmailStr,
-    Field
+    Field,
+    computed_field
 )
 
 from .contact import GetContactSchema
@@ -31,7 +32,15 @@ class GetUserAccountSchema(BaseModel):
     phone: str
     email: str
     role: Role
-    photo: Optional[FileInfo]
+    photo: Optional[FileInfo] = Field(exclude=True)
+
+    @computed_field
+    @property
+    def photo_url(self) -> Optional[str]:
+        return self.photo.url if self.photo.url else None
+
+    class Config:
+        from_attributes = True
 
 
 class GetUserSchema(GetUserAccountSchema):
