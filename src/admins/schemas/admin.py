@@ -1,6 +1,7 @@
 from typing import Optional
 
 from pydantic import (
+    Field,
     BaseModel,
     EmailStr,
     computed_field
@@ -16,7 +17,7 @@ class GetAdminSchema(BaseModel):
     phone: str
     email: EmailStr
     role: Role
-    photo: Optional[FileInfo]
+    photo: Optional[FileInfo] = Field(exclude=True)
 
     @computed_field
     @property
