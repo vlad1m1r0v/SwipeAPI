@@ -22,7 +22,6 @@ from src.users.exceptions import (
     UserAlreadyExistsException,
     IncorrectPasswordException,
     InvalidRoleException,
-    BalanceNotFoundException,
     UserDoesNotExistException,
     SubscriptionExpiredException,
     UserBlacklistedException
@@ -130,14 +129,6 @@ def setup_exception_handlers(app: FastAPI) -> None:
         create_exception_handler(
             status_code=status.HTTP_404_NOT_FOUND,
             initial_detail={"message": "User with given email does not exist."},
-        ),
-    )
-
-    app.add_exception_handler(
-        BalanceNotFoundException,
-        create_exception_handler(
-            status_code=status.HTTP_404_NOT_FOUND,
-            initial_detail={"message": "Balance was not found."},
         ),
     )
 

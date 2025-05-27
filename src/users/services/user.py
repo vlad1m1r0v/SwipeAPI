@@ -1,18 +1,8 @@
 from typing import Sequence
 
-from sqlalchemy import (
-    orm,
-    select
-)
-
 from advanced_alchemy.service import (
     SQLAlchemyAsyncRepositoryService,
     ModelDictT
-)
-
-from advanced_alchemy.filters import (
-    LimitOffset,
-    SearchFilter,
 )
 
 from src.auth.utils import (
@@ -28,23 +18,12 @@ from src.users.exceptions import (
     IncorrectPasswordException
 )
 
-from src.admins.models import Blacklist
-
 
 class UserService(SQLAlchemyAsyncRepositoryService[User, UserRepository]):
     repository_type = UserRepository
 
     async def get_user_profile(self, item_id: int) -> User:
-        return await self.get(
-            item_id=item_id,
-            load=[
-                orm.joinedload(User.contact),
-                orm.joinedload(User.agent_contact),
-                orm.joinedload(User.subscription),
-                orm.joinedload(User.notification_settings),
-                orm.joinedload(User.balance)
-            ]
-        )
+        return await self.repository.get_user_profile(item_id)
 
     async def create_user(self, data: ModelDictT) -> User:
         data = data.model_dump()
@@ -55,25 +34,7 @@ class UserService(SQLAlchemyAsyncRepositoryService[User, UserRepository]):
         return await super().create(data={**data, 'role': Role.ADMIN})
 
     async def get_blacklisted_users(self, limit: int, offset: int, search: str) -> tuple[Sequence[User], int]:
-        limit_offset = LimitOffset(limit=limit, offset=offset)
-        search_filter = SearchFilter(
-            field_name={'name', 'email', 'phone'},
-            value=search,
-            ignore_case=True,
-        )
-
-        stmt = (
-            select(User)
-            .join(Blacklist, User.id == Blacklist.user_id)
-        )
-
-        results, total = await self.list_and_count(
-            limit_offset,
-            search_filter,
-            statement=stmt.options(orm.joinedload(User.blacklist)),
-        )
-
-        return results, total
+        return await self.repository.get_blacklisted_users(limit=limit, offset=offset, search=search)
 
     async def authenticate(self, data: ModelDictT) -> User:
         user = await self.get_one_or_none(email=data.email)
@@ -104,4 +65,3 @@ class UserService(SQLAlchemyAsyncRepositoryService[User, UserRepository]):
                 hashed_password = hash_password(password)
                 data.update({"password": hashed_password.decode()})
         return await super().to_model(data, operation)
-    

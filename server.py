@@ -9,4 +9,4 @@ server = FastAPI()
 setup(server)
 
 if __name__ == "__main__":
-    uvicorn.run("main:server", reload=True)
+    uvicorn.run("server:server", reload=True)
