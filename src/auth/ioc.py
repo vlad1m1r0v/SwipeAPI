@@ -18,9 +18,17 @@ class AuthProvider(di.Provider):
         yield JwtService(config=config)
 
     @di.provide(scope=di.Scope.REQUEST)
+    def provide_sign_service(
+            self,
+            config: Config,
+    ) -> Iterator[SignService]:
+        yield SignService(config=config)
+
+    @di.provide(scope=di.Scope.REQUEST)
     def provide_auth_service(
             self,
             jwt_service: JwtService,
+            sign_service: SignService,
             user_service: UserService,
             blacklist_service: BlacklistService,
             contact_service: ContactService,
@@ -31,6 +39,7 @@ class AuthProvider(di.Provider):
     ) -> Iterator[AuthService]:
         yield AuthService(
             jwt_service=jwt_service,
+            sign_service=sign_service,
             user_service=user_service,
             blacklist_service=blacklist_service,
             contact_service=contact_service,

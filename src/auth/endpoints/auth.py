@@ -6,7 +6,8 @@ from dishka.integrations.fastapi import inject
 from fastapi import (
     APIRouter,
     Depends,
-    Form
+    Form,
+    Query
 )
 
 from src.core.schemas import SuccessfulMessageSchema
@@ -15,7 +16,9 @@ from src.auth.dependencies import payload_from_token
 from src.auth.schemas import (
     TokensSchema,
     BasePayloadSchema,
-    UpdatePasswordSchema
+    UpdatePasswordSchema,
+    ForgotPasswordSchema,
+    ResetPasswordSchema
 )
 from src.auth.services import AuthService
 from src.auth.enums import TokenType
@@ -51,3 +54,32 @@ async def update_password(
     return SuccessfulMessageSchema(
         message="Password was updated successfully."
     )
+
+
+@router.post("/password/forgot")
+@inject
+async def forgot_password(
+        auth_service: FromDishka[AuthService],
+        data: Annotated[ForgotPasswordSchema, Form()],
+):
+    await auth_service.send_forgot_password_email(data)
+    return SuccessfulMessageSchema(
+        message="Password reset email was sent successfully."
+    )
+
+
+@router.post("/password/reset")
+@inject
+async def reset_password(
+        auth_service: FromDishka[AuthService],
+        token: str = Query(),
+        new_password: str = Form(),
+        confirm_password: str = Form(...),
+):
+    data = ResetPasswordSchema(
+        token=token,
+        new_password=new_password,
+        confirm_password=confirm_password,
+    )
+
+    await auth_service.reset_password(data=data)

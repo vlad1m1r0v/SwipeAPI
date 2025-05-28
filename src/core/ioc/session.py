@@ -1,13 +1,10 @@
 from typing import AsyncIterator
 
 import dishka as di
+
 from sqlalchemy.ext import asyncio as sa
 
 from config import Config
-
-
-class ConfigProvider(di.Provider):
-    config = di.from_context(provides=Config, scope=di.Scope.APP)
 
 
 class SessionProvider(di.Provider):
@@ -31,5 +28,3 @@ class SessionProvider(di.Provider):
             except Exception:
                 await session.rollback()
                 raise
-
-__all__ = ["ConfigProvider", "SessionProvider"]

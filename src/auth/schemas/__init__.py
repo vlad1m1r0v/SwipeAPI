@@ -1,7 +1,9 @@
 from .auth import (
     LoginSchema,
     RegisterSchema,
-    UpdatePasswordSchema
+    UpdatePasswordSchema,
+    ForgotPasswordSchema,
+    ResetPasswordSchema
 )
 
 from .tokens import (

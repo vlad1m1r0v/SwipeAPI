@@ -1,18 +1,24 @@
 from datetime import date
 
+from src.auth.tasks import send_forgot_password_email
+
 from src.auth.schemas import (
     RegisterSchema,
     LoginSchema,
     BasePayloadSchema,
-    TokensSchema
+    TokensSchema,
+    ForgotPasswordSchema,
+    ResetPasswordSchema
 )
 
 from src.auth.services.jwt import JwtService
+from src.auth.services.sign import SignService
 
 from src.users.enums import Role
 
 from src.users.exceptions import (
     UserAlreadyExistsException,
+    UserDoesNotExistException,
     InvalidRoleException,
     SubscriptionExpiredException,
     UserBlacklistedException
@@ -34,6 +40,7 @@ class AuthService:
     def __init__(
             self,
             jwt_service: JwtService,
+            sign_service: SignService,
             user_service: UserService,
             blacklist_service: BlacklistService,
             contact_service: ContactService,
@@ -43,6 +50,7 @@ class AuthService:
             balance_service: BalanceService,
     ):
         self._jwt_service = jwt_service
+        self._sign_service = sign_service
         self._user_service = user_service
         self._blacklist_service = blacklist_service
         self._contact_service = contact_service
@@ -110,6 +118,31 @@ class AuthService:
 
         admin_schema = self._user_service.to_schema(data=admin, schema_type=BasePayloadSchema)
         return self.generate_tokens(admin_schema)
+
+    async def send_forgot_password_email(self, data: ForgotPasswordSchema) -> None:
+        user = await self._user_service.get_one_or_none(email=data.email)
+
+        if user is None:
+            raise UserDoesNotExistException()
+
+        token = self._sign_service.encode(data={'id': user.id, 'email': data.email})
+        send_forgot_password_email.delay(token=token, email=data.email)
+
+    async def reset_password(self, data: ResetPasswordSchema) -> None:
+        decoded = self._sign_service.decode(token=data.token)
+
+        email = decoded['email']
+        user_id = decoded['id']
+
+        user = await self._user_service.get_one_or_none(email=email)
+
+        if user is None:
+            raise UserDoesNotExistException()
+
+        await self._user_service.update(
+            data={'password': data.new_password},
+            item_id=user_id
+        )
 
     def generate_tokens(self, base_payload: BasePayloadSchema) -> TokensSchema:
         access_token = self._jwt_service.create_access_token(base_payload=base_payload)

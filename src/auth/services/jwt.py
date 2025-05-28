@@ -80,6 +80,3 @@ class JwtService:
             algorithms=[self._algorithm],
         )
         return decoded
-
-
-__all__ = ["JwtService"]

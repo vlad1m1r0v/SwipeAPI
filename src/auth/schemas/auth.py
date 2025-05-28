@@ -68,3 +68,34 @@ class UpdatePasswordSchema(BaseModel):
         if new_password and value != new_password:
             raise ValueError("Passwords do not match.")
         return value
+
+
+class ForgotPasswordSchema(BaseModel):
+    email: EmailStr
+
+
+class ResetPasswordSchema(BaseModel):
+    token: str
+    new_password: str
+    confirm_password: str
+
+    @field_validator('new_password')
+    @classmethod
+    def validate_password(cls, value: str) -> str:
+        if len(value) < 8:
+            raise ValueError("Password must be at least 8 characters long.")
+        if not re.search(UPPERCASE_LETTER, value):
+            raise ValueError("Password must contain at least one uppercase letter.")
+        if not re.search(DIGIT, value):
+            raise ValueError("Password must contain at least one number.")
+        if not re.search(SPECIAL_CHARACTER, value):
+            raise ValueError("Password must contain at least one special character.")
+        return value
+
+    @field_validator('confirm_password')
+    @classmethod
+    def passwords_match(cls, value: str, info: ValidationInfo) -> str:
+        new_password = info.data.get('new_password')
+        if new_password and value != new_password:
+            raise ValueError("Passwords do not match.")
+        return value

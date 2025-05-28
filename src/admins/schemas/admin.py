@@ -22,7 +22,7 @@ class GetAdminSchema(BaseModel):
     @computed_field
     @property
     def photo_url(self) -> Optional[str]:
-        return self.photo.url if self.photo.url else None
+        return self.photo.url if self.photo else None
 
     class Config:
         from_attributes = True

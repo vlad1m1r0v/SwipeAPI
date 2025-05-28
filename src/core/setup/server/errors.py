@@ -10,6 +10,11 @@ from advanced_alchemy.exceptions import (
     NotFoundError
 )
 
+from itsdangerous import (
+    SignatureExpired,
+    BadSignature
+)
+
 from jwt import InvalidTokenError
 
 from src.auth.exceptions import (
@@ -65,6 +70,22 @@ def setup_exception_handlers(app: FastAPI) -> None:
     # endregion database
 
     # region auth
+    app.add_exception_handler(
+        SignatureExpired,
+        create_exception_handler(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            initial_detail={"message": "Signature is expired."},
+        )
+    )
+
+    app.add_exception_handler(
+        BadSignature,
+        create_exception_handler(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            initial_detail={"message": "Invalid signature."},
+        )
+    )
+
     app.add_exception_handler(
         UnauthorizedException,
         create_exception_handler(
@@ -135,7 +156,7 @@ def setup_exception_handlers(app: FastAPI) -> None:
     app.add_exception_handler(
         SubscriptionExpiredException,
         create_exception_handler(
-            status_code=status.HTTP_404_NOT_FOUND,
+            status_code=status.HTTP_403_FORBIDDEN,
             initial_detail={"message": "Subscription is expired."},
         ),
     )
@@ -143,7 +164,7 @@ def setup_exception_handlers(app: FastAPI) -> None:
     app.add_exception_handler(
         UserBlacklistedException,
         create_exception_handler(
-            status_code=status.HTTP_404_NOT_FOUND,
+            status_code=status.HTTP_403_FORBIDDEN,
             initial_detail={"message": "User is blacklisted by moderation."},
         ),
     )
