@@ -61,7 +61,7 @@ async def update_password(
 async def forgot_password(
         auth_service: FromDishka[AuthService],
         data: Annotated[ForgotPasswordSchema, Form()],
-):
+) -> SuccessfulMessageSchema:
     await auth_service.send_forgot_password_email(data)
     return SuccessfulMessageSchema(
         message="Password reset email was sent successfully."
@@ -75,7 +75,7 @@ async def reset_password(
         token: str = Query(),
         new_password: str = Form(),
         confirm_password: str = Form(...),
-):
+) -> SuccessfulMessageSchema:
     data = ResetPasswordSchema(
         token=token,
         new_password=new_password,
@@ -83,3 +83,6 @@ async def reset_password(
     )
 
     await auth_service.reset_password(data=data)
+    return SuccessfulMessageSchema(
+        message="Password was updated successfully."
+    )
