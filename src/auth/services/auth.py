@@ -2,6 +2,10 @@ from datetime import date
 
 from src.auth.tasks import send_forgot_password_email
 
+from src.auth.exceptions import (
+    TokenAlreadyUsedException
+)
+
 from src.auth.schemas import (
     RegisterSchema,
     LoginSchema,
@@ -129,7 +133,12 @@ class AuthService:
         send_forgot_password_email.delay(token=token, email=data.email)
 
     async def reset_password(self, data: ResetPasswordSchema) -> None:
-        decoded = self._sign_service.decode(token=data.token)
+        token = data.token
+
+        if await self._sign_service.token_exists(token):
+            raise TokenAlreadyUsedException()
+
+        decoded = self._sign_service.decode(token)
 
         email = decoded['email']
         user_id = decoded['id']
@@ -143,6 +152,8 @@ class AuthService:
             data={'password': data.new_password},
             item_id=user_id
         )
+
+        await self._sign_service.save_token(token=data.token)
 
     def generate_tokens(self, base_payload: BasePayloadSchema) -> TokensSchema:
         access_token = self._jwt_service.create_access_token(base_payload=base_payload)

@@ -20,6 +20,7 @@ from jwt import InvalidTokenError
 from src.auth.exceptions import (
     TokenNotProvidedException,
     InvalidTokenTypeException,
+    TokenAlreadyUsedException,
     UnauthorizedException
 )
 
@@ -107,6 +108,14 @@ def setup_exception_handlers(app: FastAPI) -> None:
         create_exception_handler(
             status_code=status.HTTP_401_UNAUTHORIZED,
             initial_detail={"message": "Invalid token."},
+        )
+    )
+
+    app.add_exception_handler(
+        TokenAlreadyUsedException,
+        create_exception_handler(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            initial_detail={"message": "Token has been already used."},
         )
     )
 

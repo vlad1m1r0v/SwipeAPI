@@ -4,6 +4,8 @@ from config import Config
 
 import dishka as di
 
+from redis.asyncio import Redis
+
 from src.auth.services import *
 from src.users.services import *
 from src.admins.services import *
@@ -21,8 +23,9 @@ class AuthProvider(di.Provider):
     def provide_sign_service(
             self,
             config: Config,
+            redis: Redis,
     ) -> Iterator[SignService]:
-        yield SignService(config=config)
+        yield SignService(config=config, redis=redis)
 
     @di.provide(scope=di.Scope.REQUEST)
     def provide_auth_service(

@@ -10,7 +10,8 @@ from config import (
 
 from src.core.ioc import (
     ConfigProvider,
-    SessionProvider
+    SessionProvider,
+    RedisProvider
 )
 from src.auth.ioc import AuthProvider
 from src.users.ioc import UsersProvider
@@ -21,6 +22,7 @@ def setup_containers(app: FastAPI) -> None:
     container = di.make_async_container(
         ConfigProvider(),
         SessionProvider(),
+        RedisProvider(),
         AuthProvider(),
         UsersProvider(),
         AdminsProvider(),
