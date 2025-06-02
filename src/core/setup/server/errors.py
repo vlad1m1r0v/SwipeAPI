@@ -4,16 +4,9 @@ from fastapi import FastAPI, Request
 from starlette import status
 from starlette.responses import JSONResponse
 
-from advanced_alchemy.exceptions import (
-    IntegrityError,
-    DuplicateKeyError,
-    NotFoundError
-)
+from advanced_alchemy.exceptions import IntegrityError, DuplicateKeyError, NotFoundError
 
-from itsdangerous import (
-    SignatureExpired,
-    BadSignature
-)
+from itsdangerous import SignatureExpired, BadSignature
 
 from jwt import InvalidTokenError
 
@@ -21,7 +14,7 @@ from src.auth.exceptions import (
     TokenNotProvidedException,
     InvalidTokenTypeException,
     TokenAlreadyUsedException,
-    UnauthorizedException
+    UnauthorizedException,
 )
 
 from src.users.exceptions import (
@@ -30,12 +23,12 @@ from src.users.exceptions import (
     InvalidRoleException,
     UserDoesNotExistException,
     SubscriptionExpiredException,
-    UserBlacklistedException
+    UserBlacklistedException,
 )
 
 
 def create_exception_handler(
-        status_code: int, initial_detail: Any
+    status_code: int, initial_detail: Any
 ) -> Callable[[Request, Exception], JSONResponse]:
     def exception_handler(request: Request, exc: Exception):
         return JSONResponse(content=initial_detail, status_code=status_code)
@@ -49,16 +42,20 @@ def setup_exception_handlers(app: FastAPI) -> None:
         IntegrityError,
         create_exception_handler(
             status_code=status.HTTP_409_CONFLICT,
-            initial_detail={"message": "Unable to complete request because of integrity error."},
-        )
+            initial_detail={
+                "message": "Unable to complete request because of integrity error."
+            },
+        ),
     )
 
     app.add_exception_handler(
         DuplicateKeyError,
         create_exception_handler(
             status_code=status.HTTP_409_CONFLICT,
-            initial_detail={"message": " A record matching the supplied data already exists."},
-        )
+            initial_detail={
+                "message": " A record matching the supplied data already exists."
+            },
+        ),
     )
 
     app.add_exception_handler(
@@ -66,7 +63,7 @@ def setup_exception_handlers(app: FastAPI) -> None:
         create_exception_handler(
             status_code=status.HTTP_409_CONFLICT,
             initial_detail={"message": " The requested resource was not found."},
-        )
+        ),
     )
     # endregion database
 
@@ -76,7 +73,7 @@ def setup_exception_handlers(app: FastAPI) -> None:
         create_exception_handler(
             status_code=status.HTTP_400_BAD_REQUEST,
             initial_detail={"message": "Signature is expired."},
-        )
+        ),
     )
 
     app.add_exception_handler(
@@ -84,7 +81,7 @@ def setup_exception_handlers(app: FastAPI) -> None:
         create_exception_handler(
             status_code=status.HTTP_400_BAD_REQUEST,
             initial_detail={"message": "Invalid signature."},
-        )
+        ),
     )
 
     app.add_exception_handler(
@@ -92,7 +89,7 @@ def setup_exception_handlers(app: FastAPI) -> None:
         create_exception_handler(
             status_code=status.HTTP_401_UNAUTHORIZED,
             initial_detail={"message": "Unauthorized request."},
-        )
+        ),
     )
 
     app.add_exception_handler(
@@ -100,7 +97,7 @@ def setup_exception_handlers(app: FastAPI) -> None:
         create_exception_handler(
             status_code=status.HTTP_401_UNAUTHORIZED,
             initial_detail={"message": "Token was not provided."},
-        )
+        ),
     )
 
     app.add_exception_handler(
@@ -108,7 +105,7 @@ def setup_exception_handlers(app: FastAPI) -> None:
         create_exception_handler(
             status_code=status.HTTP_401_UNAUTHORIZED,
             initial_detail={"message": "Invalid token."},
-        )
+        ),
     )
 
     app.add_exception_handler(
@@ -116,7 +113,7 @@ def setup_exception_handlers(app: FastAPI) -> None:
         create_exception_handler(
             status_code=status.HTTP_400_BAD_REQUEST,
             initial_detail={"message": "Token has been already used."},
-        )
+        ),
     )
 
     app.add_exception_handler(
@@ -139,7 +136,9 @@ def setup_exception_handlers(app: FastAPI) -> None:
         InvalidRoleException,
         create_exception_handler(
             status_code=status.HTTP_403_FORBIDDEN,
-            initial_detail={"message": "You do not have permission to perform this action."},
+            initial_detail={
+                "message": "You do not have permission to perform this action."
+            },
         ),
     )
     # endregion auth
@@ -149,8 +148,7 @@ def setup_exception_handlers(app: FastAPI) -> None:
         UserAlreadyExistsException,
         create_exception_handler(
             status_code=status.HTTP_409_CONFLICT,
-            initial_detail={
-                "message": "User with given email already exists."},
+            initial_detail={"message": "User with given email already exists."},
         ),
     )
 
@@ -179,4 +177,5 @@ def setup_exception_handlers(app: FastAPI) -> None:
     )
     # endregion users
 
-    __all__ = "setup_exception_handlers"
+
+__all__ = ["setup_exception_handlers"]

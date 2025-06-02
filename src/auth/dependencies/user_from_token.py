@@ -9,10 +9,7 @@ from fastapi import Depends
 from fastapi.security import HTTPAuthorizationCredentials
 
 from src.auth.services import JwtService
-from src.auth.exceptions import (
-    TokenNotProvidedException,
-    InvalidTokenTypeException
-)
+from src.auth.exceptions import TokenNotProvidedException, InvalidTokenTypeException
 from src.auth.enums import TokenType
 from src.auth.utils import http_bearer
 
@@ -23,7 +20,7 @@ from src.users.exceptions import (
     UserDoesNotExistException,
     InvalidRoleException,
     SubscriptionExpiredException,
-    UserBlacklistedException
+    UserBlacklistedException,
 )
 
 from src.admins.services import BlacklistService
@@ -31,10 +28,10 @@ from src.admins.services import BlacklistService
 
 @inject
 async def user_from_token(
-        jwt_service: FromDishka[JwtService],
-        user_service: FromDishka[UserService],
-        blacklist_service: FromDishka[BlacklistService],
-        auth_credentials: Optional[HTTPAuthorizationCredentials] = Depends(http_bearer)
+    jwt_service: FromDishka[JwtService],
+    user_service: FromDishka[UserService],
+    blacklist_service: FromDishka[BlacklistService],
+    auth_credentials: Optional[HTTPAuthorizationCredentials] = Depends(http_bearer),
 ) -> GetUserSchema:
     if not auth_credentials:
         raise TokenNotProvidedException()

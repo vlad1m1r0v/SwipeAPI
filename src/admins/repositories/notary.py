@@ -9,10 +9,12 @@ from src.admins.models import Notary
 class NotaryRepository(SQLAlchemyAsyncRepository[Notary]):
     model_type = Notary
 
-    async def get_notaries(self, limit: int, offset: int, search: str) -> tuple[Sequence[Notary], int]:
+    async def get_notaries(
+        self, limit: int, offset: int, search: str
+    ) -> tuple[Sequence[Notary], int]:
         limit_offset = LimitOffset(limit=limit, offset=offset)
         search_filter = SearchFilter(
-            field_name={'name', 'email', 'phone'},
+            field_name={"name", "email", "phone"},
             value=search,
             ignore_case=True,
         )

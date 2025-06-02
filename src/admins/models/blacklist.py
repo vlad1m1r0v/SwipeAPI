@@ -11,7 +11,6 @@ if TYPE_CHECKING:
 
 class Blacklist(BigIntAuditBase):
     user_id: orm.Mapped[int] = orm.mapped_column(
-        sa.ForeignKey("users.id", ondelete="CASCADE"),
-        unique=True
+        sa.ForeignKey("users.id", ondelete="CASCADE"), unique=True
     )
     user: orm.Mapped["User"] = orm.relationship(back_populates="blacklist")

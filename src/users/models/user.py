@@ -14,7 +14,7 @@ if TYPE_CHECKING:
         AgentContact,
         Subscription,
         NotificationSettings,
-        Balance
+        Balance,
     )
 
     from src.admins.models import Blacklist
@@ -28,38 +28,24 @@ class User(BigIntAuditBase):
     email: orm.Mapped[str]
     phone: orm.Mapped[str]
     role: orm.Mapped[Role] = orm.mapped_column(
-        sa.Enum(Role, name="user_role_enum"),
-        nullable=False,
-        default=Role.USER
+        sa.Enum(Role, name="user_role_enum"), nullable=False, default=Role.USER
     )
     password: orm.Mapped[str]
     contact: orm.Mapped["Contact"] = orm.relationship(
-        back_populates="user",
-        uselist=False,
-        cascade="all, delete-orphan"
+        back_populates="user", uselist=False, cascade="all, delete-orphan"
     )
     agent_contact: orm.Mapped["AgentContact"] = orm.relationship(
-        back_populates="user",
-        uselist=False,
-        cascade="all, delete-orphan"
+        back_populates="user", uselist=False, cascade="all, delete-orphan"
     )
     subscription: orm.Mapped["Subscription"] = orm.relationship(
-        back_populates="user",
-        uselist=False,
-        cascade="all, delete-orphan"
+        back_populates="user", uselist=False, cascade="all, delete-orphan"
     )
     notification_settings: orm.Mapped["NotificationSettings"] = orm.relationship(
-        back_populates="user",
-        uselist=False,
-        cascade="all, delete-orphan"
+        back_populates="user", uselist=False, cascade="all, delete-orphan"
     )
     balance: orm.Mapped["Balance"] = orm.relationship(
-        back_populates="user",
-        uselist=False,
-        cascade="all, delete-orphan"
+        back_populates="user", uselist=False, cascade="all, delete-orphan"
     )
     blacklist: orm.Mapped["Blacklist"] = orm.relationship(
-        back_populates="user",
-        uselist=False,
-        cascade="all, delete-orphan"
+        back_populates="user", uselist=False, cascade="all, delete-orphan"
     )

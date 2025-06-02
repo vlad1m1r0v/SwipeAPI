@@ -1,9 +1,6 @@
 import dishka as di
 
-from fastapi_mail import (
-    FastMail,
-    ConnectionConfig
-)
+from fastapi_mail import FastMail, ConnectionConfig
 
 from config import Config
 
@@ -21,7 +18,7 @@ class FastMailProvider(di.Provider):
             MAIL_STARTTLS=True,
             MAIL_SSL_TLS=False,
             USE_CREDENTIALS=True,
-            VALIDATE_CERTS=True
+            VALIDATE_CERTS=True,
         )
 
         fast_mail = FastMail(conf)

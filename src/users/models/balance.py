@@ -16,12 +16,10 @@ class Balance(BigIntAuditBase):
     __tablename__ = "balances"
 
     user_id: orm.Mapped[int] = orm.mapped_column(
-        sa.ForeignKey("users.id", ondelete="CASCADE"),
-        unique=True
+        sa.ForeignKey("users.id", ondelete="CASCADE"), unique=True
     )
     value: orm.Mapped[Decimal] = orm.mapped_column(
-        sa.Numeric(precision=12, scale=2),
-        default=constants.DEFAULT_BALANCE
+        sa.Numeric(precision=12, scale=2), default=constants.DEFAULT_BALANCE
     )
 
     user: orm.Mapped["User"] = orm.relationship(back_populates="balance")

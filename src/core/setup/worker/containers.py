@@ -3,10 +3,7 @@ from celery import Celery
 from dishka.integrations.celery import setup_dishka
 import dishka as di
 
-from config import (
-    Config,
-    config
-)
+from config import Config, config
 
 from src.core.ioc import (
     ConfigProvider,

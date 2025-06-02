@@ -13,13 +13,15 @@ class SessionProvider(di.Provider):
         return sa.create_async_engine(config.db.url(is_async=True), echo=True)
 
     @di.provide(scope=di.Scope.APP)
-    def provide_session_maker(self, engine: sa.AsyncEngine) -> sa.async_sessionmaker[sa.AsyncSession]:
+    def provide_session_maker(
+        self, engine: sa.AsyncEngine
+    ) -> sa.async_sessionmaker[sa.AsyncSession]:
         return sa.async_sessionmaker(bind=engine, expire_on_commit=False)
 
     @di.provide(scope=di.Scope.REQUEST)
     async def provide_session(
-            self,
-            session_maker: sa.async_sessionmaker[sa.AsyncSession],
+        self,
+        session_maker: sa.async_sessionmaker[sa.AsyncSession],
     ) -> AsyncIterator[sa.AsyncSession]:
         async with session_maker() as session:
             try:

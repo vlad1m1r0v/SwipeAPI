@@ -1,11 +1,6 @@
 from typing import Optional
 
-from pydantic import (
-    BaseModel,
-    EmailStr,
-    Field,
-    computed_field
-)
+from pydantic import BaseModel, EmailStr, Field, computed_field
 
 from .contact import GetContactSchema
 from .agent_contact import GetAgentContactSchema

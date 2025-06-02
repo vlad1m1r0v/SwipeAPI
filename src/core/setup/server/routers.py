@@ -10,4 +10,5 @@ def setup_routers(app: FastAPI) -> None:
     app.include_router(users_router)
     app.include_router(admins_router)
 
+
 __all__ = ["setup_routers"]

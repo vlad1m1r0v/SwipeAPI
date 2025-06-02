@@ -7,28 +7,22 @@ from fastapi import Depends
 from fastapi.security import HTTPAuthorizationCredentials
 
 from src.auth.services import JwtService
-from src.auth.exceptions import (
-    TokenNotProvidedException,
-    InvalidTokenTypeException
-)
+from src.auth.exceptions import TokenNotProvidedException, InvalidTokenTypeException
 from src.auth.enums import TokenType
 from src.auth.utils import http_bearer
 
 from src.users.services import UserService
 from src.users.enums import Role
-from src.users.exceptions import (
-    UserDoesNotExistException,
-    InvalidRoleException
-)
+from src.users.exceptions import UserDoesNotExistException, InvalidRoleException
 
 from src.admins.schemas import GetAdminSchema
 
 
 @inject
 async def admin_from_token(
-        jwt_service: FromDishka[JwtService],
-        user_service: FromDishka[UserService],
-        auth_credentials: Optional[HTTPAuthorizationCredentials] = Depends(http_bearer),
+    jwt_service: FromDishka[JwtService],
+    user_service: FromDishka[UserService],
+    auth_credentials: Optional[HTTPAuthorizationCredentials] = Depends(http_bearer),
 ) -> GetAdminSchema:
     if not auth_credentials:
         raise TokenNotProvidedException()

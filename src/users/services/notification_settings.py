@@ -5,6 +5,8 @@ from src.users.repositories import NotificationSettingsRepository
 
 
 class NotificationSettingsService(
-    SQLAlchemyAsyncRepositoryService[NotificationSettings, NotificationSettingsRepository]
+    SQLAlchemyAsyncRepositoryService[
+        NotificationSettings, NotificationSettingsRepository
+    ]
 ):
     repository_type = NotificationSettingsRepository

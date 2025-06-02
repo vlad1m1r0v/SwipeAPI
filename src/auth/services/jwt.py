@@ -8,7 +8,7 @@ from src.auth.enums import TokenType
 from src.auth.schemas import (
     BasePayloadSchema,
     PayloadWithTypeSchema,
-    PayloadWithExpDateSchema
+    PayloadWithExpDateSchema,
 )
 
 
@@ -47,10 +47,10 @@ class JwtService:
         )
 
     def encode_jwt(
-            self,
-            payload: PayloadWithTypeSchema,
-            expire_minutes: int,
-            expire_timedelta: timedelta | None = None
+        self,
+        payload: PayloadWithTypeSchema,
+        expire_minutes: int,
+        expire_timedelta: timedelta | None = None,
     ):
         now = datetime.now(UTC)
 
@@ -60,14 +60,14 @@ class JwtService:
             expire = now + timedelta(minutes=expire_minutes)
 
         to_encode: PayloadWithExpDateSchema = PayloadWithExpDateSchema(
-            **payload.model_dump(mode='json'),
+            **payload.model_dump(mode="json"),
             exp=int(expire.timestamp()),
             iat=int(now.timestamp()),
             jti=str(uuid.uuid4()),
         )
 
         encoded = jwt.encode(
-            payload=to_encode.model_dump(mode='json'),
+            payload=to_encode.model_dump(mode="json"),
             key=self._private_key,
             algorithm=self._algorithm,
         )

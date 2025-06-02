@@ -21,22 +21,21 @@ class UserRepository(SQLAlchemyAsyncRepository[User]):
                 orm.joinedload(User.agent_contact),
                 orm.joinedload(User.subscription),
                 orm.joinedload(User.notification_settings),
-                orm.joinedload(User.balance)
-            ]
+                orm.joinedload(User.balance),
+            ],
         )
 
-    async def get_blacklisted_users(self, limit: int, offset: int, search: str) -> tuple[Sequence[User], int]:
+    async def get_blacklisted_users(
+        self, limit: int, offset: int, search: str
+    ) -> tuple[Sequence[User], int]:
         limit_offset = LimitOffset(limit=limit, offset=offset)
         search_filter = SearchFilter(
-            field_name={'name', 'email', 'phone'},
+            field_name={"name", "email", "phone"},
             value=search,
             ignore_case=True,
         )
 
-        stmt = (
-            select(User)
-            .join(Blacklist, User.id == Blacklist.user_id)
-        )
+        stmt = select(User).join(Blacklist, User.id == Blacklist.user_id)
 
         results, total = await self.list_and_count(
             limit_offset,
@@ -45,4 +44,3 @@ class UserRepository(SQLAlchemyAsyncRepository[User]):
         )
 
         return results, total
-

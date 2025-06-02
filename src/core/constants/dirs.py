@@ -7,4 +7,4 @@ BASE_DIR: typing.Final = Path(__file__).parent.parent.parent.parent
 MEDIA_FOLDER = "media"
 MEDIA_DIR: typing.Final = BASE_DIR / MEDIA_FOLDER
 
-__all__ = ['BASE_DIR', 'MEDIA_DIR', 'MEDIA_FOLDER']
+__all__ = ["BASE_DIR", "MEDIA_DIR", "MEDIA_FOLDER"]

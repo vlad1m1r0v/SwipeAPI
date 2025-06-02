@@ -10,8 +10,7 @@ class SignService:
         self._redis = redis
 
         self._serializer = URLSafeTimedSerializer(
-            secret_key=config.sign.sign_secret,
-            salt=config.sign.sign_salt
+            secret_key=config.sign.sign_secret, salt=config.sign.sign_salt
         )
 
         self._seconds = config.sign.expire_seconds

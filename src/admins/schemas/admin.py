@@ -1,11 +1,6 @@
 from typing import Optional
 
-from pydantic import (
-    Field,
-    BaseModel,
-    EmailStr,
-    computed_field
-)
+from pydantic import Field, BaseModel, EmailStr, computed_field
 
 from src.core.schemas import FileInfo
 from src.users.enums import Role

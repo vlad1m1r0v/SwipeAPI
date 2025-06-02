@@ -1,10 +1,6 @@
 from typing import Optional
 
-from pydantic import (
-    BaseModel,
-    Field,
-    EmailStr
-)
+from pydantic import BaseModel, Field, EmailStr
 
 from src.core.constants import PHONE_NUMBER
 
@@ -18,7 +14,7 @@ class UpdateAgentContactSchema(BaseModel):
 
 class GetAgentContactSchema(BaseModel):
     id: int
-    first_name: str|None
-    last_name: str|None
-    phone: str|None
-    email: str|None
+    first_name: str | None
+    last_name: str | None
+    phone: str | None
+    email: str | None

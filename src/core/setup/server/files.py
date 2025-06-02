@@ -1,10 +1,7 @@
 from fastapi import FastAPI
 from starlette.staticfiles import StaticFiles
 
-from src.core.constants import (
-    MEDIA_FOLDER,
-    MEDIA_DIR
-)
+from src.core.constants import MEDIA_FOLDER, MEDIA_DIR
 
 
 def mount_static(app: FastAPI) -> None:

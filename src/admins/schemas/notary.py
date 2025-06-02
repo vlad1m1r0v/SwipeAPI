@@ -1,11 +1,6 @@
 from typing import Optional
 
-from pydantic import (
-    BaseModel,
-    Field,
-    EmailStr,
-    computed_field
-)
+from pydantic import BaseModel, Field, EmailStr, computed_field
 
 from src.core.schemas import FileInfo
 from src.core.constants import PHONE_NUMBER
@@ -42,4 +37,3 @@ class GetNotarySchema(BaseModel):
 
     class Config:
         from_attributes = True
-

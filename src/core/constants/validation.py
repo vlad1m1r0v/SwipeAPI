@@ -1,4 +1,4 @@
-UPPERCASE_LETTER = r'[A-Z]'
-DIGIT = r'\d'
-SPECIAL_CHARACTER = r'[!@#$%^&*(),.?\":{}|<>]'
-PHONE_NUMBER = r'^\+380\d{9}$'
+UPPERCASE_LETTER = r"[A-Z]"
+DIGIT = r"\d"
+SPECIAL_CHARACTER = r"[!@#$%^&*(),.?\":{}|<>]"
+PHONE_NUMBER = r"^\+380\d{9}$"

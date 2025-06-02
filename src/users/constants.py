@@ -3,4 +3,4 @@ from typing import Final
 
 DEFAULT_BALANCE: Final = Decimal("5000.00")
 
-__all__ = ['DEFAULT_BALANCE']
+__all__ = ["DEFAULT_BALANCE"]

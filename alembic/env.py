@@ -1,24 +1,16 @@
-"""
-For automatic models import
-"""
-import importlib
-import pkgutil
-from pathlib import Path
+from alembic import context
 
-"""
-To get synchronous database connection URL
-"""
-from config import config as app_config
+from sqlalchemy import create_engine
 
-"""
-Register metadata using advanced alchemy
-"""
 from advanced_alchemy.base import orm_registry
 
 from logging.config import fileConfig
 
-from alembic import context
-from sqlalchemy import create_engine
+from config import config as app_config
+
+import importlib
+import pkgutil
+from pathlib import Path
 
 DATABASE_URL = app_config.db.url(is_async=False)
 # this is the Alembic Config object, which provides

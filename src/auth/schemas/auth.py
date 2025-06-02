@@ -1,25 +1,15 @@
 import re
 
-from pydantic import (
-    BaseModel,
-    field_validator,
-    EmailStr,
-    Field
-)
+from pydantic import BaseModel, field_validator, EmailStr, Field
 from pydantic_core.core_schema import ValidationInfo
 
-from src.core.constants import (
-    UPPERCASE_LETTER,
-    SPECIAL_CHARACTER,
-    PHONE_NUMBER,
-    DIGIT
-)
+from src.core.constants import UPPERCASE_LETTER, SPECIAL_CHARACTER, PHONE_NUMBER, DIGIT
 
 
 class PasswordMixin:
     password: str
 
-    @field_validator('password')
+    @field_validator("password")
     @classmethod
     def validate_password(cls, value: str) -> str:
         if len(value) < 8:
@@ -48,7 +38,7 @@ class UpdatePasswordSchema(BaseModel):
     new_password: str
     confirm_password: str
 
-    @field_validator('old_password', 'new_password')
+    @field_validator("old_password", "new_password")
     @classmethod
     def validate_password(cls, value: str) -> str:
         if len(value) < 8:
@@ -61,10 +51,10 @@ class UpdatePasswordSchema(BaseModel):
             raise ValueError("Password must contain at least one special character.")
         return value
 
-    @field_validator('confirm_password')
+    @field_validator("confirm_password")
     @classmethod
     def passwords_match(cls, value: str, info: ValidationInfo) -> str:
-        new_password = info.data.get('new_password')
+        new_password = info.data.get("new_password")
         if new_password and value != new_password:
             raise ValueError("Passwords do not match.")
         return value
@@ -79,7 +69,7 @@ class ResetPasswordSchema(BaseModel):
     new_password: str
     confirm_password: str
 
-    @field_validator('new_password')
+    @field_validator("new_password")
     @classmethod
     def validate_password(cls, value: str) -> str:
         if len(value) < 8:
@@ -92,10 +82,10 @@ class ResetPasswordSchema(BaseModel):
             raise ValueError("Password must contain at least one special character.")
         return value
 
-    @field_validator('confirm_password')
+    @field_validator("confirm_password")
     @classmethod
     def passwords_match(cls, value: str, info: ValidationInfo) -> str:
-        new_password = info.data.get('new_password')
+        new_password = info.data.get("new_password")
         if new_password and value != new_password:
             raise ValueError("Passwords do not match.")
         return value

@@ -3,16 +3,9 @@ from fastapi import FastAPI
 from dishka.integrations.fastapi import setup_dishka
 import dishka as di
 
-from config import (
-    Config,
-    config
-)
+from config import Config, config
 
-from src.core.ioc import (
-    ConfigProvider,
-    SessionProvider,
-    RedisProvider
-)
+from src.core.ioc import ConfigProvider, SessionProvider, RedisProvider
 from src.auth.ioc import AuthProvider
 from src.users.ioc import UsersProvider
 from src.admins.ioc import AdminsProvider
@@ -30,5 +23,6 @@ def setup_containers(app: FastAPI) -> None:
     )
 
     setup_dishka(container, app)
+
 
 __all__ = ["setup_containers"]

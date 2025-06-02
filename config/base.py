@@ -11,7 +11,7 @@ from config.signing import SignConfig
 
 from src.core.constants import BASE_DIR
 
-load_dotenv(dotenv_path=BASE_DIR / '.env')
+load_dotenv(dotenv_path=BASE_DIR / ".env")
 
 
 class Config(BaseModel):
@@ -24,4 +24,4 @@ class Config(BaseModel):
 
 config = Config()
 
-__all__ = ['Config', 'config']
+__all__ = ["Config", "config"]

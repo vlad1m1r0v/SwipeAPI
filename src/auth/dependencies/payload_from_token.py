@@ -7,10 +7,7 @@ from fastapi import Depends
 from fastapi.security import HTTPAuthorizationCredentials
 
 from src.auth.services import JwtService
-from src.auth.exceptions import (
-    TokenNotProvidedException,
-    InvalidTokenTypeException
-)
+from src.auth.exceptions import TokenNotProvidedException, InvalidTokenTypeException
 from src.auth.schemas import BasePayloadSchema
 from src.auth.enums import TokenType
 from src.auth.utils import http_bearer
@@ -22,9 +19,9 @@ from src.users.exceptions import UserDoesNotExistException
 def payload_from_token(token_type: TokenType):
     @inject
     async def _payload_from_token(
-            jwt_service: FromDishka[JwtService],
-            user_service: FromDishka[UserService],
-            auth_credentials: Optional[HTTPAuthorizationCredentials] = Depends(http_bearer)
+        jwt_service: FromDishka[JwtService],
+        user_service: FromDishka[UserService],
+        auth_credentials: Optional[HTTPAuthorizationCredentials] = Depends(http_bearer),
     ) -> BasePayloadSchema:
         if not auth_credentials:
             raise TokenNotProvidedException()

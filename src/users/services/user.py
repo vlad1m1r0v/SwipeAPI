@@ -1,22 +1,13 @@
 from typing import Sequence
 
-from advanced_alchemy.service import (
-    SQLAlchemyAsyncRepositoryService,
-    ModelDictT
-)
+from advanced_alchemy.service import SQLAlchemyAsyncRepositoryService, ModelDictT
 
-from src.auth.utils import (
-    hash_password,
-    validate_password
-)
+from src.auth.utils import hash_password, validate_password
 
 from src.users.models import User
 from src.users.repositories import UserRepository
 from src.users.enums import Role
-from src.users.exceptions import (
-    UserDoesNotExistException,
-    IncorrectPasswordException
-)
+from src.users.exceptions import UserDoesNotExistException, IncorrectPasswordException
 
 
 class UserService(SQLAlchemyAsyncRepositoryService[User, UserRepository]):
@@ -27,14 +18,18 @@ class UserService(SQLAlchemyAsyncRepositoryService[User, UserRepository]):
 
     async def create_user(self, data: ModelDictT) -> User:
         data = data.model_dump()
-        return await super().create(data={**data, 'role': Role.USER})
+        return await super().create(data={**data, "role": Role.USER})
 
     async def create_admin(self, data: ModelDictT) -> User:
         data = data.model_dump()
-        return await super().create(data={**data, 'role': Role.ADMIN})
+        return await super().create(data={**data, "role": Role.ADMIN})
 
-    async def get_blacklisted_users(self, limit: int, offset: int, search: str) -> tuple[Sequence[User], int]:
-        return await self.repository.get_blacklisted_users(limit=limit, offset=offset, search=search)
+    async def get_blacklisted_users(
+        self, limit: int, offset: int, search: str
+    ) -> tuple[Sequence[User], int]:
+        return await self.repository.get_blacklisted_users(
+            limit=limit, offset=offset, search=search
+        )
 
     async def authenticate(self, data: ModelDictT) -> User:
         user = await self.get_one_or_none(email=data.email)
@@ -53,10 +48,10 @@ class UserService(SQLAlchemyAsyncRepositoryService[User, UserRepository]):
         if not user:
             raise UserDoesNotExistException()
 
-        if not validate_password(data['old_password'], user.password.encode()):
+        if not validate_password(data["old_password"], user.password.encode()):
             raise IncorrectPasswordException()
 
-        await self.update(data={'password': data['new_password']}, item_id=user.id)
+        await self.update(data={"password": data["new_password"]}, item_id=user.id)
 
     async def to_model(self, data: ModelDictT, operation: str | None = None) -> User:
         if isinstance(data, dict) and "password" in data:
