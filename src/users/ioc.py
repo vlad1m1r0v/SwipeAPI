@@ -1,7 +1,9 @@
-from typing import AsyncIterator
+from typing import AsyncIterator, Iterator
 
 import dishka as di
+
 from sqlalchemy.ext import asyncio as sa
+from sqlalchemy.orm import Session
 
 from src.users.services import (
     UserService,
@@ -10,6 +12,7 @@ from src.users.services import (
     SubscriptionService,
     NotificationSettingsService,
     BalanceService,
+    MonthlyWithdrawalService,
 )
 
 
@@ -61,3 +64,9 @@ class UsersProvider(di.Provider):
     ) -> AsyncIterator[BalanceService]:
         async with BalanceService.new(session=session) as service:
             yield service
+
+    @di.provide(scope=di.Scope.REQUEST)
+    def provide_monthly_withdrawal_service(
+        self, session: Session
+    ) -> Iterator[MonthlyWithdrawalService]:
+        yield MonthlyWithdrawalService(session=session)

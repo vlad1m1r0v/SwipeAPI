@@ -1,10 +1,12 @@
 from typing import TYPE_CHECKING
-from datetime import datetime, UTC, timedelta
+from datetime import datetime, UTC
 
 from sqlalchemy import orm
 import sqlalchemy as sa
 
 from advanced_alchemy.base import BigIntAuditBase
+
+from src.users.constants import MONTH_DELTA
 
 if TYPE_CHECKING:
     from src.users.models import User
@@ -19,7 +21,7 @@ class Subscription(BigIntAuditBase):
     is_auto_renewal: orm.Mapped[bool] = orm.mapped_column(sa.Boolean, default=False)
     expiry_date: orm.Mapped[datetime] = orm.mapped_column(
         sa.DateTime,
-        default=lambda: datetime.now(UTC).replace(tzinfo=None) + timedelta(days=30),
+        default=lambda: datetime.now(UTC).replace(tzinfo=None) + MONTH_DELTA,
     )
 
     user: orm.Mapped["User"] = orm.relationship(back_populates="subscription")

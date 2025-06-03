@@ -5,7 +5,7 @@ import dishka as di
 
 from config import Config, config
 
-from src.core.ioc import ConfigProvider, SessionProvider, RedisProvider
+from src.core.ioc import ConfigProvider, SessionProvider, InMemoryDBProvider
 from src.auth.ioc import AuthProvider
 from src.users.ioc import UsersProvider
 from src.admins.ioc import AdminsProvider
@@ -15,7 +15,7 @@ def setup_containers(app: FastAPI) -> None:
     container = di.make_async_container(
         ConfigProvider(),
         SessionProvider(),
-        RedisProvider(),
+        InMemoryDBProvider(),
         AuthProvider(),
         UsersProvider(),
         AdminsProvider(),

@@ -4,6 +4,7 @@ from .agent_contact import AgentContactService
 from .balance import BalanceService
 from .subscription import SubscriptionService
 from .notification_settings import NotificationSettingsService
+from .monthly_withdrawal import MonthlyWithdrawalService
 
 __all__ = [
     "UserService",
@@ -12,4 +13,5 @@ __all__ = [
     "BalanceService",
     "SubscriptionService",
     "NotificationSettingsService",
+    "MonthlyWithdrawalService",
 ]
