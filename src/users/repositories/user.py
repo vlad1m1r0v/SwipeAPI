@@ -5,9 +5,11 @@ from advanced_alchemy.repository import SQLAlchemyAsyncRepository
 
 from sqlalchemy import orm, select
 
+from src.users.models import User
+
 from src.admins.models import Blacklist
 
-from src.users.models import User
+from src.builders.models import Complex
 
 
 class UserRepository(SQLAlchemyAsyncRepository[User]):
@@ -22,6 +24,19 @@ class UserRepository(SQLAlchemyAsyncRepository[User]):
                 orm.joinedload(User.subscription),
                 orm.joinedload(User.notification_settings),
                 orm.joinedload(User.balance),
+            ],
+        )
+
+    async def get_builder_profile(self, item_id) -> User:
+        return await self.get(
+            item_id=item_id,
+            load=[
+                orm.joinedload(User.contact),
+                orm.joinedload(User.complex).joinedload(Complex.infrastructure),
+                orm.joinedload(User.complex).joinedload(Complex.advantages),
+                orm.joinedload(User.complex).joinedload(
+                    Complex.formalization_and_payment_settings
+                ),
             ],
         )
 

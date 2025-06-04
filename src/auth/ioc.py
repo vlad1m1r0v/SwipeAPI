@@ -19,6 +19,13 @@ from src.users.services import (
 
 from src.admins.services import BlacklistService
 
+from src.builders.services import (
+    ComplexService,
+    InfrastructureService,
+    AdvantagesService,
+    FormalizationAndPaymentSettingsService,
+)
+
 
 class AuthProvider(di.Provider):
     @di.provide(scope=di.Scope.REQUEST)
@@ -48,6 +55,10 @@ class AuthProvider(di.Provider):
         subscription_service: SubscriptionService,
         notification_settings_service: NotificationSettingsService,
         balance_service: BalanceService,
+        complex_service: ComplexService,
+        infrastructure_service: InfrastructureService,
+        advantages_service: AdvantagesService,
+        formalization_and_payment_settings_service: FormalizationAndPaymentSettingsService,
     ) -> Iterator[AuthService]:
         yield AuthService(
             jwt_service=jwt_service,
@@ -59,6 +70,10 @@ class AuthProvider(di.Provider):
             subscription_service=subscription_service,
             notification_settings_service=notification_settings_service,
             balance_service=balance_service,
+            complex_service=complex_service,
+            infrastructure_service=infrastructure_service,
+            advances_service=advantages_service,
+            formalization_and_payment_settings_service=formalization_and_payment_settings_service,
         )
 
 

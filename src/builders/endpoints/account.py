@@ -7,10 +7,12 @@ from fastapi import APIRouter, Request, Depends, Form, UploadFile, File
 
 from src.core.utils import save_file, delete_file
 
-from src.auth.dependencies import user_from_token
+from src.auth.dependencies import builder_from_token
 
 from src.users.services import UserService
-from src.users.schemas import GetUserSchema, UpdateUserAccountSchema
+from src.users.schemas import UpdateUserAccountSchema
+
+from src.builders.schemas import GetBuilderSchema
 
 router = APIRouter()
 
@@ -24,12 +26,12 @@ async def update_account(
     name: Optional[str] = Form(default=None),
     phone: Optional[str] = Form(default=None),
     photo: Optional[UploadFile] = File(default=None),
-    user: GetUserSchema = Depends(user_from_token),
-) -> GetUserSchema:
+    builder: GetBuilderSchema = Depends(builder_from_token),
+) -> GetBuilderSchema:
     if photo is not None:
-        user_from_db = await user_service.get(item_id=user.id)
-        if user_from_db.photo is not None:
-            delete_file(user_from_db.photo["content_path"])
+        builder_from_db = await user_service.get(item_id=builder.id)
+        if builder_from_db.photo is not None:
+            delete_file(builder_from_db.photo["content_path"])
 
     fields = UpdateUserAccountSchema(
         email=email,
@@ -39,8 +41,8 @@ async def update_account(
     )
 
     await user_service.update(
-        data={**fields.model_dump(exclude_none=True)}, item_id=user.id
+        data={**fields.model_dump(exclude_none=True)}, item_id=builder.id
     )
 
-    profile = await user_service.get_user_profile(item_id=user.id)
-    return user_service.to_schema(data=profile, schema_type=GetUserSchema)
+    profile = await user_service.get_builder_profile(item_id=builder.id)
+    return user_service.to_schema(data=profile, schema_type=GetBuilderSchema)

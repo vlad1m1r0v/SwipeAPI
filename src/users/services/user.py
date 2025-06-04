@@ -16,6 +16,9 @@ class UserService(SQLAlchemyAsyncRepositoryService[User, UserRepository]):
     async def get_user_profile(self, item_id: int) -> User:
         return await self.repository.get_user_profile(item_id)
 
+    async def get_builder_profile(self, item_id: int) -> User:
+        return await self.repository.get_builder_profile(item_id)
+
     async def create_user(self, data: ModelDictT) -> User:
         data = data.model_dump()
         return await super().create(data={**data, "role": Role.USER})
@@ -23,6 +26,10 @@ class UserService(SQLAlchemyAsyncRepositoryService[User, UserRepository]):
     async def create_admin(self, data: ModelDictT) -> User:
         data = data.model_dump()
         return await super().create(data={**data, "role": Role.ADMIN})
+
+    async def create_builder(self, data: ModelDictT) -> User:
+        data = data.model_dump()
+        return await super().create(data={**data, "role": Role.BUILDER})
 
     async def get_blacklisted_users(
         self, limit: int, offset: int, search: str

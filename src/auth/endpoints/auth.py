@@ -20,6 +20,7 @@ from src.auth.enums import TokenType
 
 from src.auth.endpoints.users import router as user_router
 from src.auth.endpoints.admins import router as admin_router
+from src.auth.endpoints.builders import router as builder_router
 
 from src.users.services import UserService
 
@@ -27,6 +28,7 @@ router = APIRouter(prefix="/auth", tags=["auth"])
 
 router.include_router(user_router)
 router.include_router(admin_router)
+router.include_router(builder_router)
 
 
 @router.post("/tokens/refresh", response_model=TokensSchema)

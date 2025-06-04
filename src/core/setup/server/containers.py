@@ -9,6 +9,7 @@ from src.core.ioc import ConfigProvider, SessionProvider, InMemoryDBProvider
 from src.auth.ioc import AuthProvider
 from src.users.ioc import UsersProvider
 from src.admins.ioc import AdminsProvider
+from src.builders.ioc import BuilderProvider
 
 
 def setup_containers(app: FastAPI) -> None:
@@ -19,6 +20,7 @@ def setup_containers(app: FastAPI) -> None:
         AuthProvider(),
         UsersProvider(),
         AdminsProvider(),
+        BuilderProvider(),
         context={Config: config},
     )
 

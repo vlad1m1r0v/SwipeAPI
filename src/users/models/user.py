@@ -19,6 +19,8 @@ if TYPE_CHECKING:
 
     from src.admins.models import Blacklist
 
+    from src.builders.models import Complex
+
 
 class User(BigIntAuditBase):
     __tablename__ = "users"
@@ -47,5 +49,8 @@ class User(BigIntAuditBase):
         back_populates="user", uselist=False, cascade="all, delete-orphan"
     )
     blacklist: orm.Mapped["Blacklist"] = orm.relationship(
+        back_populates="user", uselist=False, cascade="all, delete-orphan"
+    )
+    complex: orm.Mapped["Complex"] = orm.relationship(
         back_populates="user", uselist=False, cascade="all, delete-orphan"
     )
