@@ -5,7 +5,7 @@ from dishka.integrations.fastapi import inject
 
 from fastapi import APIRouter, Request, Depends, Form, UploadFile, File
 
-from src.core.utils import save_file, delete_file
+from src.core.utils import save_file
 
 from src.auth.dependencies import builder_from_token
 
@@ -28,11 +28,6 @@ async def update_account(
     photo: Optional[UploadFile] = File(default=None),
     builder: GetBuilderSchema = Depends(builder_from_token),
 ) -> GetBuilderSchema:
-    if photo is not None:
-        builder_from_db = await user_service.get(item_id=builder.id)
-        if builder_from_db.photo is not None:
-            delete_file(builder_from_db.photo["content_path"])
-
     fields = UpdateUserAccountSchema(
         email=email,
         name=name,

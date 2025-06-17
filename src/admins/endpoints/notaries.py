@@ -10,7 +10,7 @@ from fastapi import APIRouter, Request, Depends, Form, UploadFile, File, Query
 from advanced_alchemy.service import OffsetPagination
 
 from src.core.schemas import SuccessfulMessageSchema
-from src.core.utils import save_file, delete_file
+from src.core.utils import save_file
 
 from src.auth.dependencies import admin_from_token
 
@@ -77,17 +77,12 @@ async def update_notary(
     phone: Optional[str] = Form(default=None),
     photo: Optional[UploadFile] = File(default=None),
 ) -> GetNotarySchema:
-    notary_from_db = await notary_service.get(item_id=notary_id)
-
-    if notary_from_db.photo is not None:
-        delete_file(notary_from_db.photo["content_path"])
-
     fields = UpdateNotarySchema(
         first_name=first_name,
         last_name=last_name,
         email=email,
         phone=phone,
-        photo=save_file(request=request, file=photo),
+        photo=save_file(request=request, file=photo) if photo else None,
     )
 
     notary = await notary_service.update(
@@ -103,9 +98,7 @@ async def delete_notary(
     notary_id: int,
     _: GetAdminSchema = Depends(admin_from_token),
 ):
-    record = await notary_service.delete(item_id=notary_id)
-    delete_file(record.photo["content_path"])
-
+    await notary_service.delete(item_id=notary_id)
     return SuccessfulMessageSchema(
         message="Notary has been deleted.",
     )
