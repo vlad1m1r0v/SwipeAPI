@@ -5,6 +5,7 @@ from .formalization_and_payment_settings import (
     FormalizationAndPaymentSettingsRepository,
 )
 from .news import NewsRepository
+from .document import DocumentRepository
 
 __all__ = [
     "ComplexRepository",
@@ -12,4 +13,5 @@ __all__ = [
     "AdvantagesRepository",
     "FormalizationAndPaymentSettingsRepository",
     "NewsRepository",
+    "DocumentRepository",
 ]

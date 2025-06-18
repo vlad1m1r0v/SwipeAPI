@@ -38,7 +38,8 @@ def attach_file_cleanup(model_class: Type[AdvancedDeclarativeBase], fields: list
     @event.listens_for(model_class, "before_delete")
     def on_delete(_mapper: Mapper, _connection, target):
         for field in fields:
-            delete_file(getattr(target, field, None))
+            file_info: FileInfo = getattr(target, field, None)
+            delete_file(file_info["content_path"])
 
     @event.listens_for(model_class, "before_update")
     def on_update(_mapper: Mapper, _connection, target):

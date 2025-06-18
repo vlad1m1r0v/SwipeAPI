@@ -10,6 +10,7 @@ from src.builders.services import (
     AdvantagesService,
     FormalizationAndPaymentSettingsService,
     NewsService,
+    DocumentService,
 )
 
 
@@ -54,4 +55,12 @@ class BuilderProvider(di.Provider):
         session: sa.AsyncSession,
     ) -> AsyncIterator[NewsService]:
         async with NewsService.new(session=session) as service:
+            yield service
+
+    @di.provide(scope=di.Scope.REQUEST)
+    async def provide_document_service(
+        self,
+        session: sa.AsyncSession,
+    ) -> AsyncIterator[DocumentService]:
+        async with DocumentService.new(session=session) as service:
             yield service

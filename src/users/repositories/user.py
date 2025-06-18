@@ -39,6 +39,7 @@ class UserRepository(SQLAlchemyAsyncRepository[User]):
                     Complex.formalization_and_payment_settings
                 ),
                 orm.selectinload(User.complex).selectinload(Complex.news),
+                orm.selectinload(User.complex).selectinload(Complex.documents),
             ],
         )
 

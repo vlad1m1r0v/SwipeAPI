@@ -6,6 +6,7 @@ from .infrastructure import GetInfrastructureSchema
 from .advantages import GetAdvantagesSchema
 from .formalization_and_payment_settings import GetFormalizationAndPaymentSettingsSchema
 from .news import GetNewsSchema
+from .document import GetDocumentSchema
 
 from src.users.schemas import GetUserAccountSchema, GetContactSchema
 
@@ -28,6 +29,7 @@ class GetComplexSchema(BaseComplexSchema):
     advantages: GetAdvantagesSchema
     formalization_and_payment_settings: GetFormalizationAndPaymentSettingsSchema
     news: Optional[list[GetNewsSchema]] = []
+    documents: Optional[list[GetDocumentSchema]] = []
 
 
 class GetBuilderSchema(GetUserAccountSchema):

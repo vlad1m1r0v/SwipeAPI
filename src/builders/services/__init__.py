@@ -3,6 +3,7 @@ from .infrastructure import InfrastructureService
 from .advantages import AdvantagesService
 from .formalization_and_payment_settings import FormalizationAndPaymentSettingsService
 from .news import NewsService
+from .document import DocumentService
 
 __all__ = [
     "ComplexService",
@@ -10,4 +11,5 @@ __all__ = [
     "FormalizationAndPaymentSettingsService",
     "AdvantagesService",
     "NewsService",
+    "DocumentService",
 ]

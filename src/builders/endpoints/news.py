@@ -5,8 +5,6 @@ from dishka.integrations.fastapi import inject
 
 from fastapi import APIRouter, Depends, Form
 
-from src.core.schemas import SuccessfulMessageSchema
-
 from src.users.services import UserService
 
 from src.auth.dependencies import builder_from_token
@@ -45,12 +43,14 @@ async def update_news(
     return user_service.to_schema(data=profile, schema_type=GetBuilderSchema)
 
 
-@router.delete("/{news_id}", response_model=SuccessfulMessageSchema)
+@router.delete("/{news_id}", response_model=GetBuilderSchema)
 @inject
 async def delete_news(
     news_id: int,
     news_service: FromDishka[NewsService],
-    _: GetBuilderSchema = Depends(check_builder_owns_news),
+    user_service: FromDishka[UserService],
+    builder: GetBuilderSchema = Depends(check_builder_owns_news),
 ):
     await news_service.delete(item_id=news_id)
-    return SuccessfulMessageSchema(message="News has been deleted.")
+    profile = await user_service.get_builder_profile(item_id=builder.id)
+    return user_service.to_schema(data=profile, schema_type=GetBuilderSchema)
