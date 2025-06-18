@@ -13,6 +13,8 @@ from .news import GetNewsSchema, CreateNewsSchema, UpdateNewsSchema
 
 from .document import GetDocumentSchema, CreateDocumentSchema, UpdateDocumentSchema
 
+from .gallery import GetGalleryImageSchema, CreateGalleryImageSchema
+
 __all__ = [
     "GetFormalizationAndPaymentSettingsSchema",
     "UpdateFormalizationAndPaymentSettingsSchema",
@@ -29,4 +31,6 @@ __all__ = [
     "GetDocumentSchema",
     "CreateDocumentSchema",
     "UpdateDocumentSchema",
+    "GetGalleryImageSchema",
+    "CreateGalleryImageSchema",
 ]

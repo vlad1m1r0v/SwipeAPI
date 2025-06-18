@@ -40,6 +40,7 @@ class UserRepository(SQLAlchemyAsyncRepository[User]):
                 ),
                 orm.selectinload(User.complex).selectinload(Complex.news),
                 orm.selectinload(User.complex).selectinload(Complex.documents),
+                orm.selectinload(User.complex).selectinload(Complex.gallery),
             ],
         )
 

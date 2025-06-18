@@ -6,6 +6,7 @@ from .formalization_and_payment_settings import (
 )
 from .news import NewsRepository
 from .document import DocumentRepository
+from .gallery import GalleryRepository
 
 __all__ = [
     "ComplexRepository",
@@ -14,4 +15,5 @@ __all__ = [
     "FormalizationAndPaymentSettingsRepository",
     "NewsRepository",
     "DocumentRepository",
+    "GalleryRepository",
 ]
