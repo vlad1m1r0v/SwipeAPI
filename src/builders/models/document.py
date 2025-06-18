@@ -14,7 +14,7 @@ class Document(BigIntAuditBase):
     __tablename__ = "documents"
 
     complex_id: orm.Mapped[int] = orm.mapped_column(
-        sa.ForeignKey("complexes.id", ondelete="CASCADE"), unique=True
+        sa.ForeignKey("complexes.id", ondelete="CASCADE")
     )
     name: orm.Mapped[str]
     file = sa.Column(JSONB)

@@ -10,6 +10,8 @@ from itsdangerous import SignatureExpired, BadSignature
 
 from jwt import InvalidTokenError
 
+from src.core.exceptions import IsNotOwnerException
+
 from src.auth.exceptions import (
     TokenNotProvidedException,
     InvalidTokenTypeException,
@@ -37,6 +39,18 @@ def create_exception_handler(
 
 
 def setup_exception_handlers(app: FastAPI) -> None:
+    # region general
+    app.add_exception_handler(
+        IsNotOwnerException,
+        create_exception_handler(
+            status_code=status.HTTP_403_FORBIDDEN,
+            initial_detail={
+                "message": "You do not have permission to modify this record."
+            },
+        ),
+    )
+    # endregion general
+
     # region database
     app.add_exception_handler(
         IntegrityError,

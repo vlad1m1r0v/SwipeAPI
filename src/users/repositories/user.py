@@ -31,12 +31,14 @@ class UserRepository(SQLAlchemyAsyncRepository[User]):
         return await self.get(
             item_id=item_id,
             load=[
-                orm.joinedload(User.contact),
-                orm.joinedload(User.complex).joinedload(Complex.infrastructure),
-                orm.joinedload(User.complex).joinedload(Complex.advantages),
-                orm.joinedload(User.complex).joinedload(
+                orm.selectinload(User.contact),
+                orm.selectinload(User.complex),
+                orm.selectinload(User.complex).selectinload(Complex.infrastructure),
+                orm.selectinload(User.complex).selectinload(Complex.advantages),
+                orm.selectinload(User.complex).selectinload(
                     Complex.formalization_and_payment_settings
                 ),
+                orm.selectinload(User.complex).selectinload(Complex.news),
             ],
         )
 

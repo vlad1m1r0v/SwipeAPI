@@ -9,6 +9,8 @@ from .infrastructure import GetInfrastructureSchema, UpdateInfrastructureSchema
 
 from .complex import GetComplexSchema, UpdateComplexSchema, GetBuilderSchema
 
+from .news import GetNewsSchema, CreateNewsSchema, UpdateNewsSchema
+
 __all__ = [
     "GetFormalizationAndPaymentSettingsSchema",
     "UpdateFormalizationAndPaymentSettingsSchema",
@@ -19,4 +21,7 @@ __all__ = [
     "GetComplexSchema",
     "UpdateComplexSchema",
     "GetBuilderSchema",
+    "GetNewsSchema",
+    "CreateNewsSchema",
+    "UpdateNewsSchema",
 ]

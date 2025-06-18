@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, List
 from decimal import Decimal
 
 from sqlalchemy import orm
@@ -47,12 +47,12 @@ class Complex(BigIntAuditBase):
     advantages: orm.Mapped["Advantages"] = orm.relationship(
         back_populates="complex", uselist=False, cascade="all, delete-orphan"
     )
-    news: orm.Mapped["News"] = orm.relationship(
+    news: orm.Mapped[List["News"]] = orm.relationship(
         back_populates="complex", uselist=True, cascade="all, delete-orphan"
     )
-    documents: orm.Mapped["Document"] = orm.relationship(
+    documents: orm.Mapped[List["Document"]] = orm.relationship(
         back_populates="complex", uselist=True, cascade="all, delete-orphan"
     )
-    gallery: orm.Mapped["ComplexGallery"] = orm.relationship(
+    gallery: orm.Mapped[List["ComplexGallery"]] = orm.relationship(
         back_populates="complex", uselist=True, cascade="all, delete-orphan"
     )

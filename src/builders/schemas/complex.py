@@ -2,11 +2,10 @@ from typing import Optional
 from decimal import Decimal
 from pydantic import BaseModel
 
-from src.builders.schemas import (
-    GetInfrastructureSchema,
-    GetAdvantagesSchema,
-    GetFormalizationAndPaymentSettingsSchema,
-)
+from .infrastructure import GetInfrastructureSchema
+from .advantages import GetAdvantagesSchema
+from .formalization_and_payment_settings import GetFormalizationAndPaymentSettingsSchema
+from .news import GetNewsSchema
 
 from src.users.schemas import GetUserAccountSchema, GetContactSchema
 
@@ -28,6 +27,7 @@ class GetComplexSchema(BaseComplexSchema):
     infrastructure: GetInfrastructureSchema
     advantages: GetAdvantagesSchema
     formalization_and_payment_settings: GetFormalizationAndPaymentSettingsSchema
+    news: Optional[list[GetNewsSchema]] = []
 
 
 class GetBuilderSchema(GetUserAccountSchema):

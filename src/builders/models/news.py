@@ -13,7 +13,7 @@ class News(BigIntAuditBase):
     __tablename__ = "news"
 
     complex_id: orm.Mapped[int] = orm.mapped_column(
-        sa.ForeignKey("complexes.id", ondelete="CASCADE"), unique=True
+        sa.ForeignKey("complexes.id", ondelete="CASCADE")
     )
     title: orm.Mapped[str]
     description: orm.Mapped[str] = sa.Column(sa.Text)
