@@ -12,7 +12,7 @@ from src.users.services import (
     SubscriptionService,
     NotificationSettingsService,
     BalanceService,
-    MonthlyWithdrawalService,
+    SubscriptionRenewalService,
 )
 
 
@@ -66,7 +66,9 @@ class UsersProvider(di.Provider):
             yield service
 
     @di.provide(scope=di.Scope.REQUEST)
-    def provide_monthly_withdrawal_service(
-        self, session: Session
-    ) -> Iterator[MonthlyWithdrawalService]:
-        yield MonthlyWithdrawalService(session=session)
+    def provide_subscription_renewal_service(
+        self, sync_session: Session, async_session: sa.AsyncSession
+    ) -> Iterator[SubscriptionRenewalService]:
+        yield SubscriptionRenewalService(
+            session=sync_session, async_session=async_session
+        )

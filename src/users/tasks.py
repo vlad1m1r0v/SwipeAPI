@@ -1,18 +1,14 @@
-import logging
-
 from dishka.integrations.celery import inject
 from dishka import FromDishka
 
 from src.core.celery_app import celery
 
-from src.users.services import MonthlyWithdrawalService
-
-logger = logging.getLogger(__name__)
+from src.users.services import SubscriptionRenewalService
 
 
-@celery.task(name="monthly_withdrawal")
+@celery.task(name="daily_withdrawal")
 @inject
-def monthly_withdrawal(
-    monthly_withdrawal_service: FromDishka[MonthlyWithdrawalService],
+def daily_withdrawal(
+    subscription_renewal_service: FromDishka[SubscriptionRenewalService],
 ):
-    monthly_withdrawal_service.renew_subscriptions()
+    subscription_renewal_service.renew_subscriptions()

@@ -12,7 +12,9 @@ from advanced_alchemy.service import OffsetPagination
 from src.core.schemas import SuccessfulMessageSchema
 from src.core.utils import save_file
 
-from src.auth.dependencies import admin_from_token
+from src.auth.dependencies import admin_from_token, payload_from_token
+from src.auth.schemas import BasePayloadSchema
+from src.auth.enums import TokenType
 
 from src.admins.services import NotaryService
 from src.admins.schemas import (
@@ -22,17 +24,18 @@ from src.admins.schemas import (
     GetAdminSchema,
 )
 
-router = APIRouter(prefix="/notaries")
+router = APIRouter(prefix="/notaries", tags=["Admins: Notaries"])
+notaries = APIRouter(prefix="/notaries", tags=["Notaries"])
 
 
-@router.get("", response_model=OffsetPagination[GetNotarySchema])
+@notaries.get("", response_model=OffsetPagination[GetNotarySchema])
 @inject
 async def get_notaries(
     notary_service: FromDishka[NotaryService],
     limit: int = Query(default=20),
     offset: int = Query(default=0),
     search: str = Query(default=""),
-    _: GetAdminSchema = Depends(admin_from_token),
+    _: BasePayloadSchema = Depends(payload_from_token(TokenType.ACCESS_TOKEN)),
 ) -> OffsetPagination[GetNotarySchema]:
     results, total = await notary_service.get_notaries(limit, offset, search)
     return notary_service.to_schema(

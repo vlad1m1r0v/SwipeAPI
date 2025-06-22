@@ -15,7 +15,7 @@ from src.users.schemas import GetUserSchema, UpdateUserAccountSchema
 router = APIRouter()
 
 
-@router.patch("/account")
+@router.patch(path="/account", response_model=GetUserSchema, tags=["Users: Profile"])
 @inject
 async def update_account(
     request: Request,

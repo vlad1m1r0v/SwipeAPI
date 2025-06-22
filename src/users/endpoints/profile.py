@@ -7,6 +7,6 @@ from src.users.schemas import GetUserSchema
 router = APIRouter()
 
 
-@router.get("/profile")
+@router.get("/profile", tags=["Users: Profile"])
 def get_profile(user: GetUserSchema = Depends(user_from_token)) -> GetUserSchema:
     return user

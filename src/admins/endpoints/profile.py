@@ -7,6 +7,6 @@ from src.admins.schemas import GetAdminSchema
 router = APIRouter()
 
 
-@router.get("/profile")
+@router.get("/profile", tags=["Admins: Profile"])
 def get_profile(admin: GetAdminSchema = Depends(admin_from_token)) -> GetAdminSchema:
     return admin

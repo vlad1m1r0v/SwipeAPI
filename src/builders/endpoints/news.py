@@ -1,9 +1,7 @@
-from typing import Annotated
-
 from dishka import FromDishka
 from dishka.integrations.fastapi import inject
 
-from fastapi import APIRouter, Depends, Form
+from fastapi import APIRouter, Depends
 
 from src.users.services import UserService
 
@@ -13,7 +11,7 @@ from src.builders.services import NewsService
 from src.builders.dependencies import check_builder_owns_news
 from src.builders.schemas import GetBuilderSchema, CreateNewsSchema, UpdateNewsSchema
 
-router = APIRouter(prefix="/news")
+router = APIRouter(prefix="/news", tags=["Builders: News"])
 
 
 @router.post("", response_model=GetBuilderSchema)
@@ -21,7 +19,7 @@ router = APIRouter(prefix="/news")
 async def create_news(
     news_service: FromDishka[NewsService],
     user_service: FromDishka[UserService],
-    data: Annotated[CreateNewsSchema, Form()],
+    data: CreateNewsSchema,
     builder: GetBuilderSchema = Depends(builder_from_token),
 ) -> GetBuilderSchema:
     await news_service.create({"complex_id": builder.complex.id, **data.model_dump()})
@@ -35,7 +33,7 @@ async def update_news(
     news_id: int,
     news_service: FromDishka[NewsService],
     user_service: FromDishka[UserService],
-    data: Annotated[UpdateNewsSchema, Form()],
+    data: UpdateNewsSchema,
     builder: GetBuilderSchema = Depends(check_builder_owns_news),
 ) -> GetBuilderSchema:
     await news_service.update(data=data.model_dump(exclude_none=True), item_id=news_id)

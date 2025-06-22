@@ -8,7 +8,7 @@ from .subscription import router as subscription_router
 from .balance import router as balance_router
 from .notification_settings import router as notification_settings_router
 
-router = APIRouter(prefix="/users", tags=["users"])
+router = APIRouter(prefix="/users")
 
 router.include_router(profile_router)
 router.include_router(account_router)

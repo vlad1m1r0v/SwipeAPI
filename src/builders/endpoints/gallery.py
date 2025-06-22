@@ -17,7 +17,7 @@ from src.users.services import UserService
 router = APIRouter()
 
 
-@router.patch("/gallery")
+@router.patch("/gallery", tags=["Builders: Gallery"])
 @inject
 async def update_gallery(
     request: Request,

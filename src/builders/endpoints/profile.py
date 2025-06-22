@@ -7,7 +7,7 @@ from src.builders.schemas import GetBuilderSchema
 router = APIRouter()
 
 
-@router.get("/profile")
+@router.get("/profile", tags=["Builders: Profile"])
 def get_profile(
     builder: GetBuilderSchema = Depends(builder_from_token),
 ) -> GetBuilderSchema:

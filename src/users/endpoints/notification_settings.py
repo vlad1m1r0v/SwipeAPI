@@ -1,9 +1,7 @@
-from typing import Annotated
-
 from dishka import FromDishka
 from dishka.integrations.fastapi import inject
 
-from fastapi import APIRouter, Depends, Form
+from fastapi import APIRouter, Depends
 
 from src.auth.dependencies import user_from_token
 
@@ -13,12 +11,12 @@ from src.users.schemas import GetUserSchema, UpdateNotificationSettingsSchema
 router = APIRouter()
 
 
-@router.patch("/notification-settings")
+@router.patch("/notification-settings", tags=["Users: Profile"])
 @inject
 async def update_notification_settings(
     notification_settings_service: FromDishka[NotificationSettingsService],
     user_service: FromDishka[UserService],
-    data: Annotated[UpdateNotificationSettingsSchema, Form()],
+    data: UpdateNotificationSettingsSchema,
     user: GetUserSchema = Depends(user_from_token),
 ) -> GetUserSchema:
     await notification_settings_service.update(

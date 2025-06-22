@@ -11,7 +11,7 @@ from .news import router as news_router
 from .document import router as document_router
 from .gallery import router as gallery_router
 
-router = APIRouter(prefix="/builders", tags=["builders"])
+router = APIRouter(prefix="/builders")
 
 router.include_router(profile_router)
 router.include_router(account_router)

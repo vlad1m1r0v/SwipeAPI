@@ -18,5 +18,9 @@ class SubscriptionExpiredException(Exception):
     pass
 
 
+class NotEnoughMoneyException(Exception):
+    pass
+
+
 class UserBlacklistedException(Exception):
     pass

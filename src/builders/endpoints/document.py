@@ -19,7 +19,7 @@ from src.builders.schemas import (
     UpdateDocumentSchema,
 )
 
-router = APIRouter(prefix="/documents")
+router = APIRouter(prefix="/documents", tags=["Builders: Documents"])
 
 
 @router.post("", response_model=GetBuilderSchema)

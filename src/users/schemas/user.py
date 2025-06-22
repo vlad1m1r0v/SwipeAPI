@@ -27,7 +27,7 @@ class GetUserAccountSchema(BaseModel):
     phone: str
     email: str
     role: Role
-    photo: Optional[FileInfo] = Field(exclude=True)
+    photo: Optional[FileInfo] = Field(exclude=True, default=None)
 
     @computed_field
     @property

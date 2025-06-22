@@ -1,9 +1,7 @@
-from typing import Annotated
-
 from dishka import FromDishka
 from dishka.integrations.fastapi import inject
 
-from fastapi import APIRouter, Depends, Form, Query
+from fastapi import APIRouter, Depends, Body, Query
 
 from src.core.schemas import SuccessfulMessageSchema
 
@@ -24,14 +22,14 @@ from src.auth.endpoints.builders import router as builder_router
 
 from src.users.services import UserService
 
-router = APIRouter(prefix="/auth", tags=["auth"])
+router = APIRouter(prefix="/auth")
 
 router.include_router(user_router)
 router.include_router(admin_router)
 router.include_router(builder_router)
 
 
-@router.post("/tokens/refresh", response_model=TokensSchema)
+@router.post(path="/tokens/refresh", response_model=TokensSchema, tags=["Auth: Common"])
 @inject
 def refresh_tokens(
     auth_service: FromDishka[AuthService],
@@ -40,22 +38,30 @@ def refresh_tokens(
     return auth_service.generate_tokens(payload)
 
 
-@router.post("/password/update")
+@router.post(
+    path="/password/update",
+    response_model=SuccessfulMessageSchema,
+    tags=["Auth: Common"],
+)
 @inject
 async def update_password(
     user_service: FromDishka[UserService],
-    data: Annotated[UpdatePasswordSchema, Form()],
+    data: UpdatePasswordSchema,
     payload: BasePayloadSchema = Depends(payload_from_token(TokenType.ACCESS_TOKEN)),
 ) -> SuccessfulMessageSchema:
     await user_service.update_password(item_id=payload.id, data=data.model_dump())
     return SuccessfulMessageSchema(message="Password was updated successfully.")
 
 
-@router.post("/password/forgot")
+@router.post(
+    path="/password/forgot",
+    response_model=SuccessfulMessageSchema,
+    tags=["Auth: Common"],
+)
 @inject
 async def forgot_password(
     auth_service: FromDishka[AuthService],
-    data: Annotated[ForgotPasswordSchema, Form()],
+    data: ForgotPasswordSchema,
 ) -> SuccessfulMessageSchema:
     await auth_service.send_forgot_password_email(data)
     return SuccessfulMessageSchema(
@@ -63,13 +69,18 @@ async def forgot_password(
     )
 
 
-@router.post("/password/reset")
+@router.post(
+    path="/password/reset",
+    response_model=SuccessfulMessageSchema,
+    tags=["Auth: Common"],
+)
+@inject
 @inject
 async def reset_password(
     auth_service: FromDishka[AuthService],
+    new_password: str = Body(),
+    confirm_password: str = Body(),
     token: str = Query(),
-    new_password: str = Form(),
-    confirm_password: str = Form(...),
 ) -> SuccessfulMessageSchema:
     data = ResetPasswordSchema(
         token=token,

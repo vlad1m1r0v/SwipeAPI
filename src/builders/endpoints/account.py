@@ -17,7 +17,7 @@ from src.builders.schemas import GetBuilderSchema
 router = APIRouter()
 
 
-@router.patch("/account")
+@router.patch("/account", tags=["Builders: Profile"])
 @inject
 async def update_account(
     request: Request,

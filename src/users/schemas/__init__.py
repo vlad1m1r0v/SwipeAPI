@@ -2,9 +2,9 @@ from .contact import GetContactSchema, UpdateContactSchema
 
 from .agent_contact import GetAgentContactSchema, UpdateAgentContactSchema
 
-from .balance import GetBalanceSchema
+from .balance import GetBalanceSchema, DepositBalanceSchema
 
-from .subscription import GetSubscriptionSchema
+from .subscription import GetSubscriptionSchema, UpdateSubscriptionSchema
 
 from .notification_settings import (
     GetNotificationSettingsSchema,
@@ -19,7 +19,9 @@ __all__ = [
     "GetAgentContactSchema",
     "UpdateAgentContactSchema",
     "GetBalanceSchema",
+    "DepositBalanceSchema",
     "GetSubscriptionSchema",
+    "UpdateSubscriptionSchema",
     "GetNotificationSettingsSchema",
     "UpdateNotificationSettingsSchema",
     "UpdateUserAccountSchema",

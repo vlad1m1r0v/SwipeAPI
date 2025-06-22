@@ -1,3 +1,5 @@
-from .admins import router
+from .admins import router as admins_router
+from .notaries import notaries as notaries_router
 
-__all__ = ["router"]
+
+__all__ = ["admins_router", "notaries_router"]

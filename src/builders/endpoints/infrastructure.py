@@ -1,9 +1,7 @@
-from typing import Annotated
-
 from dishka import FromDishka
 from dishka.integrations.fastapi import inject
 
-from fastapi import APIRouter, Depends, Form
+from fastapi import APIRouter, Depends
 
 from src.auth.dependencies import builder_from_token
 
@@ -15,12 +13,12 @@ from src.users.services import UserService
 router = APIRouter()
 
 
-@router.patch("/infrastructure")
+@router.patch("/infrastructure", tags=["Builders: Profile"])
 @inject
 async def update_infrastructure(
     infrastructure_service: FromDishka[InfrastructureService],
     user_service: FromDishka[UserService],
-    data: Annotated[UpdateInfrastructureSchema, Form()],
+    data: UpdateInfrastructureSchema,
     builder: GetBuilderSchema = Depends(builder_from_token),
 ) -> GetBuilderSchema:
     await infrastructure_service.update(

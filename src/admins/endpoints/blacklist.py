@@ -1,6 +1,5 @@
 from fastapi import (
     APIRouter,
-    Form,
     Query,
     Depends,
 )
@@ -12,7 +11,7 @@ from advanced_alchemy.service import OffsetPagination
 
 from src.core.schemas import SuccessfulMessageSchema
 
-from src.admins.schemas import GetAdminSchema
+from src.admins.schemas import GetAdminSchema, BlacklistUserSchema
 from src.admins.services import BlacklistService
 
 from src.users.schemas import GetUserAccountSchema
@@ -20,7 +19,7 @@ from src.users.services import UserService
 
 from src.auth.dependencies import admin_from_token
 
-router = APIRouter(prefix="/blacklist")
+router = APIRouter(prefix="/blacklist", tags=["Admins: Blacklist"])
 
 
 @router.get("", response_model=OffsetPagination[GetUserAccountSchema])
@@ -42,10 +41,10 @@ async def get_blacklist(
 @inject
 async def blacklist_user(
     blacklist_service: FromDishka[BlacklistService],
-    user_id: int = Form(),
+    data: BlacklistUserSchema,
     _: GetAdminSchema = Depends(admin_from_token),
 ):
-    await blacklist_service.create(data={"user_id": user_id})
+    await blacklist_service.create(data={"user_id": data.user_id})
     return SuccessfulMessageSchema(
         message="User has been blacklisted.",
     )
