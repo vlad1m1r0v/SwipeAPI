@@ -28,21 +28,27 @@ class UserRepository(SQLAlchemyAsyncRepository[User]):
         )
 
     async def get_builder_profile(self, item_id) -> User:
-        return await self.get(
-            item_id=item_id,
-            load=[
-                orm.selectinload(User.contact),
-                orm.selectinload(User.complex),
-                orm.selectinload(User.complex).selectinload(Complex.infrastructure),
-                orm.selectinload(User.complex).selectinload(Complex.advantages),
-                orm.selectinload(User.complex).selectinload(
+        stmt = (
+            select(User)
+            .where(User.id == item_id)
+            .options(
+                # one-to-one (JOIN)
+                orm.joinedload(User.contact),
+                orm.joinedload(User.complex),
+                orm.joinedload(User.complex).joinedload(Complex.infrastructure),
+                orm.joinedload(User.complex).joinedload(Complex.advantages),
+                orm.joinedload(User.complex).joinedload(
                     Complex.formalization_and_payment_settings
                 ),
-                orm.selectinload(User.complex).selectinload(Complex.news),
-                orm.selectinload(User.complex).selectinload(Complex.documents),
-                orm.selectinload(User.complex).selectinload(Complex.gallery),
-            ],
+                # one-to-many (SELECT IN)
+                orm.joinedload(User.complex).selectinload(Complex.news),
+                orm.joinedload(User.complex).selectinload(Complex.documents),
+                orm.joinedload(User.complex).selectinload(Complex.gallery),
+            )
         )
+
+        result = await self.session.execute(stmt)
+        return result.scalar_one_or_none()
 
     async def get_blacklisted_users(
         self, limit: int, offset: int, search: str
