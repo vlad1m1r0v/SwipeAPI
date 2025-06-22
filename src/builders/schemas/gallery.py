@@ -5,17 +5,10 @@ from pydantic import BaseModel, Field, computed_field
 from src.core.schemas import FileInfo
 
 
-class CreateGalleryImageSchema(BaseModel):
-    complex_id: int
-    photo: FileInfo
-
-    class Config:
-        from_attributes = True
-
-
 class GetGalleryImageSchema(BaseModel):
     id: int
     photo: FileInfo = Field(exclude=True)
+    order: int
 
     @computed_field
     @property
