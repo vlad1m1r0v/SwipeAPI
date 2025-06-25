@@ -6,6 +6,7 @@ from .news import NewsService
 from .document import DocumentService
 from .gallery import GalleryService
 from .block import BlockService
+from .section import SectionService
 
 __all__ = [
     "ComplexService",
@@ -16,4 +17,5 @@ __all__ = [
     "DocumentService",
     "GalleryService",
     "BlockService",
+    "SectionService",
 ]

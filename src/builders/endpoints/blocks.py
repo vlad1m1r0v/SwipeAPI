@@ -8,7 +8,7 @@ from advanced_alchemy.service import OffsetPagination
 from src.core.schemas import SuccessfulMessageSchema
 
 from src.builders.schemas import (
-    GetComplexSchema,
+    GetBuilderSchema,
     GetBlockSchema,
     CreateBlockSchema,
     UpdateBlockSchema,
@@ -28,10 +28,10 @@ async def get_blocks(
     limit: int = Query(default=20),
     offset: int = Query(default=0),
     no: int | None = Query(default=None),
-    builder: GetComplexSchema = Depends(builder_from_token),
+    builder: GetBuilderSchema = Depends(builder_from_token),
 ) -> OffsetPagination[GetBlockSchema]:
-    results, total = await block_service.get_complex_blocks(
-        limit=limit, offset=offset, no=no, complex_id=builder.complex.id
+    results, total = await block_service.get_blocks(
+        limit=limit, offset=offset, complex_id=builder.complex.id, no=no
     )
     return block_service.to_schema(
         data=results, total=total, schema_type=GetBlockSchema
@@ -43,7 +43,7 @@ async def get_blocks(
 async def create_block(
     block_service: FromDishka[BlockService],
     data: CreateBlockSchema = Body(),
-    builder: GetComplexSchema = Depends(builder_from_token),
+    builder: GetBuilderSchema = Depends(builder_from_token),
 ) -> SuccessfulMessageSchema:
     await block_service.create(
         data={**data.model_dump(), "complex_id": builder.complex.id}
@@ -59,11 +59,9 @@ async def update_block(
     block_service: FromDishka[BlockService],
     block_id: int,
     data: UpdateBlockSchema = Body(),
-    builder: GetComplexSchema = Depends(check_builder_owns_block),
+    _: GetBuilderSchema = Depends(check_builder_owns_block),
 ) -> SuccessfulMessageSchema:
-    await block_service.update(
-        item_id=block_id, data={**data.model_dump(), "complex_id": builder.complex.id}
-    )
+    await block_service.update(item_id=block_id, data=data.model_dump())
     return SuccessfulMessageSchema(message="Block has been updated successfully.")
 
 
@@ -72,7 +70,7 @@ async def update_block(
 async def delete_block(
     block_service: FromDishka[BlockService],
     block_id: int,
-    _: GetComplexSchema = Depends(check_builder_owns_block),
+    _: GetBuilderSchema = Depends(check_builder_owns_block),
 ):
     await block_service.delete(item_id=block_id)
     return SuccessfulMessageSchema(message="Block has been deleted successfully.")

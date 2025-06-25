@@ -13,6 +13,7 @@ from src.builders.services import (
     DocumentService,
     GalleryService,
     BlockService,
+    SectionService,
 )
 
 
@@ -80,4 +81,11 @@ class BuilderProvider(di.Provider):
         self, session: sa.AsyncSession
     ) -> AsyncIterator[BlockService]:
         async with BlockService.new(session=session) as service:
+            yield service
+
+    @di.provide(scope=di.Scope.REQUEST)
+    async def provide_section_service(
+        self, session: sa.AsyncSession
+    ) -> AsyncIterator[SectionService]:
+        async with SectionService.new(session=session) as service:
             yield service

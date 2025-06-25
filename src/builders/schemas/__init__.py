@@ -17,6 +17,8 @@ from .gallery import GetGalleryImageSchema
 
 from .block import GetBlockSchema, CreateBlockSchema, UpdateBlockSchema
 
+from .section import GetSectionSchema, CreateSectionSchema, UpdateSectionSchema
+
 __all__ = [
     "GetFormalizationAndPaymentSettingsSchema",
     "UpdateFormalizationAndPaymentSettingsSchema",
@@ -37,4 +39,7 @@ __all__ = [
     "GetBlockSchema",
     "CreateBlockSchema",
     "UpdateBlockSchema",
+    "GetSectionSchema",
+    "CreateSectionSchema",
+    "UpdateSectionSchema",
 ]

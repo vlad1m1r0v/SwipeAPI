@@ -8,6 +8,7 @@ from .news import NewsRepository
 from .document import DocumentRepository
 from .gallery import GalleryRepository
 from .block import BlockRepository
+from .section import SectionRepository
 
 __all__ = [
     "ComplexRepository",
@@ -18,4 +19,5 @@ __all__ = [
     "DocumentRepository",
     "GalleryRepository",
     "BlockRepository",
+    "SectionRepository",
 ]
