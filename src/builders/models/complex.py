@@ -16,6 +16,7 @@ if TYPE_CHECKING:
         News,
         Document,
         ComplexGallery,
+        Block,
     )
 
 
@@ -54,5 +55,11 @@ class Complex(BigIntAuditBase):
         back_populates="complex", uselist=True, cascade="all, delete-orphan"
     )
     gallery: orm.Mapped[List["ComplexGallery"]] = orm.relationship(
+        back_populates="complex",
+        uselist=True,
+        cascade="all, delete-orphan",
+        order_by="ComplexGallery.order",
+    )
+    blocks: orm.Mapped[List["Block"]] = orm.relationship(
         back_populates="complex", uselist=True, cascade="all, delete-orphan"
     )

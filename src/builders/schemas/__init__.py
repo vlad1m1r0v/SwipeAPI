@@ -15,6 +15,8 @@ from .document import GetDocumentSchema, CreateDocumentSchema, UpdateDocumentSch
 
 from .gallery import GetGalleryImageSchema
 
+from .block import GetBlockSchema, CreateBlockSchema, UpdateBlockSchema
+
 __all__ = [
     "GetFormalizationAndPaymentSettingsSchema",
     "UpdateFormalizationAndPaymentSettingsSchema",
@@ -32,4 +34,7 @@ __all__ = [
     "CreateDocumentSchema",
     "UpdateDocumentSchema",
     "GetGalleryImageSchema",
+    "GetBlockSchema",
+    "CreateBlockSchema",
+    "UpdateBlockSchema",
 ]

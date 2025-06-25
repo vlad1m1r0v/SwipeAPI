@@ -8,7 +8,6 @@ from src.core.schemas import FileInfo
 class GetGalleryImageSchema(BaseModel):
     id: int
     photo: FileInfo = Field(exclude=True)
-    order: int
 
     @computed_field
     @property

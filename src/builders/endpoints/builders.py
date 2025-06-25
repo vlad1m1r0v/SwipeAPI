@@ -10,6 +10,7 @@ from .formalization_and_payment_settings import (
 from .news import router as news_router
 from .document import router as document_router
 from .gallery import router as gallery_router
+from .blocks import router as blocks_router
 
 router = APIRouter(prefix="/builders")
 
@@ -21,3 +22,4 @@ router.include_router(formalization_and_payment_settings_router)
 router.include_router(news_router)
 router.include_router(document_router)
 router.include_router(gallery_router)
+router.include_router(blocks_router)

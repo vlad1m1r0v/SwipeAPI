@@ -32,7 +32,6 @@ class UserRepository(SQLAlchemyAsyncRepository[User]):
             select(User)
             .where(User.id == item_id)
             .options(
-                # one-to-one (JOIN)
                 orm.joinedload(User.contact),
                 orm.joinedload(User.complex),
                 orm.joinedload(User.complex).joinedload(Complex.infrastructure),
@@ -40,7 +39,6 @@ class UserRepository(SQLAlchemyAsyncRepository[User]):
                 orm.joinedload(User.complex).joinedload(
                     Complex.formalization_and_payment_settings
                 ),
-                # one-to-many (SELECT IN)
                 orm.joinedload(User.complex).selectinload(Complex.news),
                 orm.joinedload(User.complex).selectinload(Complex.documents),
                 orm.joinedload(User.complex).selectinload(Complex.gallery),

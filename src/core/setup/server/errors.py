@@ -25,6 +25,7 @@ from src.users.exceptions import (
     InvalidRoleException,
     UserDoesNotExistException,
     SubscriptionExpiredException,
+    NotEnoughMoneyException,
     UserBlacklistedException,
 )
 
@@ -179,6 +180,14 @@ def setup_exception_handlers(app: FastAPI) -> None:
         create_exception_handler(
             status_code=status.HTTP_403_FORBIDDEN,
             initial_detail={"message": "Subscription is expired."},
+        ),
+    )
+
+    app.add_exception_handler(
+        NotEnoughMoneyException,
+        create_exception_handler(
+            status_code=status.HTTP_403_FORBIDDEN,
+            initial_detail={"message": "Not enough money on balance."},
         ),
     )
 
