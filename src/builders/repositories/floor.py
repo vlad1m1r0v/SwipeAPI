@@ -5,34 +5,32 @@ from sqlalchemy.orm import joinedload
 
 from advanced_alchemy.repository import SQLAlchemyAsyncRepository
 
-from src.builders.models import Complex, Block, Section
+from src.builders.models import Complex, Block, Floor
 
 
-class SectionRepository(SQLAlchemyAsyncRepository[Section]):
-    model_type = Section
+class FloorRepository(SQLAlchemyAsyncRepository[Floor]):
+    model_type = Floor
 
-    async def get_sections(
+    async def get_floors(
         self,
         limit: int,
         offset: int,
         complex_id: int | None,
         block_id: int | None,
         no: int | None,
-    ) -> tuple[Sequence[Section], int]:
-        stmt = select(Section).options(
-            joinedload(Section.block).joinedload(Block.complex)
-        )
+    ) -> tuple[Sequence[Floor], int]:
+        stmt = select(Floor).options(joinedload(Floor.block).joinedload(Block.complex))
 
         if complex_id:
             stmt = stmt.where(Complex.id == complex_id)
 
         if block_id:
-            stmt = stmt.where(Section.block_id == block_id)
+            stmt = stmt.where(Floor.block_id == block_id)
 
         if no:
-            stmt = stmt.where(Section.no == no)
+            stmt = stmt.where(Floor.no == no)
 
-        stmt = stmt.order_by(Section.no.asc()).limit(limit).offset(offset)
+        stmt = stmt.order_by(Floor.no.asc()).limit(limit).offset(offset)
 
         results, total = await self.list_and_count(statement=stmt)
         return results, total

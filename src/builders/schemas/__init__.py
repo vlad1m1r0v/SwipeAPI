@@ -19,6 +19,8 @@ from .block import GetBlockSchema, CreateBlockSchema, UpdateBlockSchema
 
 from .section import GetSectionSchema, CreateSectionSchema, UpdateSectionSchema
 
+from .floor import GetFloorSchema, CreateFloorSchema, UpdateFloorSchema
+
 __all__ = [
     "GetFormalizationAndPaymentSettingsSchema",
     "UpdateFormalizationAndPaymentSettingsSchema",
@@ -42,4 +44,7 @@ __all__ = [
     "GetSectionSchema",
     "CreateSectionSchema",
     "UpdateSectionSchema",
+    "GetFloorSchema",
+    "CreateFloorSchema",
+    "UpdateFloorSchema",
 ]

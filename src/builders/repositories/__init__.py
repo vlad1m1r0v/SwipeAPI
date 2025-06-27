@@ -9,6 +9,7 @@ from .document import DocumentRepository
 from .gallery import GalleryRepository
 from .block import BlockRepository
 from .section import SectionRepository
+from .floor import FloorRepository
 
 __all__ = [
     "ComplexRepository",
@@ -20,4 +21,5 @@ __all__ = [
     "GalleryRepository",
     "BlockRepository",
     "SectionRepository",
+    "FloorRepository",
 ]

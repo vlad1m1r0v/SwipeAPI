@@ -7,6 +7,7 @@ from .document import DocumentService
 from .gallery import GalleryService
 from .block import BlockService
 from .section import SectionService
+from .floor import FloorService
 
 __all__ = [
     "ComplexService",
@@ -18,4 +19,5 @@ __all__ = [
     "GalleryService",
     "BlockService",
     "SectionService",
+    "FloorService",
 ]

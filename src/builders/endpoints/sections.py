@@ -64,7 +64,9 @@ async def update_section(
     data: UpdateSectionSchema = Body(),
     _: GetBuilderSchema = Depends(check_builder_owns_section),
 ) -> SuccessfulMessageSchema:
-    await section_service.update(item_id=section_id, data=data.model_dump())
+    await section_service.update(
+        item_id=section_id, data=data.model_dump(exclude_none=True)
+    )
     return SuccessfulMessageSchema(message="Section has been updated successfully.")
 
 

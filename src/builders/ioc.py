@@ -14,6 +14,7 @@ from src.builders.services import (
     GalleryService,
     BlockService,
     SectionService,
+    FloorService,
 )
 
 
@@ -88,4 +89,11 @@ class BuilderProvider(di.Provider):
         self, session: sa.AsyncSession
     ) -> AsyncIterator[SectionService]:
         async with SectionService.new(session=session) as service:
+            yield service
+
+    @di.provide(scope=di.Scope.REQUEST)
+    async def provide_floor_service(
+        self, session: sa.AsyncSession
+    ) -> AsyncIterator[FloorService]:
+        async with FloorService.new(session=session) as service:
             yield service
