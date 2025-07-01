@@ -2,7 +2,9 @@ import enum
 import re
 from typing import Optional
 
-from pydantic import BaseModel, Field, model_validator
+from pydantic import BaseModel, Field, model_validator, computed_field
+
+from src.core.schemas import FileInfo
 
 
 class Action(str, enum.Enum):
@@ -14,6 +16,16 @@ class Action(str, enum.Enum):
 BASE64_URL_REGEX = re.compile(
     r"^data:image/[a-zA-Z0-9.+-]+;base64,[A-Za-z0-9+/]+={0,2}$"
 )
+
+
+class GetGalleryImageSchema(BaseModel):
+    id: int
+    photo: FileInfo = Field(exclude=True)
+
+    @computed_field
+    @property
+    def photo_url(self) -> Optional[str]:
+        return self.photo.url if self.photo else None
 
 
 class MediaItem(BaseModel):

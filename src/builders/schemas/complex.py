@@ -7,7 +7,8 @@ from .advantages import GetAdvantagesSchema
 from .formalization_and_payment_settings import GetFormalizationAndPaymentSettingsSchema
 from .news import GetNewsSchema
 from .document import GetDocumentSchema
-from .gallery import GetGalleryImageSchema
+
+from src.core.schemas import GetGalleryImageSchema
 
 from src.users.schemas import GetUserAccountSchema, GetContactSchema
 

@@ -1,8 +1,11 @@
 import os
+import io
+import base64
 import uuid
 from pathlib import Path
 from typing import Type
 
+from starlette.datastructures import UploadFile as StarletteUploadFile
 from fastapi import Request, UploadFile
 
 from sqlalchemy import event, inspect
@@ -49,3 +52,13 @@ def attach_file_cleanup(model_class: Type[AdvancedDeclarativeBase], fields: list
             if hist.has_changes():
                 old_value: FileInfo = hist.deleted[0] if hist.deleted else None
                 delete_file(old_value["content_path"])
+
+
+def convert_base64_to_starlette_file(encoded_image: str) -> StarletteUploadFile:
+    base64_str = encoded_image.split(",")[1]
+    decoded = base64.b64decode(base64_str)
+
+    file = io.BytesIO(decoded)
+    file.seek(0)
+
+    return StarletteUploadFile(file=file, filename="image.png")

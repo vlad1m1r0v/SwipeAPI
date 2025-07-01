@@ -1,16 +1,11 @@
 from typing import List
 
-import io
-
-import base64
-
 from fastapi import Request
-from starlette.datastructures import UploadFile
 
 from advanced_alchemy.service import SQLAlchemyAsyncRepositoryService
 
 from src.core.schemas import MediaItem, Action
-from src.core.utils import save_file
+from src.core.utils import save_file, convert_base64_to_starlette_file
 
 from src.builders.models import ComplexGallery
 from src.builders.repositories import GalleryRepository
@@ -35,13 +30,7 @@ class GalleryService(
                 await self.update(item_id=image.id, data={"order": image.order})
 
             if image.action == Action.CREATED:
-                base64_str = image.base64.split(",")[1]
-                decoded = base64.b64decode(base64_str)
-
-                file = io.BytesIO(decoded)
-                file.seek(0)
-
-                starlette_file = UploadFile(file=file, filename="image.png")
+                starlette_file = convert_base64_to_starlette_file(image.base64)
 
                 file_info = save_file(request=request, file=starlette_file)
                 await self.create(

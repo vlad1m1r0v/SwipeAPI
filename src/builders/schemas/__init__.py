@@ -13,8 +13,6 @@ from .news import GetNewsSchema, CreateNewsSchema, UpdateNewsSchema
 
 from .document import GetDocumentSchema, CreateDocumentSchema, UpdateDocumentSchema
 
-from .gallery import GetGalleryImageSchema
-
 from .block import GetBlockSchema, CreateBlockSchema, UpdateBlockSchema
 
 from .section import GetSectionSchema, CreateSectionSchema, UpdateSectionSchema
@@ -37,7 +35,6 @@ __all__ = [
     "GetDocumentSchema",
     "CreateDocumentSchema",
     "UpdateDocumentSchema",
-    "GetGalleryImageSchema",
     "GetBlockSchema",
     "CreateBlockSchema",
     "UpdateBlockSchema",
