@@ -1,6 +1,7 @@
-from typing import Callable, Any
-
 from fastapi import FastAPI, Request
+from fastapi.exceptions import RequestValidationError
+
+from starlette import status
 from starlette.responses import JSONResponse
 
 from advanced_alchemy.exceptions import IntegrityError, DuplicateKeyError, NotFoundError
@@ -11,15 +12,6 @@ from src.core.exceptions import (
     NotFoundException,
 )
 from src.core.utils import DefaultHTTPException
-
-
-def create_exception_handler(
-    status_code: int, initial_detail: Any
-) -> Callable[[Request, Exception], JSONResponse]:
-    def exception_handler(request: Request, exc: Exception):
-        return JSONResponse(content=initial_detail, status_code=status_code)
-
-    return exception_handler
 
 
 def default_http_exception_handler(request: Request, exc: DefaultHTTPException):
@@ -47,12 +39,38 @@ async def database_exception_handler(request: Request, exc: Exception):
         raise NotFoundException()
 
 
+def validation_error_handler(request: Request, exc: RequestValidationError):
+    errors = []
+    for err in exc.errors():
+        location = ".".join(str(loc) for loc in err.get("loc", []))
+        field = err.get("loc", [None])[-1]
+        errors.append(
+            {
+                "location": location,
+                "field": field,
+                "message": err.get("msg", "Invalid input"),
+            }
+        )
+    return JSONResponse(
+        status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+        content={
+            "status": 422,
+            "error": {
+                "code": "VALIDATION_ERROR",
+                "details": errors,
+            },
+        },
+    )
+
+
 def setup_exception_handlers(app: FastAPI) -> None:
     app.add_exception_handler(IntegrityError, database_exception_handler)
     app.add_exception_handler(DuplicateKeyError, database_exception_handler)
     app.add_exception_handler(NotFoundError, database_exception_handler)
 
     app.add_exception_handler(DefaultHTTPException, default_http_exception_handler)
+
+    app.add_exception_handler(RequestValidationError, validation_error_handler)
 
 
 __all__ = ["setup_exception_handlers"]
