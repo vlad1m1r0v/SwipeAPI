@@ -2,7 +2,7 @@ from pydantic import BaseModel
 
 from src.auth.enums import TokenType
 
-from src.users.enums import Role
+from src.user.enums import Role
 
 
 class BasePayloadSchema(BaseModel):

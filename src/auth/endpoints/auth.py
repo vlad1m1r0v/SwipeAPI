@@ -16,11 +16,11 @@ from src.auth.schemas import (
 from src.auth.services import AuthService
 from src.auth.enums import TokenType
 
-from src.auth.endpoints.users import router as user_router
-from src.auth.endpoints.admins import router as admin_router
-from src.auth.endpoints.builders import router as builder_router
+from src.auth.endpoints.user import router as user_router
+from src.auth.endpoints.admin import router as admin_router
+from src.auth.endpoints.builder import router as builder_router
 
-from src.users.services import UserService
+from src.user.services import UserService
 
 router = APIRouter(prefix="/auth")
 

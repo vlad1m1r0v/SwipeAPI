@@ -1,6 +1,8 @@
-from itsdangerous import URLSafeTimedSerializer
+from itsdangerous import URLSafeTimedSerializer, SignatureExpired, BadSignature
 
 from redis.asyncio import Redis
+
+from src.auth.exceptions import SignatureExpiredException, BadSignatureException
 
 from config import Config
 
@@ -19,7 +21,12 @@ class SignService:
         return self._serializer.dumps(data)
 
     def decode(self, token: str) -> dict:
-        return self._serializer.loads(token, max_age=self._seconds)
+        try:
+            return self._serializer.loads(token, max_age=self._seconds)
+        except SignatureExpired:
+            raise SignatureExpiredException
+        except BadSignature:
+            raise BadSignatureException
 
     async def save_token(self, token: str) -> None:
         await self._redis.set(token, token, ex=self._seconds)

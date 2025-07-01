@@ -5,7 +5,7 @@ import dishka as di
 
 from config import Config, config
 
-from src.users.ioc import UsersProvider
+from src.user.ioc import UsersProvider
 
 from src.core.ioc import (
     ConfigProvider,

@@ -1,4 +1,4 @@
-"""users admins models
+"""users admin models
 
 Revision ID: 05c17c582bb5
 Revises:

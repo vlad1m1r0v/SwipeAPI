@@ -4,7 +4,9 @@ from datetime import timedelta, datetime, UTC
 import jwt
 
 from config import Config
+
 from src.auth.enums import TokenType
+from src.auth.exceptions import InvalidTokenException
 from src.auth.schemas import (
     BasePayloadSchema,
     PayloadWithTypeSchema,
@@ -74,9 +76,12 @@ class JwtService:
         return encoded
 
     def decode_jwt(self, token: str | bytes) -> dict:
-        decoded = jwt.decode(
-            jwt=token,
-            key=self._public_key,
-            algorithms=[self._algorithm],
-        )
+        try:
+            decoded = jwt.decode(
+                jwt=token,
+                key=self._public_key,
+                algorithms=[self._algorithm],
+            )
+        except jwt.InvalidTokenError:
+            raise InvalidTokenException()
         return decoded

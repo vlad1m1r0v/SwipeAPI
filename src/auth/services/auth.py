@@ -16,9 +16,9 @@ from src.auth.schemas import (
 from src.auth.services.jwt import JwtService
 from src.auth.services.sign import SignService
 
-from src.users.enums import Role
+from src.user.enums import Role
 
-from src.users.exceptions import (
+from src.user.exceptions import (
     UserAlreadyExistsException,
     UserDoesNotExistException,
     InvalidRoleException,
@@ -26,7 +26,7 @@ from src.users.exceptions import (
     UserBlacklistedException,
 )
 
-from src.users.services import (
+from src.user.services import (
     UserService,
     ContactService,
     AgentContactService,
@@ -35,9 +35,9 @@ from src.users.services import (
     BalanceService,
 )
 
-from src.admins.services import BlacklistService
+from src.admin.services import BlacklistService
 
-from src.builders.services import (
+from src.builder.services import (
     ComplexService,
     InfrastructureService,
     AdvantagesService,

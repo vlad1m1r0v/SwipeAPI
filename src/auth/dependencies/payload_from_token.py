@@ -12,8 +12,8 @@ from src.auth.schemas import BasePayloadSchema
 from src.auth.enums import TokenType
 from src.auth.utils import http_bearer
 
-from src.users.services import UserService
-from src.users.exceptions import UserDoesNotExistException
+from src.user.services import UserService
+from src.user.exceptions import UserDoesNotExistException
 
 
 def payload_from_token(token_type: TokenType):

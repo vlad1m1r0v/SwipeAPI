@@ -1,10 +1,10 @@
 from src.core.utils import attach_file_cleanup
 
-from src.users.models import User
+from src.user.models import User
 
-from src.admins.models import Notary
+from src.admin.models import Notary
 
-from src.builders.models import ComplexGallery, Document
+from src.builder.models import ComplexGallery, Document
 
 
 def setup_autoclean():
