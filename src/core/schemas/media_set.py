@@ -28,7 +28,7 @@ class GetGalleryImageSchema(BaseModel):
         return self.photo.url if self.photo else None
 
 
-class MediaItem(BaseModel):
+class Base64Item(BaseModel):
     action: Action
     id: Optional[int] = None
     base64: Optional[str] = Field(
@@ -42,7 +42,7 @@ class MediaItem(BaseModel):
     order: Optional[int] = None
 
     @model_validator(mode="after")
-    def validate_all(self) -> "MediaItem":
+    def validate_all(self) -> "Base64Item":
         if self.action == Action.CREATED and self.id is not None:
             raise ValueError("Newly created item cannot have an ID.")
 

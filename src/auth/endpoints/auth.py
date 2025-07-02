@@ -37,7 +37,7 @@ router.include_router(builder_router)
     path="/tokens/refresh",
     response_model=SuccessResponse[TokensSchema],
     status_code=status.HTTP_200_OK,
-    responses=generate_examples(auth=True),
+    responses=generate_examples(auth=True, user=True),
     tags=["Auth: Common"],
 )
 @inject
@@ -52,7 +52,7 @@ def refresh_tokens(
     path="/password/update",
     response_model=SuccessResponse,
     status_code=status.HTTP_200_OK,
-    responses=generate_examples(auth=True),
+    responses=generate_examples(auth=True, user=True),
     tags=["Auth: Common"],
 )
 @inject

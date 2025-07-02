@@ -28,7 +28,7 @@ router = APIRouter(prefix="/user", tags=["Auth: User"])
 async def register_user(
     data: RegisterSchema,
     auth_service: FromDishka[AuthService],
-):
+) -> SuccessResponse[TokensSchema]:
     return success_response(
         value=await auth_service.register_user(data=data),
         message="User registered successfully.",
@@ -47,7 +47,7 @@ async def register_user(
 async def login_user(
     data: LoginSchema,
     auth_service: FromDishka[AuthService],
-):
+) -> SuccessResponse[TokensSchema]:
     return success_response(
         value=await auth_service.login_user(data=data),
         message="User logged in successfully.",

@@ -6,11 +6,17 @@ from dishka import FromDishka
 from dishka.integrations.fastapi import inject
 
 from fastapi import APIRouter, Request, Depends, Form, UploadFile, File, Query
+from starlette import status
 
 from advanced_alchemy.service import OffsetPagination
 
-from src.core.schemas import SuccessfulMessageSchema
-from src.core.utils import save_file
+from src.core.schemas import SuccessResponse, success_response
+from src.core.utils import save_file, generate_examples
+from src.core.exceptions import (
+    DuplicateKeyException,
+    IntegrityErrorException,
+    NotFoundException,
+)
 
 from src.auth.dependencies import admin_from_token, payload_from_token
 from src.auth.schemas import BasePayloadSchema
@@ -28,7 +34,12 @@ router = APIRouter(prefix="/notaries", tags=["Admin: Notaries"])
 notaries = APIRouter(prefix="/notaries", tags=["Notaries"])
 
 
-@notaries.get("", response_model=OffsetPagination[GetNotarySchema])
+@notaries.get(
+    path="",
+    response_model=SuccessResponse[OffsetPagination[GetNotarySchema]],
+    responses=generate_examples(auth=True, user=True),
+    status_code=status.HTTP_200_OK,
+)
 @inject
 async def get_notaries(
     notary_service: FromDishka[NotaryService],
@@ -36,14 +47,23 @@ async def get_notaries(
     offset: int = Query(default=0),
     search: str = Query(default=""),
     _: BasePayloadSchema = Depends(payload_from_token(TokenType.ACCESS_TOKEN)),
-) -> OffsetPagination[GetNotarySchema]:
+) -> SuccessResponse[OffsetPagination[GetNotarySchema]]:
     results, total = await notary_service.get_notaries(limit, offset, search)
-    return notary_service.to_schema(
-        data=results, total=total, schema_type=GetNotarySchema
+    return success_response(
+        value=notary_service.to_schema(
+            data=results, total=total, schema_type=GetNotarySchema
+        )
     )
 
 
-@router.post("", response_model=GetNotarySchema)
+@router.post(
+    path="",
+    status_code=status.HTTP_201_CREATED,
+    response_model=SuccessResponse[GetNotarySchema],
+    responses=generate_examples(
+        IntegrityErrorException, DuplicateKeyException, auth=True, role=True
+    ),
+)
 @inject
 async def create_notary(
     request: Request,
@@ -54,7 +74,7 @@ async def create_notary(
     email: EmailStr = Form(),
     phone: str = Form(),
     photo: UploadFile = File(),
-) -> GetNotarySchema:
+) -> SuccessResponse[GetNotarySchema]:
     fields = CreateNotarySchema(
         first_name=first_name,
         last_name=last_name,
@@ -64,10 +84,21 @@ async def create_notary(
     )
 
     notary = await notary_service.create(data={**fields.model_dump()})
-    return notary_service.to_schema(data=notary, schema_type=GetNotarySchema)
+    return success_response(
+        status_code=status.HTTP_201_CREATED,
+        value=notary_service.to_schema(data=notary, schema_type=GetNotarySchema),
+        message="Notary created successfully.",
+    )
 
 
-@router.patch("/{notary_id}", response_model=GetNotarySchema)
+@router.patch(
+    path="/{notary_id}",
+    response_model=SuccessResponse[GetNotarySchema],
+    responses=generate_examples(
+        IntegrityErrorException, DuplicateKeyException, auth=True, role=True
+    ),
+    status_code=status.HTTP_200_OK,
+)
 @inject
 async def update_notary(
     request: Request,
@@ -79,7 +110,7 @@ async def update_notary(
     email: Optional[EmailStr] = Form(default=None),
     phone: Optional[str] = Form(default=None),
     photo: Optional[UploadFile] = File(default=None),
-) -> GetNotarySchema:
+) -> SuccessResponse[GetNotarySchema]:
     fields = UpdateNotarySchema(
         first_name=first_name,
         last_name=last_name,
@@ -91,17 +122,25 @@ async def update_notary(
     notary = await notary_service.update(
         item_id=notary_id, data={**fields.model_dump(exclude_none=True)}
     )
-    return notary_service.to_schema(data=notary, schema_type=GetNotarySchema)
+    return success_response(
+        value=notary_service.to_schema(data=notary, schema_type=GetNotarySchema),
+        message="Notary updated successfully.",
+    )
 
 
-@router.delete("/{notary_id}", response_model=SuccessfulMessageSchema)
+@router.delete(
+    path="/{notary_id}",
+    response_model=SuccessResponse,
+    responses=generate_examples(NotFoundException, auth=True, role=True),
+    status_code=status.HTTP_200_OK,
+)
 @inject
 async def delete_notary(
     notary_service: FromDishka[NotaryService],
     notary_id: int,
     _: GetAdminSchema = Depends(admin_from_token),
-):
+) -> SuccessResponse:
     await notary_service.delete(item_id=notary_id)
-    return SuccessfulMessageSchema(
-        message="Notary has been deleted.",
+    return success_response(
+        message="Notary deleted successfully.",
     )

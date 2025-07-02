@@ -5,7 +5,7 @@ from dishka.integrations.fastapi import inject
 
 from fastapi import APIRouter, Request, Depends
 
-from src.core.schemas import MediaItem
+from src.core.schemas import Base64Item
 
 from src.auth.dependencies import builder_from_token
 
@@ -23,7 +23,7 @@ async def update_gallery(
     request: Request,
     gallery_service: FromDishka[GalleryService],
     user_service: FromDishka[UserService],
-    media_set: List[MediaItem],
+    media_set: List[Base64Item],
     builder: GetBuilderSchema = Depends(builder_from_token),
 ) -> GetBuilderSchema:
     await gallery_service.update_gallery(

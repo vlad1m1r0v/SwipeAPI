@@ -4,7 +4,7 @@ from fastapi import Request
 
 from advanced_alchemy.service import SQLAlchemyAsyncRepositoryService
 
-from src.core.schemas import MediaItem, Action
+from src.core.schemas import Base64Item, Action
 from src.core.utils import save_file, convert_base64_to_starlette_file
 
 from src.builder.models import ComplexGallery
@@ -20,7 +20,7 @@ class GalleryService(
         self,
         complex_id: int,
         request: Request,
-        media_set: List[MediaItem],
+        media_set: List[Base64Item],
     ) -> None:
         for image in media_set:
             if image.action == Action.DELETED:

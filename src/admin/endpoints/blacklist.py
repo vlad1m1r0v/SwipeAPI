@@ -3,13 +3,20 @@ from fastapi import (
     Query,
     Depends,
 )
+from starlette import status
 
 from dishka import FromDishka
 from dishka.integrations.fastapi import inject
 
 from advanced_alchemy.service import OffsetPagination
 
-from src.core.schemas import SuccessfulMessageSchema
+from src.core.utils import generate_examples
+from src.core.schemas import SuccessResponse, success_response
+from src.core.exceptions import (
+    IntegrityErrorException,
+    DuplicateKeyException,
+    NotFoundException,
+)
 
 from src.admin.schemas import GetAdminSchema, BlacklistUserSchema
 from src.admin.services import BlacklistService
@@ -22,7 +29,12 @@ from src.auth.dependencies import admin_from_token
 router = APIRouter(prefix="/blacklist", tags=["Admin: Blacklist"])
 
 
-@router.get("", response_model=OffsetPagination[GetUserAccountSchema])
+@router.get(
+    path="",
+    response_model=SuccessResponse[OffsetPagination[GetUserAccountSchema]],
+    responses=generate_examples(auth=True, role=True),
+    status_code=status.HTTP_200_OK,
+)
 @inject
 async def get_blacklist(
     user_service: FromDishka[UserService],
@@ -30,27 +42,44 @@ async def get_blacklist(
     offset: int = Query(default=0),
     search: str = Query(default=""),
     _: GetAdminSchema = Depends(admin_from_token),
-) -> OffsetPagination[GetUserAccountSchema]:
+) -> SuccessResponse[OffsetPagination[GetUserAccountSchema]]:
     results, total = await user_service.get_blacklisted_users(
         limit=limit, offset=offset, search=search
     )
-    return user_service.to_schema(results, total, schema_type=GetUserAccountSchema)
+    return success_response(
+        value=user_service.to_schema(
+            data=results, total=total, schema_type=GetUserAccountSchema
+        ),
+    )
 
 
-@router.post("", response_model=SuccessfulMessageSchema)
+@router.post(
+    path="",
+    response_model=SuccessResponse,
+    responses=generate_examples(
+        IntegrityErrorException, DuplicateKeyException, auth=True, role=True
+    ),
+    status_code=status.HTTP_201_CREATED,
+)
 @inject
 async def blacklist_user(
     blacklist_service: FromDishka[BlacklistService],
     data: BlacklistUserSchema,
     _: GetAdminSchema = Depends(admin_from_token),
-):
+) -> SuccessResponse:
+    print("USER ID:", data.user_id)
     await blacklist_service.create(data={"user_id": data.user_id})
-    return SuccessfulMessageSchema(
+    return success_response(
         message="User has been blacklisted.",
     )
 
 
-@router.delete("/{record_id}", response_model=SuccessfulMessageSchema)
+@router.delete(
+    path="/{record_id}",
+    response_model=SuccessResponse,
+    responses=generate_examples(NotFoundException, auth=True, role=True),
+    status_code=status.HTTP_200_OK,
+)
 @inject
 async def remove_user_from_blacklist(
     blacklist_service: FromDishka[BlacklistService],
@@ -58,6 +87,6 @@ async def remove_user_from_blacklist(
     _: GetAdminSchema = Depends(admin_from_token),
 ):
     await blacklist_service.delete(item_id=record_id)
-    return SuccessfulMessageSchema(
+    return success_response(
         message="User has been removed from blacklist.",
     )

@@ -28,7 +28,7 @@ router = APIRouter(prefix="/builder", tags=["Auth: Builder"])
 async def register_builder(
     data: RegisterSchema,
     auth_service: FromDishka[AuthService],
-):
+) -> SuccessResponse[TokensSchema]:
     return success_response(
         value=await auth_service.register_builder(data=data),
         message="Builder registered successfully.",
@@ -48,7 +48,7 @@ async def register_builder(
 async def login_builder(
     data: LoginSchema,
     auth_service: FromDishka[AuthService],
-):
+) -> SuccessResponse[TokensSchema]:
     return success_response(
         value=await auth_service.login_builder(data=data),
         message="Builder logged in successfully.",

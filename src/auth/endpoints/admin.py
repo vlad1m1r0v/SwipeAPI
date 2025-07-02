@@ -28,7 +28,7 @@ router = APIRouter(prefix="/admin", tags=["Auth: Admin"])
 async def register_admin(
     data: RegisterSchema,
     auth_service: FromDishka[AuthService],
-):
+) -> SuccessResponse[TokensSchema]:
     return success_response(
         value=await auth_service.register_admin(data=data),
         message="Admin registered successfully.",
@@ -38,7 +38,7 @@ async def register_admin(
 
 @router.post(
     path="/login",
-    response_model=TokensSchema,
+    response_model=SuccessResponse[TokensSchema],
     status_code=status.HTTP_200_OK,
     responses=generate_examples(
         UserDoesNotExistException, IncorrectPasswordException, role=True
@@ -48,7 +48,8 @@ async def register_admin(
 async def login_admin(
     data: LoginSchema,
     auth_service: FromDishka[AuthService],
-):
+) -> SuccessResponse[TokensSchema]:
     return success_response(
-        value=auth_service.login_admin(data=data), message="Admin login successfully."
+        value=await auth_service.login_admin(data=data),
+        message="Admin logged in successfully.",
     )
