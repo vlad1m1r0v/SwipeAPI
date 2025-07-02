@@ -47,7 +47,7 @@ class SubscriptionRenewalService:
         )
         self._sync_session.execute(stmt_renew)
 
-    async def renew_user_subscription(self, item_id: int):
+    async def renew_user_subscription(self, item_id: int) -> Subscription:
         stmt = (
             select(User)
             .join(Subscription, Subscription.user_id == User.id)

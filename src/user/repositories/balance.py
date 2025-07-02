@@ -13,6 +13,8 @@ class BalanceRepository(SQLAlchemyAsyncRepository[Balance]):
             update(Balance)
             .where(Balance.id == item_id)
             .values(value=Balance.value + amount)
+            .returning(Balance)
         )
 
-        await self.session.execute(statement=stmt)
+        result = await self.session.execute(statement=stmt)
+        return result.scalar_one_or_none()

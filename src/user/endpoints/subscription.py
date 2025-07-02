@@ -61,5 +61,6 @@ async def renew_subscription(
     return success_response(
         value=subscription_service.to_schema(
             data=result, schema_type=GetSubscriptionSchema
-        )
+        ),
+        message="Subscription renewed successfully.",
     )

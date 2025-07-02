@@ -2,23 +2,36 @@ from dishka import FromDishka
 from dishka.integrations.fastapi import inject
 
 from fastapi import APIRouter, Depends
+from starlette import status
+
+from src.core.utils import generate_examples
+from src.core.schemas import SuccessResponse, success_response
 
 from src.auth.dependencies import user_from_token
 
-from src.user.services import UserService, BalanceService
-from src.user.schemas import GetUserSchema, DepositBalanceSchema
+from src.user.services import BalanceService
+from src.user.schemas import GetUserSchema, GetBalanceSchema, DepositBalanceSchema
 
 router = APIRouter()
 
 
-@router.post("/balance/deposit", tags=["User: Balance"])
+@router.post(
+    path="/balance/deposit",
+    status_code=status.HTTP_200_OK,
+    response_model=SuccessResponse[GetBalanceSchema],
+    responses=generate_examples(auth=True, role=True, user=True),
+    tags=["User: Balance"],
+)
 @inject
 async def deposit_money(
     data: DepositBalanceSchema,
-    user_service: FromDishka[UserService],
     balance_service: FromDishka[BalanceService],
     user: GetUserSchema = Depends(user_from_token),
-):
-    await balance_service.deposit_money(item_id=user.balance.id, amount=data.amount)
-    profile = await user_service.get_user_profile(item_id=user.id)
-    return user_service.to_schema(data=profile, schema_type=GetUserSchema)
+) -> SuccessResponse[GetBalanceSchema]:
+    result = await balance_service.deposit_money(
+        item_id=user.balance.id, amount=data.amount
+    )
+    return success_response(
+        value=balance_service.to_schema(data=result, schema_type=GetBalanceSchema),
+        message="Balance deposited successfully.",
+    )

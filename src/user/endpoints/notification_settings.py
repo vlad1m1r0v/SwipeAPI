@@ -2,26 +2,43 @@ from dishka import FromDishka
 from dishka.integrations.fastapi import inject
 
 from fastapi import APIRouter, Depends
+from starlette import status
+
+from src.core.utils import generate_examples
+from src.core.schemas import SuccessResponse, success_response
 
 from src.auth.dependencies import user_from_token
 
-from src.user.services import UserService, NotificationSettingsService
-from src.user.schemas import GetUserSchema, UpdateNotificationSettingsSchema
+from src.user.services import NotificationSettingsService
+from src.user.schemas import (
+    GetUserSchema,
+    GetNotificationSettingsSchema,
+    UpdateNotificationSettingsSchema,
+)
 
 router = APIRouter()
 
 
-@router.patch("/notification-settings", tags=["User: Profile"])
+@router.patch(
+    path="/notification-settings",
+    response_model=SuccessResponse[GetNotificationSettingsSchema],
+    responses=generate_examples(auth=True, role=True, user=True),
+    status_code=status.HTTP_200_OK,
+    tags=["User: Profile"],
+)
 @inject
 async def update_notification_settings(
     notification_settings_service: FromDishka[NotificationSettingsService],
-    user_service: FromDishka[UserService],
     data: UpdateNotificationSettingsSchema,
     user: GetUserSchema = Depends(user_from_token),
-) -> GetUserSchema:
-    await notification_settings_service.update(
+) -> SuccessResponse[GetNotificationSettingsSchema]:
+    result = await notification_settings_service.update(
         item_id=user.notification_settings.id,
         data={**data.model_dump(exclude_none=True)},
     )
-    profile = await user_service.get_user_profile(item_id=user.id)
-    return user_service.to_schema(data=profile, schema_type=GetUserSchema)
+    return success_response(
+        value=notification_settings_service.to_schema(
+            data=result, schema_type=GetNotificationSettingsSchema
+        ),
+        message="Notification settings updated successfully.",
+    )

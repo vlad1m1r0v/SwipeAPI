@@ -4,18 +4,30 @@ from dishka import FromDishka
 from dishka.integrations.fastapi import inject
 
 from fastapi import APIRouter, Request, Depends, Form, UploadFile, File
+from starlette import status
 
-from src.core.utils import save_file
+from src.core.utils import save_file, generate_examples
+from src.core.schemas import SuccessResponse, success_response
 
 from src.auth.dependencies import user_from_token
 
 from src.user.services import UserService
-from src.user.schemas import GetUserSchema, UpdateUserAccountSchema
+from src.user.schemas import (
+    GetUserSchema,
+    GetUserAccountSchema,
+    UpdateUserAccountSchema,
+)
 
 router = APIRouter()
 
 
-@router.patch(path="/account", response_model=GetUserSchema, tags=["User: Profile"])
+@router.patch(
+    path="/account",
+    response_model=SuccessResponse[GetUserAccountSchema],
+    status_code=status.HTTP_200_OK,
+    responses=generate_examples(auth=True, role=True, user=True),
+    tags=["User: Profile"],
+)
 @inject
 async def update_account(
     request: Request,
@@ -25,7 +37,7 @@ async def update_account(
     phone: Optional[str] = Form(default=None),
     photo: Optional[UploadFile] = File(default=None),
     user: GetUserSchema = Depends(user_from_token),
-) -> GetUserSchema:
+) -> SuccessResponse[GetUserAccountSchema]:
     fields = UpdateUserAccountSchema(
         email=email,
         name=name,
@@ -33,9 +45,11 @@ async def update_account(
         photo=save_file(file=photo, request=request) if photo else None,
     )
 
-    await user_service.update(
+    result = await user_service.update(
         data={**fields.model_dump(exclude_none=True)}, item_id=user.id
     )
 
-    profile = await user_service.get_user_profile(item_id=user.id)
-    return user_service.to_schema(data=profile, schema_type=GetUserSchema)
+    return success_response(
+        value=user_service.to_schema(data=result, schema_type=GetUserAccountSchema),
+        message="Account updated successfully.",
+    )
