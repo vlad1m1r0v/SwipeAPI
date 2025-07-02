@@ -3,13 +3,14 @@
 Examples generator module.
 """
 
-from typing import List, Optional, Type
+from typing import Type
 
 from starlette import status
 
 from src.auth.exceptions import (
     TokenNotProvidedException,
     InvalidTokenTypeException,
+    InvalidTokenException,
     UnauthorizedException,
 )
 
@@ -20,7 +21,6 @@ from src.user.exceptions import (
 )
 
 from src.core.utils.errors.base import DefaultHTTPException
-from src.core.utils.errors.success import SuccessResponse
 
 
 class ExamplesGenerator:
@@ -31,6 +31,7 @@ class ExamplesGenerator:
     auth_error = (
         TokenNotProvidedException,
         InvalidTokenTypeException,
+        InvalidTokenException,
         UnauthorizedException,
         InvalidRoleException,
     )
@@ -52,7 +53,6 @@ class ExamplesGenerator:
         *args: Type[DefaultHTTPException],
         auth: bool = False,
         is_user: bool = False,
-        success_responses: Optional[List[SuccessResponse]] = None,
     ) -> dict:
         """
         Generate the error responses for the OpenAPI docs.
@@ -76,20 +76,6 @@ class ExamplesGenerator:
 
             cls.generate_nested_schema_for_code(responses, error_code)
             responses[error_code]["content"]["application/json"]["examples"] = examples
-
-        success_codes = {success.status_code for success in success_responses or []}
-
-        for success_code in success_codes:
-            examples = {}
-
-            for success in success_responses:
-                if success.status_code == success_code:
-                    examples[success.message] = success.example()
-
-            cls.generate_nested_schema_for_code(responses, success_code)
-            responses[success_code]["content"]["application/json"]["examples"] = (
-                examples
-            )
 
         cls.change_422_validation_schema(responses)
 
