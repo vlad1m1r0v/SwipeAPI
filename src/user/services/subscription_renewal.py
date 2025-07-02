@@ -73,6 +73,8 @@ class SubscriptionRenewalService:
             update(Subscription)
             .where(Subscription.user_id == item_id)
             .values(expiry_date=Subscription.expiry_date + MONTH_DELTA)
+            .returning(Subscription)
         )
 
-        await self._async_session.execute(stmt)
+        result = await self._async_session.execute(stmt)
+        return result.scalar_one_or_none()

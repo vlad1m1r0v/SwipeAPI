@@ -2,7 +2,7 @@ from enum import Enum
 
 from typing import TypeVar, Generic, Optional
 
-from pydantic import BaseModel, Field, ConfigDict
+from pydantic import BaseModel, Field
 from pydantic.generics import GenericModel
 
 from starlette import status
@@ -30,8 +30,6 @@ class SuccessData(GenericModel, Generic[T]):
 class SuccessResponse(GenericModel, Generic[T]):
     status: int = Field(default=status.HTTP_200_OK)
     data: SuccessData[T]
-
-    model_config = ConfigDict(exclude_none=True)
 
 
 def success_response(

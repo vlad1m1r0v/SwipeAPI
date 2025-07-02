@@ -32,6 +32,7 @@ async def register_user(
     return success_response(
         value=await auth_service.register_user(data=data),
         message="User registered successfully.",
+        status_code=status.HTTP_201_CREATED,
     )
 
 
@@ -39,7 +40,7 @@ async def register_user(
     path="/login",
     response_model=SuccessResponse[TokensSchema],
     responses=generate_examples(
-        UserDoesNotExistException, IncorrectPasswordException, is_user=True
+        UserDoesNotExistException, IncorrectPasswordException, user=True, role=True
     ),
 )
 @inject

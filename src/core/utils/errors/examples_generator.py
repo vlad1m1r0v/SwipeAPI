@@ -33,10 +33,11 @@ class ExamplesGenerator:
         InvalidTokenTypeException,
         InvalidTokenException,
         UnauthorizedException,
-        InvalidRoleException,
     )
 
-    user_auth_error = (UserBlacklistedException, SubscriptionExpiredException)
+    role_error = (InvalidRoleException,)
+
+    user_error = (UserBlacklistedException, SubscriptionExpiredException)
 
     @staticmethod
     def generate_nested_schema_for_code(responses, error_code):
@@ -52,7 +53,8 @@ class ExamplesGenerator:
         cls,
         *args: Type[DefaultHTTPException],
         auth: bool = False,
-        is_user: bool = False,
+        user: bool = False,
+        role: bool = False,
     ) -> dict:
         """
         Generate the error responses for the OpenAPI docs.
@@ -61,8 +63,11 @@ class ExamplesGenerator:
         if auth:
             args += cls.auth_error
 
-        if is_user:
-            args += cls.user_auth_error
+        if user:
+            args += cls.user_error
+
+        if role:
+            args += cls.role_error
 
         error_codes = {error.status_code for error in args}
 
