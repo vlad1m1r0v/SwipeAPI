@@ -10,6 +10,7 @@ from .gallery import GalleryRepository
 from .block import BlockRepository
 from .section import SectionRepository
 from .floor import FloorRepository
+from .riser import RiserRepository
 
 __all__ = [
     "ComplexRepository",
@@ -22,4 +23,5 @@ __all__ = [
     "BlockRepository",
     "SectionRepository",
     "FloorRepository",
+    "RiserRepository",
 ]

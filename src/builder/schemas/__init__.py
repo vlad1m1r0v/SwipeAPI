@@ -19,6 +19,8 @@ from .section import GetSectionSchema, CreateSectionSchema, UpdateSectionSchema
 
 from .floor import GetFloorSchema, CreateFloorSchema, UpdateFloorSchema
 
+from .riser import GetRiserSchema, CreateRiserSchema, UpdateRiserSchema
+
 __all__ = [
     "GetFormalizationAndPaymentSettingsSchema",
     "UpdateFormalizationAndPaymentSettingsSchema",
@@ -44,4 +46,7 @@ __all__ = [
     "GetFloorSchema",
     "CreateFloorSchema",
     "UpdateFloorSchema",
+    "GetRiserSchema",
+    "CreateRiserSchema",
+    "UpdateRiserSchema",
 ]
