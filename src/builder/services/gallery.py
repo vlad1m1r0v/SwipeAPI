@@ -1,10 +1,11 @@
-from typing import List
+from typing import List, Sequence
 
 from fastapi import Request
 
 from advanced_alchemy.service import SQLAlchemyAsyncRepositoryService
+from sqlalchemy import select
 
-from src.core.schemas import Base64Item, Action
+from src.core.schemas import Base64Item, Action, GetGalleryImageSchema
 from src.core.utils import save_file, convert_base64_to_starlette_file
 
 from src.builder.models import ComplexGallery
@@ -21,7 +22,7 @@ class GalleryService(
         complex_id: int,
         request: Request,
         media_set: List[Base64Item],
-    ) -> None:
+    ) -> List[GetGalleryImageSchema]:
         for image in media_set:
             if image.action == Action.DELETED:
                 await self.delete(item_id=image.id)
@@ -31,8 +32,8 @@ class GalleryService(
 
             if image.action == Action.CREATED:
                 starlette_file = convert_base64_to_starlette_file(image.base64)
-
                 file_info = save_file(request=request, file=starlette_file)
+
                 await self.create(
                     data={
                         "complex_id": complex_id,
@@ -40,3 +41,17 @@ class GalleryService(
                         "order": image.order,
                     }
                 )
+
+        stmt = (
+            select(ComplexGallery)
+            .where(ComplexGallery.complex_id == complex_id)
+            .order_by(ComplexGallery.order)
+        )
+
+        fetched_gallery: Sequence[ComplexGallery] = await self.repository.list(
+            statement=stmt
+        )
+        return [
+            GetGalleryImageSchema(id=item.id, photo=item.photo)
+            for item in fetched_gallery
+        ]

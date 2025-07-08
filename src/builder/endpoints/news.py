@@ -2,53 +2,96 @@ from dishka import FromDishka
 from dishka.integrations.fastapi import inject
 
 from fastapi import APIRouter, Depends
+from starlette import status
 
-from src.user.services import UserService
+from src.core.exceptions import (
+    IsNotOwnerException,
+    IntegrityErrorException,
+    NotFoundException,
+    DuplicateKeyException,
+)
+from src.core.utils import generate_examples
+from src.core.schemas import SuccessResponse
 
 from src.auth.dependencies import builder_from_token
 
 from src.builder.services import NewsService
 from src.builder.dependencies import check_builder_owns_news
-from src.builder.schemas import GetBuilderSchema, CreateNewsSchema, UpdateNewsSchema
+from src.builder.schemas import (
+    GetBuilderSchema,
+    GetNewsSchema,
+    CreateNewsSchema,
+    UpdateNewsSchema,
+)
 
 router = APIRouter(prefix="/news", tags=["Builder: News"])
 
 
-@router.post("", response_model=GetBuilderSchema)
+@router.post(
+    path="",
+    response_model=SuccessResponse[GetNewsSchema],
+    responses=generate_examples(IntegrityErrorException, auth=True, role=True),
+    status_code=status.HTTP_201_CREATED,
+)
 @inject
 async def create_news(
     news_service: FromDishka[NewsService],
-    user_service: FromDishka[UserService],
     data: CreateNewsSchema,
     builder: GetBuilderSchema = Depends(builder_from_token),
-) -> GetBuilderSchema:
-    await news_service.create({"complex_id": builder.complex.id, **data.model_dump()})
-    profile = await user_service.get_builder_profile(item_id=builder.id)
-    return user_service.to_schema(data=profile, schema_type=GetBuilderSchema)
+) -> SuccessResponse[GetNewsSchema]:
+    news = await news_service.create(
+        {"complex_id": builder.complex.id, **data.model_dump()}
+    )
+    return SuccessResponse(
+        data=news_service.to_schema(data=news, schema_type=GetNewsSchema)
+    )
 
 
-@router.patch("/{news_id}", response_model=GetBuilderSchema)
+@router.patch(
+    path="/{news_id}",
+    response_model=SuccessResponse[GetNewsSchema],
+    responses=generate_examples(
+        DuplicateKeyException,
+        IsNotOwnerException,
+        IntegrityErrorException,
+        NotFoundException,
+        auth=True,
+        role=True,
+    ),
+    status_code=status.HTTP_200_OK,
+)
 @inject
 async def update_news(
     news_id: int,
     news_service: FromDishka[NewsService],
-    user_service: FromDishka[UserService],
     data: UpdateNewsSchema,
-    builder: GetBuilderSchema = Depends(check_builder_owns_news),
-) -> GetBuilderSchema:
-    await news_service.update(data=data.model_dump(exclude_none=True), item_id=news_id)
-    profile = await user_service.get_builder_profile(item_id=builder.id)
-    return user_service.to_schema(data=profile, schema_type=GetBuilderSchema)
+    _: GetBuilderSchema = Depends(check_builder_owns_news),
+) -> SuccessResponse[GetNewsSchema]:
+    news = await news_service.update(
+        data=data.model_dump(exclude_none=True), item_id=news_id
+    )
+    return SuccessResponse(
+        data=news_service.to_schema(data=news, schema_type=GetNewsSchema)
+    )
 
 
-@router.delete("/{news_id}", response_model=GetBuilderSchema)
+@router.delete(
+    path="/{news_id}",
+    response_model=SuccessResponse,
+    responses=generate_examples(
+        IsNotOwnerException,
+        IntegrityErrorException,
+        NotFoundException,
+        auth=True,
+        role=True,
+    ),
+    status_code=status.HTTP_200_OK,
+)
 @inject
 async def delete_news(
     news_id: int,
     news_service: FromDishka[NewsService],
-    user_service: FromDishka[UserService],
-    builder: GetBuilderSchema = Depends(check_builder_owns_news),
+    _: GetBuilderSchema = Depends(check_builder_owns_news),
 ):
     await news_service.delete(item_id=news_id)
-    profile = await user_service.get_builder_profile(item_id=builder.id)
-    return user_service.to_schema(data=profile, schema_type=GetBuilderSchema)
+    return SuccessResponse(message="News has been deleted successfully.")

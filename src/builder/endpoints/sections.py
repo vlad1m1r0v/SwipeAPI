@@ -2,10 +2,18 @@ from dishka import FromDishka
 from dishka.integrations.fastapi import inject
 
 from fastapi import APIRouter, Depends, Query, Body
+from starlette import status
 
 from advanced_alchemy.service import OffsetPagination
 
-from src.core.schemas import SuccessfulMessageSchema
+from src.core.exceptions import (
+    IsNotOwnerException,
+    IntegrityErrorException,
+    NotFoundException,
+    DuplicateKeyException,
+)
+from src.core.utils import generate_examples
+from src.core.schemas import SuccessResponse
 
 from src.builder.schemas import (
     GetBuilderSchema,
@@ -21,7 +29,12 @@ from src.auth.dependencies import builder_from_token
 router = APIRouter(prefix="/sections", tags=["Builder: Sections"])
 
 
-@router.get("", response_model=OffsetPagination[GetSectionSchema])
+@router.get(
+    path="",
+    response_model=SuccessResponse[OffsetPagination[GetSectionSchema]],
+    responses=generate_examples(auth=True, role=True),
+    status_code=status.HTTP_200_OK,
+)
 @inject
 async def get_sections(
     section_service: FromDishka[SectionService],
@@ -30,7 +43,7 @@ async def get_sections(
     block_id: int | None = Query(default=None),
     no: int | None = Query(default=None),
     builder: GetBuilderSchema = Depends(builder_from_token),
-) -> OffsetPagination[GetSectionSchema]:
+) -> SuccessResponse[OffsetPagination[GetSectionSchema]]:
     results, total = await section_service.get_sections(
         limit=limit,
         offset=offset,
@@ -38,44 +51,76 @@ async def get_sections(
         block_id=block_id,
         no=no,
     )
-    return section_service.to_schema(
-        data=results, total=total, schema_type=GetSectionSchema
+    return SuccessResponse(
+        data=section_service.to_schema(
+            data=results, total=total, schema_type=GetSectionSchema
+        )
     )
 
 
-@router.post("", response_model=SuccessfulMessageSchema)
+@router.post(
+    path="",
+    response_model=SuccessResponse[GetSectionSchema],
+    responses=generate_examples(IntegrityErrorException, auth=True, role=True),
+    status_code=status.HTTP_201_CREATED,
+)
 @inject
 async def create_section(
     section_service: FromDishka[SectionService],
     data: CreateSectionSchema = Body(),
     _: GetBuilderSchema = Depends(builder_from_token),
-) -> SuccessfulMessageSchema:
-    await section_service.create(data=data.model_dump())
-    return SuccessfulMessageSchema(
-        message="Section has been added successfully to block."
+) -> SuccessResponse[GetSectionSchema]:
+    section = await section_service.create(data=data.model_dump())
+    return SuccessResponse(
+        data=section_service.to_schema(data=section, schema_type=GetSectionSchema)
     )
 
 
-@router.patch("/{section_id}", response_model=SuccessfulMessageSchema)
+@router.patch(
+    path="/{section_id}",
+    response_model=SuccessResponse[GetSectionSchema],
+    responses=generate_examples(
+        DuplicateKeyException,
+        IsNotOwnerException,
+        IntegrityErrorException,
+        NotFoundException,
+        auth=True,
+        role=True,
+    ),
+    status_code=status.HTTP_200_OK,
+)
 @inject
 async def update_section(
     section_service: FromDishka[SectionService],
     section_id: int,
     data: UpdateSectionSchema = Body(),
     _: GetBuilderSchema = Depends(check_builder_owns_section),
-) -> SuccessfulMessageSchema:
-    await section_service.update(
+) -> SuccessResponse[GetSectionSchema]:
+    section = await section_service.update(
         item_id=section_id, data=data.model_dump(exclude_none=True)
     )
-    return SuccessfulMessageSchema(message="Section has been updated successfully.")
+    return SuccessResponse(
+        data=section_service.to_schema(data=section, schema_type=GetSectionSchema)
+    )
 
 
-@router.delete("/{section_id}", response_model=SuccessfulMessageSchema)
+@router.delete(
+    path="/{section_id}",
+    response_model=SuccessResponse,
+    responses=generate_examples(
+        IsNotOwnerException,
+        IntegrityErrorException,
+        NotFoundException,
+        auth=True,
+        role=True,
+    ),
+    status_code=status.HTTP_200_OK,
+)
 @inject
 async def delete_section(
     section_service: FromDishka[SectionService],
     section_id: int,
     _: GetBuilderSchema = Depends(check_builder_owns_section),
-):
+) -> SuccessResponse:
     await section_service.delete(item_id=section_id)
-    return SuccessfulMessageSchema(message="Section has been deleted successfully.")
+    return SuccessResponse(message="Section has been deleted successfully.")

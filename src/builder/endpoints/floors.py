@@ -2,10 +2,18 @@ from dishka import FromDishka
 from dishka.integrations.fastapi import inject
 
 from fastapi import APIRouter, Depends, Query, Body
+from starlette import status
 
 from advanced_alchemy.service import OffsetPagination
 
-from src.core.schemas import SuccessfulMessageSchema
+from src.core.schemas import SuccessResponse
+from src.core.utils import generate_examples
+from src.core.exceptions import (
+    IsNotOwnerException,
+    IntegrityErrorException,
+    NotFoundException,
+    DuplicateKeyException,
+)
 
 from src.builder.schemas import (
     GetBuilderSchema,
@@ -21,7 +29,12 @@ from src.auth.dependencies import builder_from_token
 router = APIRouter(prefix="/floors", tags=["Builder: Floors"])
 
 
-@router.get("", response_model=OffsetPagination[GetFloorSchema])
+@router.get(
+    path="",
+    response_model=SuccessResponse[OffsetPagination[GetFloorSchema]],
+    responses=generate_examples(auth=True, role=True),
+    status_code=status.HTTP_200_OK,
+)
 @inject
 async def get_floors(
     floor_service: FromDishka[FloorService],
@@ -30,7 +43,7 @@ async def get_floors(
     block_id: int | None = Query(default=None),
     no: int | None = Query(default=None),
     builder: GetBuilderSchema = Depends(builder_from_token),
-) -> OffsetPagination[GetFloorSchema]:
+) -> SuccessResponse[OffsetPagination[GetFloorSchema]]:
     results, total = await floor_service.get_floors(
         limit=limit,
         offset=offset,
@@ -38,39 +51,71 @@ async def get_floors(
         block_id=block_id,
         no=no,
     )
-    return floor_service.to_schema(
-        data=results, total=total, schema_type=GetFloorSchema
+    return SuccessResponse(
+        data=floor_service.to_schema(
+            data=results, total=total, schema_type=GetFloorSchema
+        )
     )
 
 
-@router.post("", response_model=SuccessfulMessageSchema)
+@router.post(
+    path="",
+    response_model=SuccessResponse[GetFloorSchema],
+    responses=generate_examples(IntegrityErrorException, auth=True, role=True),
+    status_code=status.HTTP_201_CREATED,
+)
 @inject
 async def create_floor(
     floor_service: FromDishka[FloorService],
     data: CreateFloorSchema = Body(),
     _: GetBuilderSchema = Depends(builder_from_token),
-) -> SuccessfulMessageSchema:
-    await floor_service.create(data=data.model_dump())
-    return SuccessfulMessageSchema(
-        message="Floor has been added successfully to block."
+) -> SuccessResponse[GetFloorSchema]:
+    floor = await floor_service.create(data=data.model_dump())
+    return SuccessResponse(
+        data=floor_service.to_schema(data=floor, schema_type=GetFloorSchema)
     )
 
 
-@router.patch("/{floor_id}", response_model=SuccessfulMessageSchema)
+@router.patch(
+    path="/{floor_id}",
+    response_model=SuccessResponse[GetFloorSchema],
+    responses=generate_examples(
+        DuplicateKeyException,
+        IsNotOwnerException,
+        IntegrityErrorException,
+        NotFoundException,
+        auth=True,
+        role=True,
+    ),
+    status_code=status.HTTP_200_OK,
+)
 @inject
 async def update_floor(
     floor_service: FromDishka[FloorService],
     floor_id: int,
     data: UpdateFloorSchema = Body(),
     _: GetBuilderSchema = Depends(check_builder_owns_floor),
-) -> SuccessfulMessageSchema:
-    await floor_service.update(
+) -> SuccessResponse[GetFloorSchema]:
+    floor = await floor_service.update(
         item_id=floor_id, data=data.model_dump(exclude_none=True)
     )
-    return SuccessfulMessageSchema(message="Floor has been updated successfully.")
+    return SuccessResponse(
+        data=floor_service.to_schema(data=floor, schema_type=GetFloorSchema)
+    )
 
 
-@router.delete("/{floor_id}", response_model=SuccessfulMessageSchema)
+@router.delete(
+    path="/{floor_id}",
+    response_model=SuccessResponse,
+    responses=generate_examples(
+        IsNotOwnerException,
+        IntegrityErrorException,
+        NotFoundException,
+        auth=True,
+        role=True,
+    ),
+    status_code=status.HTTP_200_OK,
+)
 @inject
 async def delete_floor(
     floor_service: FromDishka[FloorService],
@@ -78,4 +123,4 @@ async def delete_floor(
     _: GetBuilderSchema = Depends(check_builder_owns_floor),
 ):
     await floor_service.delete(item_id=floor_id)
-    return SuccessfulMessageSchema(message="Floor has been deleted successfully.")
+    return SuccessResponse(message="Floor has been deleted successfully.")

@@ -2,8 +2,6 @@ from typing import Optional
 
 from pydantic import BaseModel, Field
 
-from src.builder.schemas.block import GetBlockSchema
-
 
 class CreateFloorSchema(BaseModel):
     block_id: int
@@ -18,4 +16,3 @@ class UpdateFloorSchema(BaseModel):
 class GetFloorSchema(BaseModel):
     id: int
     no: int
-    block: GetBlockSchema

@@ -13,6 +13,7 @@ from src.core.exceptions import (
     DuplicateKeyException,
 )
 from src.core.utils import generate_examples
+from src.core.schemas import SuccessResponse
 
 from src.builder.schemas import (
     GetBuilderSchema,
@@ -24,7 +25,6 @@ from src.builder.services import BlockService
 from src.builder.dependencies import check_builder_owns_block
 
 from src.auth.dependencies import builder_from_token
-from src.core.schemas import SuccessResponse
 
 router = APIRouter(prefix="/blocks", tags=["Builder: Blocks"])
 
@@ -68,7 +68,9 @@ async def create_block(
     block = await block_service.create(
         data={**data.model_dump(), "complex_id": builder.complex.id}
     )
-    return SuccessResponse(data=block)
+    return SuccessResponse(
+        data=block_service.to_schema(data=block, schema_type=GetBlockSchema)
+    )
 
 
 @router.patch(
@@ -92,7 +94,9 @@ async def update_block(
     _: GetBuilderSchema = Depends(check_builder_owns_block),
 ) -> SuccessResponse[GetBlockSchema]:
     block = await block_service.update(item_id=block_id, data=data.model_dump())
-    return SuccessResponse(data=block)
+    return SuccessResponse(
+        data=block_service.to_schema(data=block, schema_type=GetBlockSchema)
+    )
 
 
 @router.delete(
