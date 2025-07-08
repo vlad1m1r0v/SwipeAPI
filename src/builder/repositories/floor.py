@@ -1,7 +1,7 @@
 from typing import Sequence
 
 from sqlalchemy import select
-from sqlalchemy.orm import joinedload
+from sqlalchemy.orm import joinedload, aliased
 
 from advanced_alchemy.repository import SQLAlchemyAsyncRepository
 
@@ -19,7 +19,11 @@ class FloorRepository(SQLAlchemyAsyncRepository[Floor]):
         block_id: int | None,
         no: int | None,
     ) -> tuple[Sequence[Floor], int]:
-        stmt = select(Floor).options(joinedload(Floor.block).joinedload(Block.complex))
+        block_alias = aliased(Block)
+
+        stmt = select(Floor).options(
+            joinedload(Floor.block.of_type(block_alias)).joinedload(block_alias.complex)
+        )
 
         if complex_id:
             stmt = stmt.where(Complex.id == complex_id)
@@ -30,7 +34,11 @@ class FloorRepository(SQLAlchemyAsyncRepository[Floor]):
         if no:
             stmt = stmt.where(Floor.no == no)
 
-        stmt = stmt.order_by(Floor.no.asc()).limit(limit).offset(offset)
+        stmt = (
+            stmt.order_by(block_alias.no.asc(), Floor.no.asc())
+            .limit(limit)
+            .offset(offset)
+        )
 
         results, total = await self.list_and_count(statement=stmt)
         return results, total
