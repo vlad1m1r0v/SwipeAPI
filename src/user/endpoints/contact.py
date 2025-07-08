@@ -5,7 +5,7 @@ from fastapi import APIRouter, Depends
 from starlette import status
 
 from src.core.utils import generate_examples
-from src.core.schemas import SuccessResponse, success_response
+from src.core.schemas import SuccessResponse
 
 from src.auth.dependencies import user_from_token
 
@@ -29,7 +29,6 @@ async def update_contact(
     user: GetUserSchema = Depends(user_from_token),
 ) -> SuccessResponse[GetContactSchema]:
     result = await contact_service.update(data=data, item_id=user.contact.id)
-    return success_response(
-        value=contact_service.to_schema(data=result, schema_type=GetContactSchema),
-        message="Contact updated successfully.",
+    return SuccessResponse(
+        data=contact_service.to_schema(data=result, schema_type=GetContactSchema),
     )

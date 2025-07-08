@@ -7,7 +7,7 @@ from fastapi import APIRouter, Request, Depends, Form, UploadFile, File
 from starlette import status
 
 from src.core.utils import save_file, generate_examples
-from src.core.schemas import SuccessResponse, success_response
+from src.core.schemas import SuccessResponse
 
 from src.auth.dependencies import user_from_token
 
@@ -49,7 +49,6 @@ async def update_account(
         data={**fields.model_dump(exclude_none=True)}, item_id=user.id
     )
 
-    return success_response(
-        value=user_service.to_schema(data=result, schema_type=GetUserAccountSchema),
-        message="Account updated successfully.",
+    return SuccessResponse(
+        data=user_service.to_schema(data=result, schema_type=GetUserAccountSchema)
     )

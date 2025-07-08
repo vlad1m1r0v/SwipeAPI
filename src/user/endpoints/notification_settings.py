@@ -5,7 +5,7 @@ from fastapi import APIRouter, Depends
 from starlette import status
 
 from src.core.utils import generate_examples
-from src.core.schemas import SuccessResponse, success_response
+from src.core.schemas import SuccessResponse
 
 from src.auth.dependencies import user_from_token
 
@@ -36,9 +36,8 @@ async def update_notification_settings(
         item_id=user.notification_settings.id,
         data={**data.model_dump(exclude_none=True)},
     )
-    return success_response(
-        value=notification_settings_service.to_schema(
+    return SuccessResponse(
+        data=notification_settings_service.to_schema(
             data=result, schema_type=GetNotificationSettingsSchema
-        ),
-        message="Notification settings updated successfully.",
+        )
     )

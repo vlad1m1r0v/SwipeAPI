@@ -4,7 +4,7 @@ from dishka import FromDishka
 from dishka.integrations.fastapi import inject
 
 from src.core.utils import generate_examples
-from src.core.schemas import SuccessResponse, success_response
+from src.core.schemas import SuccessResponse
 
 from src.auth.services import AuthService
 from src.auth.schemas import TokensSchema, RegisterSchema, LoginSchema
@@ -29,10 +29,8 @@ async def register_user(
     data: RegisterSchema,
     auth_service: FromDishka[AuthService],
 ) -> SuccessResponse[TokensSchema]:
-    return success_response(
-        value=await auth_service.register_user(data=data),
-        message="User registered successfully.",
-        status_code=status.HTTP_201_CREATED,
+    return SuccessResponse(
+        data=await auth_service.register_user(data=data),
     )
 
 
@@ -48,7 +46,6 @@ async def login_user(
     data: LoginSchema,
     auth_service: FromDishka[AuthService],
 ) -> SuccessResponse[TokensSchema]:
-    return success_response(
-        value=await auth_service.login_user(data=data),
-        message="User logged in successfully.",
+    return SuccessResponse(
+        data=await auth_service.login_user(data=data),
     )

@@ -10,7 +10,7 @@ from starlette import status
 
 from advanced_alchemy.service import OffsetPagination
 
-from src.core.schemas import SuccessResponse, success_response
+from src.core.schemas import SuccessResponse
 from src.core.utils import save_file, generate_examples
 from src.core.exceptions import (
     DuplicateKeyException,
@@ -49,8 +49,8 @@ async def get_notaries(
     _: BasePayloadSchema = Depends(payload_from_token(TokenType.ACCESS_TOKEN)),
 ) -> SuccessResponse[OffsetPagination[GetNotarySchema]]:
     results, total = await notary_service.get_notaries(limit, offset, search)
-    return success_response(
-        value=notary_service.to_schema(
+    return SuccessResponse(
+        data=notary_service.to_schema(
             data=results, total=total, schema_type=GetNotarySchema
         )
     )
@@ -84,10 +84,8 @@ async def create_notary(
     )
 
     notary = await notary_service.create(data={**fields.model_dump()})
-    return success_response(
-        status_code=status.HTTP_201_CREATED,
-        value=notary_service.to_schema(data=notary, schema_type=GetNotarySchema),
-        message="Notary created successfully.",
+    return SuccessResponse(
+        data=notary_service.to_schema(data=notary, schema_type=GetNotarySchema)
     )
 
 
@@ -122,9 +120,8 @@ async def update_notary(
     notary = await notary_service.update(
         item_id=notary_id, data={**fields.model_dump(exclude_none=True)}
     )
-    return success_response(
-        value=notary_service.to_schema(data=notary, schema_type=GetNotarySchema),
-        message="Notary updated successfully.",
+    return SuccessResponse(
+        data=notary_service.to_schema(data=notary, schema_type=GetNotarySchema)
     )
 
 
@@ -141,6 +138,6 @@ async def delete_notary(
     _: GetAdminSchema = Depends(admin_from_token),
 ) -> SuccessResponse:
     await notary_service.delete(item_id=notary_id)
-    return success_response(
+    return SuccessResponse(
         message="Notary deleted successfully.",
     )

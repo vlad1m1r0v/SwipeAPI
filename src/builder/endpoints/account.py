@@ -4,8 +4,10 @@ from dishka import FromDishka
 from dishka.integrations.fastapi import inject
 
 from fastapi import APIRouter, Request, Depends, Form, UploadFile, File
+from starlette import status
 
-from src.core.utils import save_file
+from src.core.utils import save_file, generate_examples
+from src.core.schemas import SuccessResponse
 
 from src.auth.dependencies import builder_from_token
 
@@ -17,7 +19,13 @@ from src.builder.schemas import GetBuilderSchema
 router = APIRouter()
 
 
-@router.patch("/account", tags=["Builder: Profile"])
+@router.patch(
+    path="/account",
+    response_model=SuccessResponse[GetBuilderSchema],
+    responses=generate_examples(auth=True, role=True),
+    status_code=status.HTTP_200_OK,
+    tags=["Builder: Profile"],
+)
 @inject
 async def update_account(
     request: Request,
@@ -27,7 +35,7 @@ async def update_account(
     phone: Optional[str] = Form(default=None),
     photo: Optional[UploadFile] = File(default=None),
     builder: GetBuilderSchema = Depends(builder_from_token),
-) -> GetBuilderSchema:
+) -> SuccessResponse[GetBuilderSchema]:
     fields = UpdateUserAccountSchema(
         email=email,
         name=name,
@@ -40,4 +48,6 @@ async def update_account(
     )
 
     profile = await user_service.get_builder_profile(item_id=builder.id)
-    return user_service.to_schema(data=profile, schema_type=GetBuilderSchema)
+    return SuccessResponse(
+        data=user_service.to_schema(data=profile, schema_type=GetBuilderSchema)
+    )

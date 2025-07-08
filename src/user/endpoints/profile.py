@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends
 
 from src.core.utils import generate_examples
-from src.core.schemas import SuccessResponse, success_response
+from src.core.schemas import SuccessResponse
 
 from src.auth.dependencies import user_from_token
 
@@ -16,5 +16,7 @@ router = APIRouter()
     responses=generate_examples(auth=True, user=True, role=True),
     tags=["User: Profile"],
 )
-def get_profile(user: GetUserSchema = Depends(user_from_token)) -> GetUserSchema:
-    return success_response(value=user)
+def get_profile(
+    user: GetUserSchema = Depends(user_from_token),
+) -> SuccessResponse[GetUserSchema]:
+    return SuccessResponse(data=user)

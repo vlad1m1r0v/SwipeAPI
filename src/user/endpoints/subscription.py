@@ -5,7 +5,7 @@ from fastapi import APIRouter, Depends
 from starlette import status
 
 from src.core.utils import generate_examples
-from src.core.schemas import SuccessResponse, success_response
+from src.core.schemas import SuccessResponse
 
 from src.auth.dependencies import user_from_token
 
@@ -37,11 +37,10 @@ async def update_subscription(
     result = await subscription_service.update(
         item_id=user.subscription.id, data=data.model_dump()
     )
-    return success_response(
-        value=subscription_service.to_schema(
+    return SuccessResponse(
+        data=subscription_service.to_schema(
             data=result, schema_type=GetSubscriptionSchema
-        ),
-        message="Subscription updated successfully.",
+        )
     )
 
 
@@ -58,9 +57,8 @@ async def renew_subscription(
     user: GetUserSchema = Depends(user_from_token),
 ) -> SuccessResponse[GetSubscriptionSchema]:
     result = await subscription_renewal_service.renew_user_subscription(item_id=user.id)
-    return success_response(
-        value=subscription_service.to_schema(
+    return SuccessResponse(
+        data=subscription_service.to_schema(
             data=result, schema_type=GetSubscriptionSchema
-        ),
-        message="Subscription renewed successfully.",
+        )
     )

@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends
 from starlette import status
 
 from src.core.utils import generate_examples
-from src.core.schemas import SuccessResponse, success_response
+from src.core.schemas import SuccessResponse
 
 from src.auth.dependencies import admin_from_token
 
@@ -21,4 +21,4 @@ router = APIRouter()
 def get_profile(
     admin: GetAdminSchema = Depends(admin_from_token),
 ) -> SuccessResponse[GetAdminSchema]:
-    return success_response(value=admin)
+    return SuccessResponse(data=admin)

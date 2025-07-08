@@ -4,7 +4,7 @@ from dishka.integrations.fastapi import inject
 from fastapi import APIRouter, Depends, Body, Query
 from starlette import status
 
-from src.core.schemas import SuccessResponse, success_response
+from src.core.schemas import SuccessResponse
 from src.core.utils import generate_examples
 
 from src.auth.dependencies import payload_from_token
@@ -45,7 +45,7 @@ def refresh_tokens(
     auth_service: FromDishka[AuthService],
     payload: BasePayloadSchema = Depends(payload_from_token(TokenType.REFRESH_TOKEN)),
 ) -> SuccessResponse[TokensSchema]:
-    return success_response(value=auth_service.generate_tokens(payload))
+    return SuccessResponse(data=auth_service.generate_tokens(payload))
 
 
 @router.post(
@@ -62,7 +62,7 @@ async def update_password(
     payload: BasePayloadSchema = Depends(payload_from_token(TokenType.ACCESS_TOKEN)),
 ) -> SuccessResponse:
     await user_service.update_password(item_id=payload.id, data=data.model_dump())
-    return success_response(message="Password updated successfully.")
+    return SuccessResponse(message="Password updated successfully.")
 
 
 @router.post(
@@ -78,7 +78,7 @@ async def forgot_password(
     data: ForgotPasswordSchema,
 ) -> SuccessResponse:
     await auth_service.send_forgot_password_email(data)
-    return success_response(message="Password reset email was sent successfully.")
+    return SuccessResponse(message="Password reset email was sent successfully.")
 
 
 @router.post(
@@ -103,4 +103,4 @@ async def reset_password(
     )
 
     await auth_service.reset_password(data=data)
-    return success_response(message="Password updated successfully.")
+    return SuccessResponse(message="Password updated successfully.")

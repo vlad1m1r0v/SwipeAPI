@@ -11,7 +11,7 @@ from dishka.integrations.fastapi import inject
 from advanced_alchemy.service import OffsetPagination
 
 from src.core.utils import generate_examples
-from src.core.schemas import SuccessResponse, success_response
+from src.core.schemas import SuccessResponse
 from src.core.exceptions import (
     IntegrityErrorException,
     DuplicateKeyException,
@@ -46,10 +46,10 @@ async def get_blacklist(
     results, total = await user_service.get_blacklisted_users(
         limit=limit, offset=offset, search=search
     )
-    return success_response(
-        value=user_service.to_schema(
+    return SuccessResponse(
+        data=user_service.to_schema(
             data=results, total=total, schema_type=GetUserAccountSchema
-        ),
+        )
     )
 
 
@@ -67,11 +67,8 @@ async def blacklist_user(
     data: BlacklistUserSchema,
     _: GetAdminSchema = Depends(admin_from_token),
 ) -> SuccessResponse:
-    print("USER ID:", data.user_id)
     await blacklist_service.create(data={"user_id": data.user_id})
-    return success_response(
-        message="User has been blacklisted.",
-    )
+    return SuccessResponse(message="User has been blacklisted.")
 
 
 @router.delete(
@@ -87,6 +84,6 @@ async def remove_user_from_blacklist(
     _: GetAdminSchema = Depends(admin_from_token),
 ):
     await blacklist_service.delete(item_id=record_id)
-    return success_response(
+    return SuccessResponse(
         message="User has been removed from blacklist.",
     )

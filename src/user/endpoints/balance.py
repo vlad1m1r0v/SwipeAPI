@@ -5,7 +5,7 @@ from fastapi import APIRouter, Depends
 from starlette import status
 
 from src.core.utils import generate_examples
-from src.core.schemas import SuccessResponse, success_response
+from src.core.schemas import SuccessResponse
 
 from src.auth.dependencies import user_from_token
 
@@ -31,7 +31,6 @@ async def deposit_money(
     result = await balance_service.deposit_money(
         item_id=user.balance.id, amount=data.amount
     )
-    return success_response(
-        value=balance_service.to_schema(data=result, schema_type=GetBalanceSchema),
-        message="Balance deposited successfully.",
+    return SuccessResponse(
+        data=balance_service.to_schema(data=result, schema_type=GetBalanceSchema)
     )
