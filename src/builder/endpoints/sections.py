@@ -70,7 +70,8 @@ async def create_section(
     data: CreateSectionSchema = Body(),
     _: GetBuilderSchema = Depends(builder_from_token),
 ) -> SuccessResponse[GetSectionSchema]:
-    section = await section_service.create(data=data.model_dump())
+    created = await section_service.create(data=data.model_dump())
+    section = await section_service.get_section(item_id=created.id)
     return SuccessResponse(
         data=section_service.to_schema(data=section, schema_type=GetSectionSchema)
     )
@@ -96,9 +97,10 @@ async def update_section(
     data: UpdateSectionSchema = Body(),
     _: GetBuilderSchema = Depends(check_builder_owns_section),
 ) -> SuccessResponse[GetSectionSchema]:
-    section = await section_service.update(
+    updated = await section_service.update(
         item_id=section_id, data=data.model_dump(exclude_none=True)
     )
+    section = await section_service.get_section(item_id=updated.id)
     return SuccessResponse(
         data=section_service.to_schema(data=section, schema_type=GetSectionSchema)
     )

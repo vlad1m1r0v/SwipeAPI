@@ -20,3 +20,6 @@ class SectionService(SQLAlchemyAsyncRepositoryService[Section, SectionRepository
         return await self.repository.get_sections(
             limit, offset, complex_id, block_id, no
         )
+
+    async def get_section(self, item_id: int) -> Section:
+        return await self.repository.get_section(item_id)

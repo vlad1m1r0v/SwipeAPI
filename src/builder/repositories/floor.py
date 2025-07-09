@@ -1,6 +1,7 @@
 from typing import Sequence
 
-from sqlalchemy import select
+
+from sqlalchemy import select, orm
 from sqlalchemy.orm import joinedload, aliased
 
 from advanced_alchemy.repository import SQLAlchemyAsyncRepository
@@ -42,3 +43,13 @@ class FloorRepository(SQLAlchemyAsyncRepository[Floor]):
 
         results, total = await self.list_and_count(statement=stmt)
         return results, total
+
+    async def get_floor(self, item_id: int) -> Floor:
+        stmt = (
+            select(Floor)
+            .where(Floor.id == item_id)
+            .options(orm.joinedload(Floor.block))
+        )
+
+        result = await self.session.execute(stmt)
+        return result.scalar_one_or_none()

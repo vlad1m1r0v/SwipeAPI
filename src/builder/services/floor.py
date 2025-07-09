@@ -18,3 +18,6 @@ class FloorService(SQLAlchemyAsyncRepositoryService[Floor, FloorRepository]):
         no: int | None,
     ) -> tuple[Sequence[Floor], int]:
         return await self.repository.get_floors(limit, offset, complex_id, block_id, no)
+
+    async def get_floor(self, item_id: int) -> Floor:
+        return await self.repository.get_floor(item_id)

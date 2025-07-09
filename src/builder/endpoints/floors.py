@@ -70,7 +70,8 @@ async def create_floor(
     data: CreateFloorSchema = Body(),
     _: GetBuilderSchema = Depends(builder_from_token),
 ) -> SuccessResponse[GetFloorSchema]:
-    floor = await floor_service.create(data=data.model_dump())
+    created = await floor_service.create(data=data.model_dump())
+    floor = await floor_service.get_floor(item_id=created.id)
     return SuccessResponse(
         data=floor_service.to_schema(data=floor, schema_type=GetFloorSchema)
     )
@@ -96,9 +97,10 @@ async def update_floor(
     data: UpdateFloorSchema = Body(),
     _: GetBuilderSchema = Depends(check_builder_owns_floor),
 ) -> SuccessResponse[GetFloorSchema]:
-    floor = await floor_service.update(
+    updated = await floor_service.update(
         item_id=floor_id, data=data.model_dump(exclude_none=True)
     )
+    floor = await floor_service.get_floor(item_id=updated.id)
     return SuccessResponse(
         data=floor_service.to_schema(data=floor, schema_type=GetFloorSchema)
     )
