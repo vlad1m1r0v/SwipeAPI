@@ -33,6 +33,7 @@ def import_all_models():
 
     for module_info in pkgutil.iter_modules([str(app_dir)]):
         models_module = f"src.{module_info.name}.models"
+
         try:
             importlib.import_module(models_module)
         except ModuleNotFoundError:

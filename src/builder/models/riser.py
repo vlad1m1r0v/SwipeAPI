@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, List
 
 from sqlalchemy import orm
 import sqlalchemy as sa
@@ -7,6 +7,8 @@ from advanced_alchemy.base import BigIntAuditBase
 
 if TYPE_CHECKING:
     from src.builder.models import Section
+
+    from src.apartments.models import Apartment
 
 
 class Riser(BigIntAuditBase):
@@ -20,3 +22,7 @@ class Riser(BigIntAuditBase):
     no = sa.Column(sa.SmallInteger)
 
     section: orm.Mapped["Section"] = orm.relationship(back_populates="risers")
+    apartments: orm.Mapped[List["Apartment"]] = orm.relationship(
+        back_populates="riser",
+        uselist=True,
+    )
