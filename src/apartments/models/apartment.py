@@ -94,14 +94,3 @@ class Apartment(BigIntAuditBase):
         cascade="all, delete-orphan",
         order_by="ApartmentGallery.order",
     )
-    # preview: orm.Mapped["ApartmentGallery"] = orm.relationship(
-    #     "ApartmentGallery",
-    #     primaryjoin=lambda: sa.and_(
-    #         Apartment.id == orm.foreign(ApartmentGallery.apartment_id),
-    #         ApartmentGallery.order == sa.select(sa.func.min(ApartmentGallery.order))
-    #         .where(ApartmentGallery.apartment_id == Apartment.id)
-    #         .scalar_subquery()
-    #     ),
-    #     uselist=False,
-    #     viewonly=True
-    # )

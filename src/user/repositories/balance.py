@@ -8,7 +8,7 @@ from src.user.models import Balance
 class BalanceRepository(SQLAlchemyAsyncRepository[Balance]):
     model_type = Balance
 
-    async def deposit_money(self, item_id: int, amount: float) -> None:
+    async def deposit_money(self, item_id: int, amount: float) -> Balance:
         stmt = (
             update(Balance)
             .where(Balance.id == item_id)
