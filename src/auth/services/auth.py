@@ -26,80 +26,34 @@ from src.user.exceptions import (
     UserBlacklistedException,
 )
 
-from src.user.services import (
-    UserService,
-    ContactService,
-    AgentContactService,
-    SubscriptionService,
-    NotificationSettingsService,
-    BalanceService,
-)
+from src.user.services import UserService, SubscriptionService
 
 from src.admin.services import BlacklistService
-
-from src.builder.services import (
-    ComplexService,
-    InfrastructureService,
-    AdvantagesService,
-    FormalizationAndPaymentSettingsService,
-)
 
 
 class AuthService:
     def __init__(
         self,
-        # auth related services
         jwt_service: JwtService,
         sign_service: SignService,
         user_service: UserService,
-        # user related services
         blacklist_service: BlacklistService,
-        contact_service: ContactService,
-        agent_contact_service: AgentContactService,
         subscription_service: SubscriptionService,
-        notification_settings_service: NotificationSettingsService,
-        balance_service: BalanceService,
-        # builder related services
-        complex_service: ComplexService,
-        infrastructure_service: InfrastructureService,
-        advances_service: AdvantagesService,
-        formalization_and_payment_settings_service: FormalizationAndPaymentSettingsService,
     ):
+        # Auth related services
         self._jwt_service = jwt_service
         self._sign_service = sign_service
         self._user_service = user_service
 
+        # User related services
         self._blacklist_service = blacklist_service
-        self._contact_service = contact_service
-        self._agent_contact_service = agent_contact_service
         self._subscription_service = subscription_service
-        self._notification_settings_service = notification_settings_service
-        self._balance_service = balance_service
-
-        self._complex_service = complex_service
-        self._infrastructure_service = infrastructure_service
-        self._advances_service = advances_service
-        self._formalization_and_payment_settings_service = (
-            formalization_and_payment_settings_service
-        )
 
     async def register_user(self, data: RegisterSchema) -> TokensSchema:
         if await self._user_service.exists(email=data.email):
             raise UserAlreadyExistsException()
 
         user = await self._user_service.create_user(data)
-
-        await self._contact_service.create(
-            {"user_id": user.id, "email": user.email, "phone": user.phone}
-        )
-
-        await self._agent_contact_service.create({"user_id": user.id})
-
-        await self._subscription_service.create({"user_id": user.id})
-
-        await self._notification_settings_service.create({"user_id": user.id})
-
-        await self._balance_service.create({"user_id": user.id})
 
         user_schema = self._user_service.to_schema(
             data=user, schema_type=BasePayloadSchema
@@ -122,22 +76,6 @@ class AuthService:
             raise UserAlreadyExistsException()
 
         builder = await self._user_service.create_builder(data)
-
-        await self._contact_service.create(
-            {"user_id": builder.id, "email": builder.email, "phone": builder.phone}
-        )
-
-        building = await self._complex_service.create(
-            {"user_id": builder.id, "name": builder.name}
-        )
-
-        await self._infrastructure_service.create({"complex_id": building.id})
-
-        await self._advances_service.create({"complex_id": building.id})
-
-        await self._formalization_and_payment_settings_service.create(
-            {"complex_id": building.id}
-        )
 
         builder_schema = self._user_service.to_schema(
             data=builder, schema_type=BasePayloadSchema

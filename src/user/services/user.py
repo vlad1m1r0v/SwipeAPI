@@ -6,7 +6,6 @@ from src.auth.utils import hash_password, validate_password
 
 from src.user.models import User
 from src.user.repositories import UserRepository
-from src.user.enums import Role
 from src.user.exceptions import UserDoesNotExistException, IncorrectPasswordException
 
 
@@ -20,16 +19,13 @@ class UserService(SQLAlchemyAsyncRepositoryService[User, UserRepository]):
         return await self.repository.get_builder_profile(item_id)
 
     async def create_user(self, data: ModelDictT) -> User:
-        data = data.model_dump()
-        return await super().create(data={**data, "role": Role.USER})
+        return await self.repository.create_user(data)
 
     async def create_admin(self, data: ModelDictT) -> User:
-        data = data.model_dump()
-        return await super().create(data={**data, "role": Role.ADMIN})
+        return await self.repository.create_admin(data)
 
     async def create_builder(self, data: ModelDictT) -> User:
-        data = data.model_dump()
-        return await super().create(data={**data, "role": Role.BUILDER})
+        return await self.repository.create_builder(data)
 
     async def get_blacklisted_users(
         self, limit: int, offset: int, search: str

@@ -3,17 +3,103 @@ from typing import Sequence
 from advanced_alchemy.filters import LimitOffset, SearchFilter
 from advanced_alchemy.repository import SQLAlchemyAsyncRepository
 
-from sqlalchemy import orm, select
+from sqlalchemy import orm, select, insert
 
-from src.user.models import User
+from src.auth.utils import hash_password
+from src.auth.schemas import RegisterSchema
+
+from src.user.enums import Role
+from src.user.models import (
+    User,
+    Contact,
+    AgentContact,
+    Subscription,
+    NotificationSettings,
+    Balance,
+)
 
 from src.admin.models import Blacklist
 
-from src.builder.models import Complex
+from src.builder.models import (
+    Complex,
+    Infrastructure,
+    Advantages,
+    FormalizationAndPaymentSettings,
+)
 
 
 class UserRepository(SQLAlchemyAsyncRepository[User]):
     model_type = User
+
+    async def create_user(self, data: RegisterSchema) -> User:
+        fields = data.model_dump()
+        password = fields.pop("password")
+
+        stmt = (
+            insert(User)
+            .values(**fields, role=Role.USER, password=str(hash_password(password)))
+            .returning(User)
+        )
+        result = await self.session.execute(stmt)
+        user = result.scalar_one_or_none()
+
+        inserts = [
+            insert(Contact).values(user_id=user.id, email=user.email, phone=user.phone),
+            insert(AgentContact).values(user_id=user.id),
+            insert(Subscription).values(user_id=user.id),
+            insert(NotificationSettings).values(user_id=user.id),
+            insert(Balance).values(user_id=user.id),
+        ]
+        for stmt in inserts:
+            await self.session.execute(stmt)
+
+        return user
+
+    async def create_admin(self, data: RegisterSchema) -> User:
+        fields = data.model_dump()
+        password = fields.pop("password")
+
+        stmt = (
+            insert(User)
+            .values(**fields, role=Role.ADMIN, password=str(hash_password(password)))
+            .returning(User)
+        )
+        result = await self.session.execute(stmt)
+        admin = result.scalar_one_or_none()
+        return admin
+
+    async def create_builder(self, data: RegisterSchema) -> User:
+        fields = data.model_dump()
+        password = fields.pop("password")
+
+        stmt = (
+            insert(User)
+            .values(**fields, role=Role.USER, password=str(hash_password(password)))
+            .returning(User)
+        )
+        result = await self.session.execute(stmt)
+        builder = result.scalar_one_or_none()
+
+        await self.session.execute(
+            insert(Contact).values(
+                user_id=builder.id, email=builder.email, phone=builder.phone
+            )
+        )
+
+        result = await self.session.execute(
+            insert(Complex).values(user_id=builder.id, name=builder.name)
+        )
+        building = result.scalar_one_or_none()
+
+        inserts = [
+            insert(Infrastructure).values(user_id=building.id),
+            insert(Advantages).values(user_id=building.id),
+            insert(FormalizationAndPaymentSettings).values(user_id=building.id),
+        ]
+        for stmt in inserts:
+            await self.session.execute(stmt)
+
+        return builder
 
     async def get_user_profile(self, item_id: int) -> User:
         return await self.get(
