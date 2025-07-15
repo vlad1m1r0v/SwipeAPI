@@ -1,7 +1,5 @@
 from typing import List
 
-from fastapi import Request
-
 from advanced_alchemy.repository import SQLAlchemyAsyncRepository
 from sqlalchemy import orm, select
 
@@ -42,33 +40,29 @@ class ApartmentRepository(SQLAlchemyAsyncRepository[Apartment]):
     async def get_apartment_item(self, apartment_id: int) -> Apartment: ...
 
     async def create_apartment(
-        self, request: Request, user_id: int, data: CreateApartmentSchema
+        self, user_id: int, data: CreateApartmentSchema
     ) -> Apartment:
         fields = data.model_dump()
 
         scheme_base64 = fields.pop("scheme", "")
         scheme_starlette_file = convert_base64_to_starlette_file(scheme_base64)
-        scheme_file_info = save_file(request=request, file=scheme_starlette_file)
+        file_path = save_file(file=scheme_starlette_file)
 
         gallery: List[Base64Item] = fields.pop("gallery", [])
 
         instance: Apartment = await self.add(
-            data=Apartment(
-                **fields, user_id=user_id, scheme=scheme_file_info.model_dump()
-            )
+            data=Apartment(**fields, user_id=user_id, scheme=file_path)
         )
 
         images_to_create: List[ApartmentGallery] = []
 
         for image in gallery:
             starlette_file = convert_base64_to_starlette_file(image.get("base64"))
-            file_info = save_file(request=request, file=starlette_file)
+            file_path = save_file(file=starlette_file)
 
             images_to_create.append(
                 ApartmentGallery(
-                    apartment_id=instance.id,
-                    photo=file_info.model_dump(),
-                    order=image.get("order"),
+                    apartment_id=instance.id, photo=file_path, order=image.get("order")
                 )
             )
 

@@ -1,7 +1,7 @@
 from dishka import FromDishka
 from dishka.integrations.fastapi import inject
 
-from fastapi import APIRouter, Request, Depends, Body
+from fastapi import APIRouter, Depends, Body
 from starlette import status
 
 
@@ -27,7 +27,7 @@ router = APIRouter(prefix="/user/apartments", tags=["User: Apartments"])
 @router.get(
     path="/{apartment_id}",
     response_model=SuccessResponse[GetApartmentDetailsSchema],
-    responses=generate_examples(NotFoundException, auth=True, role=True),
+    responses=generate_examples(NotFoundException, auth=True, role=True, user=True),
     status_code=status.HTTP_200_OK,
 )
 @inject
@@ -47,19 +47,18 @@ async def get_apartment(
 @router.post(
     path="",
     status_code=status.HTTP_201_CREATED,
-    responses=generate_examples(IntegrityErrorException, auth=True, role=True),
+    responses=generate_examples(
+        IntegrityErrorException, auth=True, role=True, user=True
+    ),
     response_model=SuccessResponse[GetApartmentDetailsSchema],
 )
 @inject
 async def create_apartment(
-    request: Request,
     apartment_service: FromDishka[ApartmentService],
     data: CreateApartmentSchema = Body(),
     user: GetUserSchema = Depends(user_from_token),
 ) -> SuccessResponse[GetApartmentDetailsSchema]:
-    apartment = await apartment_service.create_apartment(
-        request=request, user_id=user.id, data=data
-    )
+    apartment = await apartment_service.create_apartment(user_id=user.id, data=data)
     return SuccessResponse(
         data=apartment_service.to_schema(
             data=apartment, schema_type=GetApartmentDetailsSchema
@@ -76,6 +75,7 @@ async def create_apartment(
         NotFoundException,
         auth=True,
         role=True,
+        user=True,
     ),
     status_code=status.HTTP_200_OK,
 )

@@ -11,7 +11,7 @@ class Type(str, enum.Enum):
     MULTI_APARTMENT = "multi_apartment"
     TOWNHOUSE = "townhouse"
     COTTAGE = "cottage"
-    VILLA = "vila"
+    VILLA = "villa"
 
 
 class Class(str, enum.Enum):

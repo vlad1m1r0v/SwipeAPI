@@ -3,7 +3,7 @@ from typing import List
 from dishka import FromDishka
 from dishka.integrations.fastapi import inject
 
-from fastapi import APIRouter, Request, Depends
+from fastapi import APIRouter, Depends
 from starlette import status
 
 from src.core.schemas import Base64Item, GetGalleryImageSchema, SuccessResponse
@@ -39,12 +39,11 @@ router = APIRouter()
 )
 @inject
 async def update_gallery(
-    request: Request,
     gallery_service: FromDishka[GalleryService],
     media_set: List[Base64Item],
     builder: GetBuilderSchema = Depends(builder_from_token),
 ) -> SuccessResponse[List[GetGalleryImageSchema]]:
     gallery = await gallery_service.update_gallery(
-        complex_id=builder.complex.id, request=request, media_set=media_set
+        complex_id=builder.complex.id, media_set=media_set
     )
     return SuccessResponse(data=gallery)

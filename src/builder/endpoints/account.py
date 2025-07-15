@@ -3,7 +3,7 @@ from typing import Optional
 from dishka import FromDishka
 from dishka.integrations.fastapi import inject
 
-from fastapi import APIRouter, Request, Depends, Form, UploadFile, File
+from fastapi import APIRouter, Depends, Form, UploadFile, File
 from starlette import status
 
 from src.core.utils import save_file, generate_examples
@@ -28,7 +28,6 @@ router = APIRouter()
 )
 @inject
 async def update_account(
-    request: Request,
     user_service: FromDishka[UserService],
     email: Optional[str] = Form(default=None),
     name: Optional[str] = Form(default=None),
@@ -40,7 +39,7 @@ async def update_account(
         email=email,
         name=name,
         phone=phone,
-        photo=save_file(file=photo, request=request) if photo else None,
+        photo=save_file(file=photo) if photo else None,
     )
 
     await user_service.update(

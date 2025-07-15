@@ -1,6 +1,6 @@
 from .validation import UPPERCASE_LETTER, SPECIAL_CHARACTER, PHONE_NUMBER, DIGIT
 
-from .dirs import BASE_DIR, MEDIA_DIR, MEDIA_FOLDER
+from .dirs import BASE_DIR, MEDIA_DIR, MEDIA_FOLDER, DATASETS_DIR
 
 __all__ = [
     "UPPERCASE_LETTER",
@@ -10,4 +10,5 @@ __all__ = [
     "BASE_DIR",
     "MEDIA_DIR",
     "MEDIA_FOLDER",
+    "DATASETS_DIR",
 ]

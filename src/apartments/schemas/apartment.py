@@ -4,6 +4,8 @@ from datetime import datetime
 
 from pydantic import BaseModel, Field, computed_field
 
+from config import config
+
 from src.builder.enums import Technology, PropertyType, Heating
 from src.builder.schemas import GetRiserSchema
 
@@ -18,7 +20,7 @@ from src.apartments.enums import (
     CallMethod,
 )
 
-from src.core.schemas import Base64Item, GetGalleryImageSchema, FileInfo
+from src.core.schemas import Base64Item, GetGalleryImageSchema
 
 
 class CreateApartmentSchema(BaseModel):
@@ -92,7 +94,6 @@ class GetFloorSchema(BaseModel):
 
 class GetApartmentItemSchema(BaseModel):
     id: int
-    preview: GetGalleryImageSchema | None = Field(exclude=True)
     address: str
     area: float
     price: float
@@ -121,11 +122,6 @@ class GetApartmentItemSchema(BaseModel):
     def riser_no(self) -> Optional[int]:
         return self.riser.no if self.riser else None
 
-    @computed_field
-    @property
-    def preview_url(self) -> Optional[str]:
-        return self.preview.photo_url if self.preview else None
-
 
 class GetApartmentDetailsSchema(BaseModel):
     id: int
@@ -151,7 +147,7 @@ class GetApartmentDetailsSchema(BaseModel):
     call_method: CallMethod
     description: str
     price: int
-    scheme: FileInfo = Field(exclude=True)
+    scheme: str = Field(exclude=True)
     gallery: List[GetGalleryImageSchema]
 
     floor: GetFloorSchema | None = Field(exclude=True)
@@ -180,4 +176,4 @@ class GetApartmentDetailsSchema(BaseModel):
     @computed_field
     @property
     def scheme_url(self) -> Optional[str]:
-        return self.scheme.url if self.scheme else None
+        return f"{config.server.url}/{self.scheme}" if self.scheme else None

@@ -1,7 +1,6 @@
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Optional
 
 from sqlalchemy import orm
-from sqlalchemy.dialects.postgresql import JSONB
 import sqlalchemy as sa
 
 from advanced_alchemy.base import BigIntAuditBase
@@ -26,7 +25,7 @@ class User(BigIntAuditBase):
     __tablename__ = "users"
 
     name: orm.Mapped[str]
-    photo = sa.Column(JSONB)
+    photo: orm.Mapped[Optional[str]] = orm.mapped_column(nullable=True)
     email: orm.Mapped[str]
     phone: orm.Mapped[str]
     role: orm.Mapped[Role] = orm.mapped_column(

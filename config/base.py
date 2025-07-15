@@ -9,6 +9,7 @@ from config.in_memory_db import InMemoryDBConfig
 from config.email import EmailConfig
 from config.signing import SignConfig
 from config.celery import CeleryConfig
+from config.server import ServerConfig
 
 from src.core.constants import BASE_DIR
 
@@ -24,6 +25,7 @@ class Config(BaseModel):
     celery: CeleryConfig = Field(default_factory=lambda: CeleryConfig(**env))
     email: EmailConfig = Field(default_factory=lambda: EmailConfig(**env))
     sign: SignConfig = Field(default_factory=lambda: SignConfig(**env))
+    server: ServerConfig = Field(default_factory=lambda: ServerConfig(**env))
 
 
 config = Config()

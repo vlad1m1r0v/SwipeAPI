@@ -1,8 +1,9 @@
 from typing import Optional
 
+from config import config
+
 from pydantic import Field, BaseModel, EmailStr, computed_field
 
-from src.core.schemas import FileInfo
 from src.user.enums import Role
 
 
@@ -12,12 +13,12 @@ class GetAdminSchema(BaseModel):
     phone: str
     email: EmailStr
     role: Role
-    photo: Optional[FileInfo] = Field(exclude=True)
+    photo: Optional[str] = Field(exclude=True)
 
     @computed_field
     @property
     def photo_url(self) -> Optional[str]:
-        return self.photo.url if self.photo else None
+        return f"{config.server.url}/{self.photo}" if self.photo else None
 
     class Config:
         from_attributes = True

@@ -5,7 +5,7 @@ from pydantic import EmailStr
 from dishka import FromDishka
 from dishka.integrations.fastapi import inject
 
-from fastapi import APIRouter, Request, Depends, Form, UploadFile, File, Query
+from fastapi import APIRouter, Depends, Form, UploadFile, File, Query
 from starlette import status
 
 from advanced_alchemy.service import OffsetPagination
@@ -66,7 +66,6 @@ async def get_notaries(
 )
 @inject
 async def create_notary(
-    request: Request,
     notary_service: FromDishka[NotaryService],
     _: GetAdminSchema = Depends(admin_from_token),
     first_name: str = Form(),
@@ -80,7 +79,7 @@ async def create_notary(
         last_name=last_name,
         email=email,
         phone=phone,
-        photo=save_file(request=request, file=photo),
+        photo=save_file(file=photo),
     )
 
     notary = await notary_service.create(data={**fields.model_dump()})
@@ -99,7 +98,6 @@ async def create_notary(
 )
 @inject
 async def update_notary(
-    request: Request,
     notary_id: int,
     notary_service: FromDishka[NotaryService],
     _: GetAdminSchema = Depends(admin_from_token),
@@ -114,7 +112,7 @@ async def update_notary(
         last_name=last_name,
         email=email,
         phone=phone,
-        photo=save_file(request=request, file=photo) if photo else None,
+        photo=save_file(file=photo) if photo else None,
     )
 
     notary = await notary_service.update(

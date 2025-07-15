@@ -2,7 +2,6 @@ from typing import TYPE_CHECKING
 
 from sqlalchemy import orm
 import sqlalchemy as sa
-from sqlalchemy.dialects.postgresql import JSONB
 
 from advanced_alchemy.base import BigIntAuditBase
 
@@ -17,6 +16,6 @@ class Document(BigIntAuditBase):
         sa.ForeignKey("complexes.id", ondelete="CASCADE")
     )
     name: orm.Mapped[str]
-    file = sa.Column(JSONB)
+    file: orm.Mapped[str]
 
     complex: orm.Mapped["Complex"] = orm.relationship(back_populates="documents")

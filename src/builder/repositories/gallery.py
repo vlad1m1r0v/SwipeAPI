@@ -1,7 +1,5 @@
 from typing import List, Sequence
 
-from fastapi import Request
-
 from advanced_alchemy.repository import SQLAlchemyAsyncRepository
 from sqlalchemy import select
 
@@ -17,7 +15,6 @@ class GalleryRepository(SQLAlchemyAsyncRepository[ComplexGallery]):
     async def update_gallery(
         self,
         complex_id: int,
-        request: Request,
         media_set: List[Base64Item],
     ) -> List[GetGalleryImageSchema]:
         for image in media_set:
@@ -31,11 +28,11 @@ class GalleryRepository(SQLAlchemyAsyncRepository[ComplexGallery]):
 
             if image.action == Action.CREATED:
                 starlette_file = convert_base64_to_starlette_file(image.base64)
-                file_info = save_file(request=request, file=starlette_file)
+                file_path = save_file(file=starlette_file)
 
                 image_to_add = ComplexGallery(
                     complex_id=complex_id,
-                    photo=file_info.model_dump(),
+                    photo=file_path,
                     order=image.order,
                 )
                 images_to_add.append(image_to_add)

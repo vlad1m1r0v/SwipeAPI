@@ -3,7 +3,6 @@ from typing import TYPE_CHECKING, List
 
 from sqlalchemy import orm
 import sqlalchemy as sa
-from sqlalchemy.dialects.postgresql import JSONB
 
 from advanced_alchemy.base import BigIntAuditBase
 
@@ -84,7 +83,7 @@ class Apartment(BigIntAuditBase):
     )
     description: orm.Mapped[str | None] = sa.Column(sa.Text)
     price: orm.Mapped[int] = orm.mapped_column(sa.Integer)
-    scheme = sa.Column(JSONB)
+    scheme: orm.Mapped[str]
 
     floor: orm.Mapped["Floor"] = orm.relationship(back_populates="apartments")
     riser: orm.Mapped["Riser"] = orm.relationship(back_populates="apartments")

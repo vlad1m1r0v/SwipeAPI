@@ -2,6 +2,8 @@ from typing import Optional
 
 from pydantic import BaseModel, EmailStr, Field, computed_field
 
+from config import config
+
 from .contact import GetContactSchema
 from .agent_contact import GetAgentContactSchema
 from .notification_settings import GetNotificationSettingsSchema
@@ -11,14 +13,13 @@ from .balance import GetBalanceSchema
 from src.user.enums import Role
 
 from src.core.constants import PHONE_NUMBER
-from src.core.schemas import FileInfo
 
 
 class UpdateUserAccountSchema(BaseModel):
     name: Optional[str] = Field(min_length=3, max_length=100)
     phone: Optional[str] = Field(pattern=PHONE_NUMBER)
     email: Optional[EmailStr]
-    photo: Optional[FileInfo]
+    photo: Optional[str]
 
 
 class GetUserAccountSchema(BaseModel):
@@ -27,12 +28,12 @@ class GetUserAccountSchema(BaseModel):
     phone: str
     email: str
     role: Role
-    photo: Optional[FileInfo] = Field(exclude=True, default=None)
+    photo: Optional[str] = Field(exclude=True, default=None)
 
     @computed_field
     @property
     def photo_url(self) -> Optional[str]:
-        return self.photo.url if self.photo else None
+        return f"{config.server.url}/{self.photo}" if self.photo else None
 
     class Config:
         from_attributes = True

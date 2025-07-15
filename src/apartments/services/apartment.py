@@ -1,5 +1,3 @@
-from fastapi import Request
-
 from advanced_alchemy.service import SQLAlchemyAsyncRepositoryService
 
 from src.apartments.models import Apartment
@@ -16,8 +14,6 @@ class ApartmentService(
         return await self.repository.get_apartment_details(apartment_id)
 
     async def create_apartment(
-        self, request: Request, user_id: int, data: CreateApartmentSchema
+        self, user_id: int, data: CreateApartmentSchema
     ) -> Apartment:
-        return await self.repository.create_apartment(
-            request=request, user_id=user_id, data=data
-        )
+        return await self.repository.create_apartment(user_id=user_id, data=data)

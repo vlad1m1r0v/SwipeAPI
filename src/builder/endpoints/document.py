@@ -3,7 +3,7 @@ from typing import Optional
 from dishka import FromDishka
 from dishka.integrations.fastapi import inject
 
-from fastapi import APIRouter, Depends, Request, Form, UploadFile, File
+from fastapi import APIRouter, Depends, Form, UploadFile, File
 from starlette import status
 
 from src.core.utils import save_file, generate_examples
@@ -37,13 +37,12 @@ router = APIRouter(prefix="/documents", tags=["Builder: Documents"])
 )
 @inject
 async def create_document(
-    request: Request,
     document_service: FromDishka[DocumentService],
     name: str = Form(),
     file: UploadFile = File(),
     builder: GetBuilderSchema = Depends(builder_from_token),
 ) -> SuccessResponse[GetDocumentSchema]:
-    fields = CreateDocumentSchema(name=name, file=save_file(file=file, request=request))
+    fields = CreateDocumentSchema(name=name, file=save_file(file=file))
     document = await document_service.create(
         {"complex_id": builder.complex.id, **fields.model_dump()}
     )
@@ -67,7 +66,6 @@ async def create_document(
 )
 @inject
 async def update_document(
-    request: Request,
     document_id: int,
     document_service: FromDishka[DocumentService],
     name: Optional[str] = Form(default=None),
@@ -76,7 +74,7 @@ async def update_document(
 ) -> SuccessResponse[GetDocumentSchema]:
     fields = UpdateDocumentSchema(
         name=name,
-        file=save_file(file=file, request=request) if file else None,
+        file=save_file(file=file) if file else None,
     )
     document = await document_service.update(
         data=fields.model_dump(exclude_none=True), item_id=document_id
