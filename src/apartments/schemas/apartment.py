@@ -101,6 +101,17 @@ class GetApartmentItemSchema(BaseModel):
     riser: GetRiserSchema | None = Field(exclude=True)
     created_at: datetime
     updated_at: datetime
+    gallery: List[GetGalleryImageSchema] = Field(exclude=True)
+
+    @computed_field
+    @property
+    def preview_url(self) -> Optional[str]:
+        return self.gallery[0] if len(self.gallery) else None
+
+    @computed_field
+    @property
+    def complex_name(self) -> Optional[int]:
+        return self.riser.section.block.complex.name if self.riser else None
 
     @computed_field
     @property
@@ -152,6 +163,11 @@ class GetApartmentDetailsSchema(BaseModel):
 
     floor: GetFloorSchema | None = Field(exclude=True)
     riser: GetRiserSchema | None = Field(exclude=True)
+
+    @computed_field
+    @property
+    def complex_name(self) -> Optional[int]:
+        return self.riser.section.block.complex.name if self.riser else None
 
     @computed_field
     @property

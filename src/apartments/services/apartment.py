@@ -1,3 +1,5 @@
+from typing import Sequence
+
 from advanced_alchemy.service import SQLAlchemyAsyncRepositoryService
 
 from src.apartments.models import Apartment
@@ -12,6 +14,13 @@ class ApartmentService(
 
     async def get_apartment_details(self, apartment_id: int) -> Apartment:
         return await self.repository.get_apartment_details(apartment_id)
+
+    async def get_apartments(
+        self, limit: int, offset: int, user_id: int
+    ) -> tuple[Sequence[Apartment], int]:
+        return await self.repository.get_apartments(
+            limit=limit, offset=offset, user_id=user_id
+        )
 
     async def create_apartment(
         self, user_id: int, data: CreateApartmentSchema

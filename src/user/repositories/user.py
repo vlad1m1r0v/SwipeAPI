@@ -37,7 +37,7 @@ class UserRepository(SQLAlchemyAsyncRepository[User]):
 
         stmt = (
             insert(User)
-            .values(**fields, role=Role.USER, password=str(hash_password(password)))
+            .values(**fields, role=Role.USER, password=hash_password(password).decode())
             .returning(User)
         )
         result = await self.session.execute(stmt)
@@ -61,7 +61,9 @@ class UserRepository(SQLAlchemyAsyncRepository[User]):
 
         stmt = (
             insert(User)
-            .values(**fields, role=Role.ADMIN, password=str(hash_password(password)))
+            .values(
+                **fields, role=Role.ADMIN, password=hash_password(password).decode()
+            )
             .returning(User)
         )
         result = await self.session.execute(stmt)
@@ -74,7 +76,7 @@ class UserRepository(SQLAlchemyAsyncRepository[User]):
 
         stmt = (
             insert(User)
-            .values(**fields, role=Role.USER, password=str(hash_password(password)))
+            .values(**fields, role=Role.USER, password=hash_password(password).decode())
             .returning(User)
         )
         result = await self.session.execute(stmt)

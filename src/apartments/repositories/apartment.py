@@ -1,6 +1,8 @@
-from typing import List
+from typing import List, Sequence
 
+from advanced_alchemy.filters import LimitOffset
 from advanced_alchemy.repository import SQLAlchemyAsyncRepository
+
 from sqlalchemy import orm, select
 
 from src.builder.models import Section
@@ -10,7 +12,7 @@ from src.core.utils import (
     save_file,
 )
 
-from src.builder.models import Riser
+from src.builder.models import Riser, Block
 
 from src.apartments.models import Apartment, ApartmentGallery
 from src.apartments.schemas import CreateApartmentSchema
@@ -30,6 +32,10 @@ class ApartmentRepository(SQLAlchemyAsyncRepository[Apartment]):
                 orm.joinedload(Apartment.riser)
                 .joinedload(Riser.section)
                 .joinedload(Section.block),
+                orm.joinedload(Apartment.riser)
+                .joinedload(Riser.section)
+                .joinedload(Section.block)
+                .joinedload(Block.complex),
                 orm.selectinload(Apartment.gallery),
             )
         )
@@ -37,7 +43,35 @@ class ApartmentRepository(SQLAlchemyAsyncRepository[Apartment]):
         result = await self.session.execute(stmt)
         return result.scalar_one_or_none()
 
-    async def get_apartment_item(self, apartment_id: int) -> Apartment: ...
+    async def get_apartments(
+        self, limit: int, offset: int, user_id: int
+    ) -> tuple[Sequence[Apartment], int]:
+        stmt = (
+            select(Apartment)
+            .where(Apartment.user_id == user_id)
+            .options(
+                orm.joinedload(Apartment.floor),
+                orm.joinedload(Apartment.riser),
+                orm.joinedload(Apartment.riser).joinedload(Riser.section),
+                orm.joinedload(Apartment.riser)
+                .joinedload(Riser.section)
+                .joinedload(Section.block),
+                orm.joinedload(Apartment.riser)
+                .joinedload(Riser.section)
+                .joinedload(Section.block)
+                .joinedload(Block.complex),
+                orm.selectinload(Apartment.gallery),
+            )
+        )
+
+        limit_offset = LimitOffset(limit=limit, offset=offset)
+
+        results, total = await self.list_and_count(
+            limit_offset,
+            statement=stmt,
+        )
+
+        return results, total
 
     async def create_apartment(
         self, user_id: int, data: CreateApartmentSchema
