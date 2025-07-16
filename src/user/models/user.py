@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING, Optional
+from typing import TYPE_CHECKING, Optional, List
 
 from sqlalchemy import orm
 import sqlalchemy as sa
@@ -19,6 +19,8 @@ if TYPE_CHECKING:
     from src.admin.models import Blacklist
 
     from src.builder.models import Complex
+
+    from src.apartments.models import Apartment
 
 
 class User(BigIntAuditBase):
@@ -52,4 +54,9 @@ class User(BigIntAuditBase):
     )
     complex: orm.Mapped["Complex"] = orm.relationship(
         back_populates="user", uselist=False, cascade="all, delete-orphan"
+    )
+    apartments: orm.Mapped[List["Apartment"]] = orm.relationship(
+        back_populates="user",
+        uselist=True,
+        cascade="all, delete-orphan",
     )

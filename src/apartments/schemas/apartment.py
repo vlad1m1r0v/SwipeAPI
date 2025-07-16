@@ -106,7 +106,7 @@ class GetApartmentItemSchema(BaseModel):
     @computed_field
     @property
     def preview_url(self) -> Optional[str]:
-        return self.gallery[0] if len(self.gallery) else None
+        return self.gallery[0].photo_url if len(self.gallery) else None
 
     @computed_field
     @property

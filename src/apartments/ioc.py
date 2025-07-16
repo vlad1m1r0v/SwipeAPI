@@ -4,7 +4,7 @@ import dishka as di
 
 from sqlalchemy.ext import asyncio as sa
 
-from src.apartments.services import ApartmentService
+from src.apartments.services import ApartmentService, AddToComplexRequestService
 
 
 class ApartmentsProvider(di.Provider):
@@ -14,4 +14,12 @@ class ApartmentsProvider(di.Provider):
         session: sa.AsyncSession,
     ) -> AsyncIterator[ApartmentService]:
         async with ApartmentService.new(session=session) as service:
+            yield service
+
+    @di.provide(scope=di.Scope.REQUEST)
+    async def provide_add_to_complex_request_service(
+        self,
+        session: sa.AsyncSession,
+    ) -> AsyncIterator[AddToComplexRequestService]:
+        async with AddToComplexRequestService.new(session=session) as service:
             yield service

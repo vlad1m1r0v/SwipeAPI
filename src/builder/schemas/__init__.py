@@ -46,6 +46,8 @@ from .riser import (
     UpdateRiserSchema,
 )
 
+from .add_to_complex_request import AddToComplexRequestSchema
+
 __all__ = [
     "GetFormalizationAndPaymentSettingsSchema",
     "UpdateFormalizationAndPaymentSettingsSchema",
@@ -79,4 +81,5 @@ __all__ = [
     "GetRiserWithComplexSchema",
     "CreateRiserSchema",
     "UpdateRiserSchema",
+    "AddToComplexRequestSchema",
 ]

@@ -20,6 +20,8 @@ from src.apartments.enums import (
 )
 
 if TYPE_CHECKING:
+    from src.user.models import User
+
     from src.builder.models import Riser, Floor
 
     from src.apartments.models import ApartmentGallery, AddToComplexRequest
@@ -85,6 +87,7 @@ class Apartment(BigIntAuditBase):
     price: orm.Mapped[int] = orm.mapped_column(sa.Integer)
     scheme: orm.Mapped[str]
 
+    user: orm.Mapped["User"] = orm.relationship(back_populates="apartments")
     floor: orm.Mapped["Floor"] = orm.relationship(back_populates="apartments")
     riser: orm.Mapped["Riser"] = orm.relationship(back_populates="apartments")
     gallery: orm.Mapped[List["ApartmentGallery"]] = orm.relationship(

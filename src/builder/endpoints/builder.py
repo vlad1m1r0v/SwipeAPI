@@ -14,6 +14,7 @@ from .blocks import router as blocks_router
 from .sections import router as sections_router
 from .floors import router as floors_router
 from .risers import router as risers_router
+from .add_to_complex_request import router as add_to_complex_request_router
 
 router = APIRouter(prefix="/builder")
 
@@ -29,3 +30,4 @@ router.include_router(blocks_router)
 router.include_router(sections_router)
 router.include_router(floors_router)
 router.include_router(risers_router)
+router.include_router(add_to_complex_request_router)
