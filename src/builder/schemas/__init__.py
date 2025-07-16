@@ -15,7 +15,12 @@ from .document import GetDocumentSchema, CreateDocumentSchema, UpdateDocumentSch
 
 from .block import GetBlockSchema, CreateBlockSchema, UpdateBlockSchema
 
-from .section import GetSectionSchema, CreateSectionSchema, UpdateSectionSchema
+from .section import (
+    GetSectionSchema,
+    GetSectionWithComplexSchema,
+    CreateSectionSchema,
+    UpdateSectionSchema,
+)
 
 from .floor import GetFloorSchema, CreateFloorSchema, UpdateFloorSchema
 
@@ -41,6 +46,7 @@ __all__ = [
     "CreateBlockSchema",
     "UpdateBlockSchema",
     "GetSectionSchema",
+    "GetSectionWithComplexSchema",
     "CreateSectionSchema",
     "UpdateSectionSchema",
     "GetFloorSchema",

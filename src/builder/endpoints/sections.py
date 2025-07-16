@@ -18,15 +18,50 @@ from src.core.schemas import SuccessResponse
 from src.builder.schemas import (
     GetBuilderSchema,
     GetSectionSchema,
+    GetSectionWithComplexSchema,
     UpdateSectionSchema,
     CreateSectionSchema,
 )
 from src.builder.services import SectionService
 from src.builder.dependencies import check_builder_owns_section
 
-from src.auth.dependencies import builder_from_token
+from src.auth.dependencies import builder_from_token, user_from_token
+
+from src.user.schemas import GetUserSchema
 
 router = APIRouter(prefix="/sections", tags=["Builder: Sections"])
+
+sections = APIRouter(prefix="/sections", tags=["User: Add to complex requests"])
+
+
+@sections.get(
+    path="",
+    response_model=SuccessResponse[OffsetPagination[GetSectionWithComplexSchema]],
+    responses=generate_examples(auth=True, role=True, user=True),
+    status_code=status.HTTP_200_OK,
+)
+@inject
+async def get_sections(
+    section_service: FromDishka[SectionService],
+    limit: int = Query(default=20),
+    offset: int = Query(default=0),
+    complex_id: int | None = Query(default=None),
+    block_id: int | None = Query(default=None),
+    no: int | None = Query(default=None),
+    _: GetUserSchema = Depends(user_from_token),
+) -> SuccessResponse[OffsetPagination[GetSectionWithComplexSchema]]:
+    results, total = await section_service.get_sections(
+        limit=limit,
+        offset=offset,
+        complex_id=complex_id,
+        block_id=block_id,
+        no=no,
+    )
+    return SuccessResponse(
+        data=section_service.to_schema(
+            data=results, total=total, schema_type=GetSectionWithComplexSchema
+        )
+    )
 
 
 @router.get(
@@ -36,7 +71,7 @@ router = APIRouter(prefix="/sections", tags=["Builder: Sections"])
     status_code=status.HTTP_200_OK,
 )
 @inject
-async def get_sections(
+async def get_complex_sections(
     section_service: FromDishka[SectionService],
     limit: int = Query(default=20),
     offset: int = Query(default=0),
