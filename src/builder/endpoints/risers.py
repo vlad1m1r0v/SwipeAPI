@@ -18,15 +18,51 @@ from src.core.schemas import SuccessResponse
 from src.builder.schemas import (
     GetBuilderSchema,
     GetRiserSchema,
+    GetRiserWithComplexSchema,
     UpdateRiserSchema,
     CreateRiserSchema,
 )
 from src.builder.services import RiserService
 from src.builder.dependencies import check_builder_owns_riser
 
-from src.auth.dependencies import builder_from_token
+from src.auth.dependencies import builder_from_token, user_from_token
+
+from src.user.schemas import GetUserSchema
 
 router = APIRouter(prefix="/risers", tags=["Builder: Risers"])
+risers = APIRouter(prefix="/risers", tags=["User: Add to complex requests"])
+
+
+@risers.get(
+    path="",
+    response_model=SuccessResponse[OffsetPagination[GetRiserWithComplexSchema]],
+    responses=generate_examples(auth=True, role=True, user=True),
+    status_code=status.HTTP_200_OK,
+)
+@inject
+async def get_risers(
+    riser_service: FromDishka[RiserService],
+    limit: int = Query(default=20),
+    offset: int = Query(default=0),
+    complex_id: int | None = Query(default=None),
+    block_id: int | None = Query(default=None),
+    section_id: int | None = Query(default=None),
+    no: int | None = Query(default=None),
+    _: GetUserSchema = Depends(user_from_token),
+) -> SuccessResponse[OffsetPagination[GetRiserWithComplexSchema]]:
+    results, total = await riser_service.get_risers(
+        limit=limit,
+        offset=offset,
+        complex_id=complex_id,
+        block_id=block_id,
+        section_id=section_id,
+        no=no,
+    )
+    return SuccessResponse(
+        data=riser_service.to_schema(
+            data=results, total=total, schema_type=GetRiserWithComplexSchema
+        )
+    )
 
 
 @router.get(
@@ -36,7 +72,7 @@ router = APIRouter(prefix="/risers", tags=["Builder: Risers"])
     status_code=status.HTTP_200_OK,
 )
 @inject
-async def get_risers(
+async def get_complex_risers(
     riser_service: FromDishka[RiserService],
     limit: int = Query(default=20),
     offset: int = Query(default=0),

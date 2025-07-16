@@ -40,3 +40,15 @@ class GetRiserSchema(BaseModel):
     @property
     def block_no(self) -> int:
         return self.section.block.no
+
+
+class GetRiserWithComplexSchema(GetRiserSchema):
+    @computed_field
+    @property
+    def complex_id(self) -> int:
+        return self.section.block.complex.id
+
+    @computed_field
+    @property
+    def complex_name(self) -> str:
+        return self.section.block.complex.name
