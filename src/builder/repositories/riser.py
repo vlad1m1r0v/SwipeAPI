@@ -62,6 +62,9 @@ class RiserRepository(SQLAlchemyAsyncRepository[Riser]):
             .options(
                 orm.joinedload(Riser.section),
                 orm.joinedload(Riser.section).joinedload(Section.block),
+                orm.joinedload(Riser.section)
+                .joinedload(Section.block)
+                .joinedload(Block.complex),
             )
         )
 

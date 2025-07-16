@@ -22,7 +22,7 @@ from src.apartments.enums import (
 if TYPE_CHECKING:
     from src.builder.models import Riser, Floor
 
-    from src.apartments.models import ApartmentGallery
+    from src.apartments.models import ApartmentGallery, AddToComplexRequest
 
 
 class Apartment(BigIntAuditBase):
@@ -92,4 +92,9 @@ class Apartment(BigIntAuditBase):
         uselist=True,
         cascade="all, delete-orphan",
         order_by="ApartmentGallery.order",
+    )
+    add_to_complex_requests: orm.Mapped[List["AddToComplexRequest"]] = orm.relationship(
+        back_populates="apartment",
+        uselist=True,
+        cascade="all, delete-orphan",
     )

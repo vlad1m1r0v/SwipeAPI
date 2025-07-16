@@ -50,7 +50,10 @@ class SectionRepository(SQLAlchemyAsyncRepository[Section]):
         stmt = (
             select(Section)
             .where(Section.id == item_id)
-            .options(orm.joinedload(Section.block))
+            .options(
+                orm.joinedload(Section.block),
+                orm.joinedload(Section.block).joinedload(Block.complex),
+            )
         )
 
         result = await self.session.execute(stmt)

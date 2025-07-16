@@ -1,5 +1,7 @@
 from typing import Sequence
 
+from sqlalchemy import select, orm
+
 from advanced_alchemy.filters import (
     StatementFilter,
     LimitOffset,
@@ -32,6 +34,17 @@ class BlockRepository(SQLAlchemyAsyncRepository[Block]):
         if no:
             filters.append(ComparisonFilter(field_name="no", operator="eq", value=no))
 
-        results, total = await self.list_and_count(*filters)
-
+        results, total = await self.list_and_count(
+            *filters, load=[orm.joinedload(Block.complex)]
+        )
         return results, total
+
+    async def get_block(self, item_id: int) -> Block:
+        stmt = (
+            select(Block)
+            .where(Block.id == item_id)
+            .options(orm.joinedload(Block.complex))
+        )
+
+        result = await self.session.execute(stmt)
+        return result.scalar_one_or_none()

@@ -35,6 +35,11 @@ class GetComplexSchema(BaseComplexSchema):
     gallery: Optional[list[GetGalleryImageSchema]] = []
 
 
+class GetComplexIdAndNoSchema(BaseModel):
+    id: int
+    name: str
+
+
 class GetBuilderSchema(GetUserAccountSchema):
     contact: GetContactSchema
     complex: GetComplexSchema

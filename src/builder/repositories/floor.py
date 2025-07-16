@@ -48,7 +48,10 @@ class FloorRepository(SQLAlchemyAsyncRepository[Floor]):
         stmt = (
             select(Floor)
             .where(Floor.id == item_id)
-            .options(orm.joinedload(Floor.block))
+            .options(
+                orm.joinedload(Floor.block),
+                orm.joinedload(Floor.block).joinedload(Block.complex),
+            )
         )
 
         result = await self.session.execute(stmt)

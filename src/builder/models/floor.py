@@ -8,7 +8,7 @@ from advanced_alchemy.base import BigIntAuditBase
 if TYPE_CHECKING:
     from src.builder.models import Block
 
-    from src.apartments.models import Apartment
+    from src.apartments.models import Apartment, AddToComplexRequest
 
 
 class Floor(BigIntAuditBase):
@@ -26,4 +26,9 @@ class Floor(BigIntAuditBase):
     apartments: orm.Mapped[List["Apartment"]] = orm.relationship(
         back_populates="floor",
         uselist=True,
+    )
+    add_to_complex_requests: orm.Mapped[List["AddToComplexRequest"]] = orm.relationship(
+        back_populates="floor",
+        uselist=True,
+        cascade="all, delete-orphan",
     )

@@ -29,3 +29,15 @@ class GetFloorSchema(BaseModel):
     @property
     def block_no(self) -> int:
         return self.block.no
+
+
+class GetFloorWithComplexSchema(GetFloorSchema):
+    @computed_field
+    @property
+    def complex_id(self) -> int:
+        return self.block.complex.id
+
+    @computed_field
+    @property
+    def complex_name(self) -> str:
+        return self.block.complex.name

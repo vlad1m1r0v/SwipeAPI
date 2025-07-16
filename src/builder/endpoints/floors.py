@@ -18,15 +18,51 @@ from src.core.exceptions import (
 from src.builder.schemas import (
     GetBuilderSchema,
     GetFloorSchema,
+    GetFloorWithComplexSchema,
     UpdateFloorSchema,
     CreateFloorSchema,
 )
 from src.builder.services import FloorService
 from src.builder.dependencies import check_builder_owns_floor
 
-from src.auth.dependencies import builder_from_token
+from src.auth.dependencies import builder_from_token, user_from_token
+
+from src.user.schemas import GetUserSchema
 
 router = APIRouter(prefix="/floors", tags=["Builder: Floors"])
+floors = APIRouter(
+    prefix="/add-to-complex-request/floors", tags=["User: Add to complex requests"]
+)
+
+
+@floors.get(
+    path="",
+    response_model=SuccessResponse[OffsetPagination[GetFloorWithComplexSchema]],
+    responses=generate_examples(auth=True, role=True),
+    status_code=status.HTTP_200_OK,
+)
+@inject
+async def get_floors(
+    floor_service: FromDishka[FloorService],
+    limit: int = Query(default=20),
+    offset: int = Query(default=0),
+    complex_id: int | None = Query(default=None),
+    block_id: int | None = Query(default=None),
+    no: int | None = Query(default=None),
+    _: GetUserSchema = Depends(user_from_token),
+) -> SuccessResponse[OffsetPagination[GetFloorWithComplexSchema]]:
+    results, total = await floor_service.get_floors(
+        limit=limit,
+        offset=offset,
+        complex_id=complex_id,
+        block_id=block_id,
+        no=no,
+    )
+    return SuccessResponse(
+        data=floor_service.to_schema(
+            data=results, total=total, schema_type=GetFloorWithComplexSchema
+        )
+    )
 
 
 @router.get(
@@ -36,7 +72,7 @@ router = APIRouter(prefix="/floors", tags=["Builder: Floors"])
     status_code=status.HTTP_200_OK,
 )
 @inject
-async def get_floors(
+async def get_complex_floors(
     floor_service: FromDishka[FloorService],
     limit: int = Query(default=20),
     offset: int = Query(default=0),

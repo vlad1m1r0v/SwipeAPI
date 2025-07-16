@@ -17,3 +17,6 @@ class BlockService(SQLAlchemyAsyncRepositoryService[Block, BlockRepository]):
         no: int | None,
     ) -> tuple[Sequence[Block], int]:
         return await self.repository.get_blocks(limit, offset, complex_id, no)
+
+    async def get_block(self, item_id: int) -> Block:
+        return await self.repository.get_block(item_id)

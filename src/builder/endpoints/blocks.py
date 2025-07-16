@@ -18,15 +18,46 @@ from src.core.schemas import SuccessResponse
 from src.builder.schemas import (
     GetBuilderSchema,
     GetBlockSchema,
+    GetBlockWithComplexSchema,
     CreateBlockSchema,
     UpdateBlockSchema,
 )
 from src.builder.services import BlockService
 from src.builder.dependencies import check_builder_owns_block
 
-from src.auth.dependencies import builder_from_token
+from src.auth.dependencies import builder_from_token, user_from_token
+
+from src.user.schemas import GetUserSchema
 
 router = APIRouter(prefix="/blocks", tags=["Builder: Blocks"])
+blocks = APIRouter(
+    prefix="/add-to-complex-request/blocks", tags=["User: Add to complex requests"]
+)
+
+
+@blocks.get(
+    path="",
+    response_model=SuccessResponse[OffsetPagination[GetBlockWithComplexSchema]],
+    responses=generate_examples(auth=True, role=True, user=True),
+    status_code=status.HTTP_200_OK,
+)
+@inject
+async def get_blocks(
+    block_service: FromDishka[BlockService],
+    limit: int = Query(default=20),
+    offset: int = Query(default=0),
+    complex_id: int | None = Query(default=None),
+    no: int | None = Query(default=None),
+    _: GetUserSchema = Depends(user_from_token),
+) -> SuccessResponse[OffsetPagination[GetBlockWithComplexSchema]]:
+    results, total = await block_service.get_blocks(
+        limit=limit, offset=offset, complex_id=complex_id, no=no
+    )
+    return SuccessResponse(
+        data=block_service.to_schema(
+            data=results, total=total, schema_type=GetBlockWithComplexSchema
+        )
+    )
 
 
 @router.get(
@@ -36,7 +67,7 @@ router = APIRouter(prefix="/blocks", tags=["Builder: Blocks"])
     status_code=status.HTTP_200_OK,
 )
 @inject
-async def get_blocks(
+async def get_complex_blocks(
     block_service: FromDishka[BlockService],
     limit: int = Query(default=20),
     offset: int = Query(default=0),
@@ -65,9 +96,11 @@ async def create_block(
     data: CreateBlockSchema = Body(),
     builder: GetBuilderSchema = Depends(builder_from_token),
 ) -> SuccessResponse[GetBlockSchema]:
-    block = await block_service.create(
+    created = await block_service.create(
         data={**data.model_dump(), "complex_id": builder.complex.id}
     )
+    block = await block_service.get_block(created.id)
+
     return SuccessResponse(
         data=block_service.to_schema(data=block, schema_type=GetBlockSchema)
     )
@@ -93,7 +126,9 @@ async def update_block(
     data: UpdateBlockSchema = Body(),
     _: GetBuilderSchema = Depends(check_builder_owns_block),
 ) -> SuccessResponse[GetBlockSchema]:
-    block = await block_service.update(item_id=block_id, data=data.model_dump())
+    updated = await block_service.update(item_id=block_id, data=data.model_dump())
+    block = await block_service.get_block(updated.id)
+
     return SuccessResponse(
         data=block_service.to_schema(data=block, schema_type=GetBlockSchema)
     )

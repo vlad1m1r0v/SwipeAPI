@@ -76,7 +76,9 @@ class UserRepository(SQLAlchemyAsyncRepository[User]):
 
         stmt = (
             insert(User)
-            .values(**fields, role=Role.USER, password=hash_password(password).decode())
+            .values(
+                **fields, role=Role.BUILDER, password=hash_password(password).decode()
+            )
             .returning(User)
         )
         result = await self.session.execute(stmt)
@@ -89,14 +91,16 @@ class UserRepository(SQLAlchemyAsyncRepository[User]):
         )
 
         result = await self.session.execute(
-            insert(Complex).values(user_id=builder.id, name=builder.name)
+            insert(Complex)
+            .values(user_id=builder.id, name=builder.name)
+            .returning(Complex)
         )
-        building = result.scalar_one_or_none()
+        building: Complex = result.scalar_one_or_none()
 
         inserts = [
-            insert(Infrastructure).values(user_id=building.id),
-            insert(Advantages).values(user_id=building.id),
-            insert(FormalizationAndPaymentSettings).values(user_id=building.id),
+            insert(Infrastructure).values(complex_id=building.id),
+            insert(Advantages).values(complex_id=building.id),
+            insert(FormalizationAndPaymentSettings).values(complex_id=building.id),
         ]
         for stmt in inserts:
             await self.session.execute(stmt)

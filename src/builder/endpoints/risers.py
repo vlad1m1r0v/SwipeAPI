@@ -30,7 +30,9 @@ from src.auth.dependencies import builder_from_token, user_from_token
 from src.user.schemas import GetUserSchema
 
 router = APIRouter(prefix="/risers", tags=["Builder: Risers"])
-risers = APIRouter(prefix="/risers", tags=["User: Add to complex requests"])
+risers = APIRouter(
+    prefix="/add-to-complex-request/risers", tags=["User: Add to complex requests"]
+)
 
 
 @risers.get(

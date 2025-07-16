@@ -31,7 +31,9 @@ from src.user.schemas import GetUserSchema
 
 router = APIRouter(prefix="/sections", tags=["Builder: Sections"])
 
-sections = APIRouter(prefix="/sections", tags=["User: Add to complex requests"])
+sections = APIRouter(
+    prefix="/add-to-complex-request/sections", tags=["User: Add to complex requests"]
+)
 
 
 @sections.get(

@@ -8,7 +8,7 @@ from advanced_alchemy.base import BigIntAuditBase
 if TYPE_CHECKING:
     from src.builder.models import Section
 
-    from src.apartments.models import Apartment
+    from src.apartments.models import Apartment, AddToComplexRequest
 
 
 class Riser(BigIntAuditBase):
@@ -25,4 +25,10 @@ class Riser(BigIntAuditBase):
     apartments: orm.Mapped[List["Apartment"]] = orm.relationship(
         back_populates="riser",
         uselist=True,
+    )
+
+    add_to_complex_requests: orm.Mapped[List["AddToComplexRequest"]] = orm.relationship(
+        back_populates="riser",
+        uselist=True,
+        cascade="all, delete-orphan",
     )
