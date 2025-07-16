@@ -3,10 +3,10 @@ from typing import List, Sequence
 from advanced_alchemy.filters import LimitOffset
 from advanced_alchemy.repository import SQLAlchemyAsyncRepository
 
-from sqlalchemy import orm, select
+from sqlalchemy import orm, select, update, delete
 
 from src.builder.models import Section
-from src.core.schemas import Base64Item
+from src.core.schemas import Base64Item, Action
 from src.core.utils import (
     convert_base64_to_starlette_file,
     save_file,
@@ -15,7 +15,7 @@ from src.core.utils import (
 from src.builder.models import Riser, Block
 
 from src.apartments.models import Apartment, ApartmentGallery
-from src.apartments.schemas import CreateApartmentSchema
+from src.apartments.schemas import CreateApartmentSchema, UpdateApartmentSchema
 
 
 class ApartmentRepository(SQLAlchemyAsyncRepository[Apartment]):
@@ -104,4 +104,53 @@ class ApartmentRepository(SQLAlchemyAsyncRepository[Apartment]):
         await self.session.commit()
 
         apartment = await self.get_apartment_details(apartment_id=instance.id)
+        return apartment
+
+    async def update_apartment(
+        self, item_id: int, data: UpdateApartmentSchema
+    ) -> Apartment:
+        fields = data.model_dump(exclude_none=True)
+
+        if fields.get("scheme") is not None:
+            scheme_base64 = fields.pop("scheme")
+            scheme_starlette_file = convert_base64_to_starlette_file(scheme_base64)
+            file_path = save_file(file=scheme_starlette_file)
+            fields.setdefault("scheme", file_path)
+
+        gallery: List[Base64Item] = fields.pop("gallery", [])
+
+        stmt = update(Apartment).values(**fields).where(Apartment.id == item_id)
+
+        await self.session.execute(stmt)
+
+        images_to_add: List[ApartmentGallery] = []
+
+        for image in gallery:
+            if image.get("action") == Action.DELETED:
+                await self.session.execute(
+                    delete(ApartmentGallery).where(ApartmentGallery.id == image.id)
+                )
+
+            if image.get("action") == Action.UPDATED:
+                await self.session.execute(
+                    update(ApartmentGallery)
+                    .values(**image.model_dump(exclude={"action", "base64"}))
+                    .where(ApartmentGallery.id == image.id)
+                )
+
+            if image.get("action") == Action.CREATED:
+                starlette_file = convert_base64_to_starlette_file(image.get("base64"))
+                file_path = save_file(file=starlette_file)
+
+                image_to_add = ApartmentGallery(
+                    apartment_id=item_id,
+                    photo=file_path,
+                    order=image.get("order"),
+                )
+                images_to_add.append(image_to_add)
+
+        self.session.add_all(images_to_add)
+        await self.session.commit()
+
+        apartment = await self.get_apartment_details(apartment_id=item_id)
         return apartment

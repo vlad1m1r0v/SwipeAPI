@@ -16,6 +16,7 @@ from src.core.schemas import SuccessResponse
 from src.apartments.schemas import (
     GetApartmentDetailsSchema,
     CreateApartmentSchema,
+    UpdateApartmentSchema,
     GetApartmentItemSchema,
 )
 from src.apartments.services import ApartmentService
@@ -86,6 +87,31 @@ async def create_apartment(
     user: GetUserSchema = Depends(user_from_token),
 ) -> SuccessResponse[GetApartmentDetailsSchema]:
     apartment = await apartment_service.create_apartment(user_id=user.id, data=data)
+    return SuccessResponse(
+        data=apartment_service.to_schema(
+            data=apartment, schema_type=GetApartmentDetailsSchema
+        )
+    )
+
+
+@router.patch(
+    path="/{apartment_id}",
+    status_code=status.HTTP_200_OK,
+    responses=generate_examples(
+        IntegrityErrorException, auth=True, role=True, user=True
+    ),
+    response_model=SuccessResponse[GetApartmentDetailsSchema],
+)
+@inject
+async def update_apartment(
+    apartment_id: int,
+    apartment_service: FromDishka[ApartmentService],
+    data: UpdateApartmentSchema = Body(),
+    _: GetUserSchema = Depends(check_user_owns_apartment),
+) -> SuccessResponse[GetApartmentDetailsSchema]:
+    apartment = await apartment_service.update_apartment(
+        item_id=apartment_id, data=data
+    )
     return SuccessResponse(
         data=apartment_service.to_schema(
             data=apartment, schema_type=GetApartmentDetailsSchema

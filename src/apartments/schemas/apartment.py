@@ -56,35 +56,36 @@ class CreateApartmentSchema(BaseModel):
 
 
 class UpdateApartmentSchema(BaseModel):
-    address: Optional[str]
-    longitude: Optional[float]
-    latitude: Optional[float]
-    district: Optional[str]
-    microdistrict: Optional[str]
-    technology: Optional[Technology]
-    property_type: Optional[PropertyType]
-    ownership_type: Optional[OwnershipType]
-    bedrooms: Optional[Bedrooms]
-    bathrooms: Optional[Bathrooms]
-    kitchen_area: Optional[float]
-    heating: Optional[Heating]
-    has_balcony_or_loggia: Optional[bool]
-    has_mortgage: Optional[bool]
-    commission_to_agent: Optional[Commission]
-    condition: Optional[ApartmentCondition]
-    finishing: Optional[Finishing]
-    rooms: Optional[Rooms]
-    area: Optional[float]
-    call_method: Optional[CallMethod]
-    description: Optional[str]
-    price: Optional[int]
+    address: Optional[str] = Field(default=None)
+    longitude: Optional[float] = Field(default=None)
+    latitude: Optional[float] = Field(default=None)
+    district: Optional[str] = Field(default=None)
+    microdistrict: Optional[str] = Field(default=None)
+    technology: Optional[Technology] = Field(default=None)
+    property_type: Optional[PropertyType] = Field(default=None)
+    ownership_type: Optional[OwnershipType] = Field(default=None)
+    bedrooms: Optional[Bedrooms] = Field(default=None)
+    bathrooms: Optional[Bathrooms] = Field(default=None)
+    kitchen_area: Optional[float] = Field(default=None)
+    heating: Optional[Heating] = Field(default=None)
+    has_balcony_or_loggia: Optional[bool] = Field(default=None)
+    has_mortgage: Optional[bool] = Field(default=None)
+    commission_to_agent: Optional[Commission] = Field(default=None)
+    condition: Optional[ApartmentCondition] = Field(default=None)
+    finishing: Optional[Finishing] = Field(default=None)
+    rooms: Optional[Rooms] = Field(default=None)
+    area: Optional[float] = Field(default=None)
+    call_method: Optional[CallMethod] = Field(default=None)
+    description: Optional[str] = Field(default=None)
+    price: Optional[int] = Field(default=None)
     # base64 string
     scheme: Optional[str] = Field(
         examples=[
             "data:image/webp;base64,UklGRsYBAABXRUJQVlA4ILoBAAAQBwCdASoZABkAPlEkj0WjoiEUBAA4BQSxgE6ZcQwMtSrgDId+zdj09sCsqOL727JpXxkUk+fXSI8XTKRcmPOoAAD+9WPEOt/QRkR0Fx/6jYW3Ph2WvqZb/WNSAy5f5bTlVdONzxFXAu39tFlQLHk2O22XpgsgRtmCKASeHVHf6VUjUXkqH9pBp3uZlomESkDt2YAwj3EmJGufzx1FNKtdEjvZ1ChhmZs9Avd3PNJNwvHz9Pw986RmTZ750TTyjUn0gQHEYzAK63blnz4pP3M6Rw9zbXm1BVKHYpBWwpGb4vviA90o8iScc+6/xB6i1BBt/Jh5H+KUdoP+Oa+9duR/9WuCz9LOYfce8PPvbctf/ZyCbESy1YIMqYf9SuSbkw/ao3lpwfUfUArZvSf/lzqn6d473t+UNiOXh1V2fvlQK+lOBMEX4qT/6F2I/f/SEK9n4N9uKxZeCg6VXd3kUNI4uGwIEnDw55eLX4BVSmfTxVPPk5uKBJpmPhqeYcILa+fZ8nHTDr7YrojLSTLumbimf2Xkk5+XrJ7wWB+z5xtYel8f/zYxdusDu9K/uf+Lhh6P7lv5O/1jCAAA"
-        ]
+        ],
+        default=None,
     )
-    gallery: Optional[List[Base64Item]]
+    gallery: Optional[List[Base64Item]] = []
 
 
 class GetFloorSchema(BaseModel):
