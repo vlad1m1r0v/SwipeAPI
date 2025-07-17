@@ -3,7 +3,7 @@ from typing import List, Sequence
 from advanced_alchemy.filters import LimitOffset
 from advanced_alchemy.repository import SQLAlchemyAsyncRepository
 
-from sqlalchemy import orm, select, update, delete
+from sqlalchemy import orm, select
 
 from src.builder.models import Section
 from src.core.schemas import Base64Item, Action
@@ -119,24 +119,25 @@ class ApartmentRepository(SQLAlchemyAsyncRepository[Apartment]):
 
         gallery: List[Base64Item] = fields.pop("gallery", [])
 
-        stmt = update(Apartment).values(**fields).where(Apartment.id == item_id)
+        apartment = await self.session.get(Apartment, item_id)
 
-        await self.session.execute(stmt)
+        for key, value in fields.items():
+            setattr(apartment, key, value)
 
         images_to_add: List[ApartmentGallery] = []
 
         for image in gallery:
             if image.get("action") == Action.DELETED:
-                await self.session.execute(
-                    delete(ApartmentGallery).where(ApartmentGallery.id == image.id)
+                image_to_delete = await self.session.get(
+                    ApartmentGallery, image.get("id")
                 )
+                await self.session.delete(image_to_delete)
 
             if image.get("action") == Action.UPDATED:
-                await self.session.execute(
-                    update(ApartmentGallery)
-                    .values(**image.model_dump(exclude={"action", "base64"}))
-                    .where(ApartmentGallery.id == image.id)
+                image_to_update = await self.session.get(
+                    ApartmentGallery, image.get("id")
                 )
+                image_to_update.order = image.get("order")
 
             if image.get("action") == Action.CREATED:
                 starlette_file = convert_base64_to_starlette_file(image.get("base64"))
