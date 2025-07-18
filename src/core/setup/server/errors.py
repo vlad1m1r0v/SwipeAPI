@@ -11,7 +11,7 @@ from src.core.exceptions import (
     DuplicateKeyException,
     NotFoundException,
 )
-from src.core.utils import DefaultHTTPException
+from src.core.exceptions.base import DefaultHTTPException
 
 
 def default_http_exception_handler(request: Request, exc: DefaultHTTPException):

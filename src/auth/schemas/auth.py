@@ -6,7 +6,7 @@ from pydantic_core.core_schema import ValidationInfo
 from src.core.constants import UPPERCASE_LETTER, SPECIAL_CHARACTER, PHONE_NUMBER, DIGIT
 
 
-class PasswordMixin:
+class PasswordMixin(BaseModel):
     password: str
 
     @field_validator("password")
@@ -23,13 +23,13 @@ class PasswordMixin:
         return value
 
 
-class RegisterSchema(BaseModel, PasswordMixin):
+class RegisterSchema(PasswordMixin):
     name: str = Field(min_length=3, max_length=100)
     phone: str = Field(pattern=PHONE_NUMBER)
     email: EmailStr
 
 
-class LoginSchema(BaseModel, PasswordMixin):
+class LoginSchema(PasswordMixin):
     email: EmailStr
 
 

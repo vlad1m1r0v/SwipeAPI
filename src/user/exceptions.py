@@ -1,5 +1,5 @@
 from starlette import status
-from src.core.utils.errors.base import DefaultHTTPException
+from src.core.exceptions.base import DefaultHTTPException
 
 
 class UserAlreadyExistsException(DefaultHTTPException):

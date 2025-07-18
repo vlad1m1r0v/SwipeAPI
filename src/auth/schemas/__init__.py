@@ -4,6 +4,7 @@ from .auth import (
     UpdatePasswordSchema,
     ForgotPasswordSchema,
     ResetPasswordSchema,
+    PasswordMixin,
 )
 
 from .tokens import (
@@ -19,6 +20,7 @@ __all__ = [
     "UpdatePasswordSchema",
     "ForgotPasswordSchema",
     "ResetPasswordSchema",
+    "PasswordMixin",
     "BasePayloadSchema",
     "PayloadWithTypeSchema",
     "PayloadWithExpDateSchema",

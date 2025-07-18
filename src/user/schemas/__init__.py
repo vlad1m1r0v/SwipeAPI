@@ -11,9 +11,15 @@ from .notification_settings import (
     UpdateNotificationSettingsSchema,
 )
 
-from .user import GetUserAccountSchema, GetUserSchema, UpdateUserAccountSchema
+from .user import (
+    CreateUserSchema,
+    GetUserAccountSchema,
+    GetUserSchema,
+    UpdateUserAccountSchema,
+)
 
 __all__ = [
+    "CreateUserSchema",
     "GetContactSchema",
     "UpdateContactSchema",
     "GetAgentContactSchema",
