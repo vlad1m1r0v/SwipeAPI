@@ -59,7 +59,9 @@ class UkrainianPhoneProvider(BaseProvider):
 class CustomEmailProvider(BaseProvider):
     @staticmethod
     def custom_email(name: str) -> str:
-        return f"{re.sub(r'[ .]', '_', name.lower())}_{fake.random_int(min=1950, max=1990)}@gmail.com"
+        without_dots = re.sub(r"\.", "", name.lower())
+        without_spaces = re.sub(r"\s+", "_", without_dots)
+        return f"{re.sub(r'[ .]', '_', without_spaces.lower())}_{fake.random_int(min=1950, max=1990)}@gmail.com"
 
 
 fake.add_provider(avatar_path_provider)
