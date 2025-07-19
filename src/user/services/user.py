@@ -1,5 +1,7 @@
 from typing import Sequence
 
+from pydantic import BaseModel
+
 from advanced_alchemy.service import SQLAlchemyAsyncRepositoryService, ModelDictT
 
 from src.auth.utils import hash_password, validate_password
@@ -57,7 +59,10 @@ class UserService(SQLAlchemyAsyncRepositoryService[User, UserRepository]):
         await self.update(data={"password": data["new_password"]}, item_id=user.id)
 
     async def to_model(self, data: ModelDictT, operation: str | None = None) -> User:
-        if isinstance(data, dict) and "password" in data:
+        if isinstance(data, BaseModel):
+            data = data.model_dump(exclude_unset=True)
+
+        if "password" in data:
             password: bytes | str | None = data.pop("password", None)
 
             if password is not None:

@@ -1,5 +1,7 @@
 import os
 import random
+import re
+
 
 from faker import Faker
 from faker.providers import DynamicProvider, BaseProvider
@@ -54,9 +56,16 @@ class UkrainianPhoneProvider(BaseProvider):
         return f"+380{random.randint(400000000, 999999999)}"
 
 
+class CustomEmailProvider(BaseProvider):
+    @staticmethod
+    def custom_email(name: str) -> str:
+        return f"{re.sub(r'[ .]', '_', name.lower())}_{fake.random_int(min=1950, max=1990)}@gmail.com"
+
+
 fake.add_provider(avatar_path_provider)
 fake.add_provider(document_path_provider)
 fake.add_provider(building_path_provider)
 fake.add_provider(room_path_provider)
 fake.add_provider(scheme_path_provider)
 fake.add_provider(UkrainianPhoneProvider)
+fake.add_provider(CustomEmailProvider)
