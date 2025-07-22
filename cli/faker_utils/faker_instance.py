@@ -2,7 +2,6 @@ import os
 import random
 import re
 
-
 from faker import Faker
 from faker.providers import DynamicProvider, BaseProvider
 
@@ -56,12 +55,59 @@ class UkrainianPhoneProvider(BaseProvider):
         return f"+380{random.randint(400000000, 999999999)}"
 
 
+class CustomNameProvider(BaseProvider):
+    prefixes = ["RC", "Residence", "Living", "The"]
+    names = [
+        "Aurora",
+        "Skyline",
+        "Harmony",
+        "Nova",
+        "Vista",
+        "Sunrise",
+        "Legacy",
+        "Horizon",
+        "Emerald",
+        "Cascade",
+        "Zenith",
+        "Serenity",
+        "Lakeside",
+        "Harbor",
+        "Valley",
+        "Highlands",
+        "Oakwood",
+        "Greenfield",
+    ]
+    suffixes = [
+        "Park",
+        "City",
+        "Heights",
+        "Place",
+        "Tower",
+        "Bay",
+        "Garden",
+        "Square",
+        "Point",
+        "Village",
+    ]
+
+    def custom_builder_name(self):
+        prefix = random.choice(self.prefixes)
+        name = random.choice(self.names)
+        if random.random() < 0.5:
+            name += " " + random.choice(self.suffixes)
+        return f"{prefix} {name}"
+
+
 class CustomEmailProvider(BaseProvider):
     @staticmethod
-    def custom_email(name: str) -> str:
+    def custom_user_email(name: str) -> str:
         without_dots = re.sub(r"\.", "", name.lower())
         without_spaces = re.sub(r"\s+", "_", without_dots)
         return f"{re.sub(r'[ .]', '_', without_spaces.lower())}_{fake.random_int(min=1950, max=1990)}@gmail.com"
+
+    @staticmethod
+    def custom_builder_email(name: str) -> str:
+        return f"{name.replace(' ', '_').lower()}@gmail.com"
 
 
 fake.add_provider(avatar_path_provider)
@@ -71,3 +117,4 @@ fake.add_provider(room_path_provider)
 fake.add_provider(scheme_path_provider)
 fake.add_provider(UkrainianPhoneProvider)
 fake.add_provider(CustomEmailProvider)
+fake.add_provider(CustomNameProvider)

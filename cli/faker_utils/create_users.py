@@ -47,7 +47,7 @@ def generate_users() -> List[CreateUserSchema]:
 
     for _ in range(USERS_TOTAL):
         name = fake.unique.name()
-        email = fake.custom_email(name)
+        email = fake.custom_user_email(name)
         photo = save_file_from_dataset(fake.avatar_path())
         phone = fake.ukrainian_phone()
         users.append(
@@ -88,7 +88,7 @@ def generate_user_agent_contacts(
     for user in users:
         first_name = fake.unique.first_name()
         last_name = fake.unique.last_name()
-        email = fake.custom_email(f"{first_name} {last_name}")
+        email = fake.custom_user_email(f"{first_name} {last_name}")
 
         agent_contacts.append(
             CreateAgentContactSchema(

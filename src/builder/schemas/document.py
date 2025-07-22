@@ -6,6 +6,7 @@ from pydantic import BaseModel, Field, computed_field
 
 
 class CreateDocumentSchema(BaseModel):
+    complex_id: int
     name: str = Field(min_length=5, max_length=50)
     file: str
 
