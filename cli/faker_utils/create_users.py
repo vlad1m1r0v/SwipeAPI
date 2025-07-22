@@ -4,10 +4,13 @@ from datetime import datetime, timedelta
 
 from pydantic import EmailStr
 
+from dishka import AsyncContainer
+
 from .faker_instance import fake
-
 from .media_utils import save_file_from_dataset
+from .contstants import COMMON_PASSWORD, TEST_USER_NAME, TEST_USER_EMAIL, USERS_TOTAL
 
+from src.user.enums import NotificationType
 from src.user.schemas import (
     CreateUserSchema,
     CreateContactSchema,
@@ -16,16 +19,33 @@ from src.user.schemas import (
     CreateNotificationSettingsSchema,
     CreateSubscriptionSchema,
 )
-from src.user.enums import NotificationType
-from src.user.models import User
+from src.user.services import (
+    UserService,
+    ContactService,
+    AgentContactService,
+    BalanceService,
+    SubscriptionService,
+    NotificationSettingsService,
+)
 
-AMOUNT_OF_USERS = 20
-PASSWORD = "Qwerty123#"
+from src.user.models import User
 
 
 def generate_users() -> List[CreateUserSchema]:
-    users: List[CreateUserSchema] = []
-    for _ in range(AMOUNT_OF_USERS):
+    photo = save_file_from_dataset(fake.avatar_path())
+    phone = fake.ukrainian_phone()
+
+    users: List[CreateUserSchema] = [
+        CreateUserSchema(
+            name=TEST_USER_NAME,
+            email=cast(EmailStr, TEST_USER_EMAIL),
+            password=COMMON_PASSWORD,
+            photo=photo,
+            phone=phone,
+        )
+    ]
+
+    for _ in range(USERS_TOTAL):
         name = fake.unique.name()
         email = fake.custom_email(name)
         photo = save_file_from_dataset(fake.avatar_path())
@@ -34,7 +54,7 @@ def generate_users() -> List[CreateUserSchema]:
             CreateUserSchema(
                 name=name,
                 email=cast(EmailStr, email),
-                password=PASSWORD,
+                password=COMMON_PASSWORD,
                 photo=photo,
                 phone=phone,
             )
@@ -131,3 +151,31 @@ def generate_subscriptions(users: Sequence[User]) -> List[CreateSubscriptionSche
         )
 
     return subscriptions
+
+
+async def create_users(container: AsyncContainer) -> Sequence[User]:
+    users_to_create = generate_users()
+    user_service = await container.get(UserService)
+    users = await user_service.create_many(users_to_create)
+
+    user_contacts_to_create = generate_user_contacts(users)
+    contact_service = await container.get(ContactService)
+    await contact_service.create_many(user_contacts_to_create)
+
+    user_agent_contacts_to_create = generate_user_agent_contacts(users)
+    agent_contact_service = await container.get(AgentContactService)
+    await agent_contact_service.create_many(user_agent_contacts_to_create)
+
+    balances_to_create = generate_balances(users)
+    balance_service = await container.get(BalanceService)
+    await balance_service.create_many(balances_to_create)
+
+    subscriptions_to_create = generate_subscriptions(users)
+    subscription_service = await container.get(SubscriptionService)
+    await subscription_service.create_many(subscriptions_to_create)
+
+    notification_settings_to_create = generate_notification_settings(users)
+    notification_settings_service = await container.get(NotificationSettingsService)
+    await notification_settings_service.create_many(notification_settings_to_create)
+
+    return users

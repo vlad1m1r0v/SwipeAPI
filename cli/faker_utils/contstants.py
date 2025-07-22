@@ -1,0 +1,22 @@
+COMMON_PASSWORD = "Qwerty123#"
+
+
+TEST_USER_NAME = "User Swipe"
+TEST_USER_EMAIL = "user_swipe_2025@gmail.com"
+
+USERS_TOTAL = 20
+
+TEST_BUILDER_NAME = "Builder Swipe"
+TEST_BUILDER_EMAIL = "builder_swipe_2025@gmail.com"
+
+BUILDERS_TOTAL = 5
+
+__all__ = [
+    "COMMON_PASSWORD",
+    "TEST_USER_NAME",
+    "TEST_USER_EMAIL",
+    "USERS_TOTAL",
+    "TEST_BUILDER_NAME",
+    "TEST_BUILDER_EMAIL",
+    "BUILDERS_TOTAL",
+]
