@@ -45,7 +45,7 @@ from src.builder.schemas import (
     CreateImageSchema,
     CreateDocumentSchema,
 )
-from src.builder.models import Complex, Block, Section
+from src.builder.models import Complex, Block, Section, Floor
 from src.builder.services import (
     ComplexService,
     InfrastructureService,
@@ -298,7 +298,9 @@ def generate_risers(sections: Sequence[Section]) -> List[CreateRiserSchema]:
     return risers
 
 
-async def create_builders(container: AsyncContainer):
+async def create_builders(
+    container: AsyncContainer,
+) -> tuple[Sequence[Complex], Sequence[Floor]]:
     builders_to_create = generate_builders()
     user_service = await container.get(UserService)
     builders = await user_service.create_many(builders_to_create)
@@ -345,8 +347,10 @@ async def create_builders(container: AsyncContainer):
 
     floors_to_create = generate_floors(blocks)
     floor_service = await container.get(FloorService)
-    await floor_service.create_many(floors_to_create)
+    floors = await floor_service.create_many(floors_to_create)
 
     risers_to_create = generate_risers(sections)
     riser_service = await container.get(RiserService)
     await riser_service.create_many(risers_to_create)
+
+    return complexes, floors
