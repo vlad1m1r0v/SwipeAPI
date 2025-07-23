@@ -13,3 +13,7 @@ endif
 	poetry run alembic revision --autogenerate -m "$(name)"
 migration-upgrade:
 	poetry run alembic upgrade head
+seed:
+	python -m cli seed
+clear:
+	python -m cli clear

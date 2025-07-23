@@ -26,6 +26,8 @@ if TYPE_CHECKING:
 
     from src.apartments.models import ApartmentGallery, AddToComplexRequest
 
+    from src.announcements.models import Announcement
+
 
 class Apartment(BigIntAuditBase):
     __tablename__ = "apartments"
@@ -100,4 +102,7 @@ class Apartment(BigIntAuditBase):
         back_populates="apartment",
         uselist=True,
         cascade="all, delete-orphan",
+    )
+    announcement: orm.Mapped["Announcement"] = orm.relationship(
+        back_populates="apartment"
     )

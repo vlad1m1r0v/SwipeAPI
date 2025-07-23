@@ -22,6 +22,13 @@ if TYPE_CHECKING:
 
     from src.apartments.models import Apartment
 
+    from src.announcements.models import (
+        AnnouncementView,
+        FavouriteAnnouncement,
+        Filter,
+        Complaint,
+    )
+
 
 class User(BigIntAuditBase):
     __tablename__ = "users"
@@ -58,5 +65,27 @@ class User(BigIntAuditBase):
     apartments: orm.Mapped[List["Apartment"]] = orm.relationship(
         back_populates="user",
         uselist=True,
+        cascade="all, delete-orphan",
+    )
+    views: orm.Mapped[List["AnnouncementView"]] = orm.relationship(
+        back_populates="user",
+        uselist=True,
+        cascade="all, delete-orphan",
+    )
+    favourite_announcements: orm.Mapped[List["FavouriteAnnouncement"]] = (
+        orm.relationship(
+            back_populates="user",
+            uselist=True,
+            cascade="all, delete-orphan",
+        )
+    )
+    filters: orm.Mapped[List["Filter"]] = orm.relationship(
+        back_populates="user",
+        uselist=True,
+        cascade="all, delete-orphan",
+    )
+    complaints: orm.Mapped[List["Complaint"]] = orm.relationship(
+        uselist=True,
+        back_populates="user",
         cascade="all, delete-orphan",
     )

@@ -1,8 +1,8 @@
 """init
 
-Revision ID: a13c08b2fa71
+Revision ID: b27f8a0096bd
 Revises:
-Create Date: 2025-07-15 12:44:16.160387
+Create Date: 2025-07-23 14:32:45.738753
 
 """
 
@@ -12,7 +12,7 @@ import advanced_alchemy
 
 
 # revision identifiers, used by Alembic.
-revision = "a13c08b2fa71"
+revision = "b27f8a0096bd"
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -220,6 +220,110 @@ def upgrade():
         ),
         sa.PrimaryKeyConstraint("id", name=op.f("pk_contacts")),
         sa.UniqueConstraint("user_id", name=op.f("uq_contacts_user_id")),
+    )
+    op.create_table(
+        "filters",
+        sa.Column(
+            "user_id",
+            sa.BigInteger().with_variant(sa.Integer(), "sqlite"),
+            nullable=False,
+        ),
+        sa.Column(
+            "type",
+            sa.Enum(
+                "MULTI_APARTMENT",
+                "TOWNHOUSE",
+                "COTTAGE",
+                "VILLA",
+                name="filter_type_enum",
+            ),
+            nullable=False,
+        ),
+        sa.Column(
+            "status",
+            sa.Enum(
+                "UNDER_CONSTRUCTION", "BUILT", "COMMISSIONED", name="filter_status_enum"
+            ),
+            nullable=False,
+        ),
+        sa.Column("district", sa.String(), nullable=False),
+        sa.Column("neighborhood", sa.String(), nullable=False),
+        sa.Column(
+            "rooms",
+            sa.Enum(
+                "ONE",
+                "TWO",
+                "THREE",
+                "FOUR",
+                "FIVE",
+                "SIX",
+                "SEVEN",
+                "EIGHT",
+                "NINE",
+                "TEN",
+                name="filter_rooms_enum",
+            ),
+            nullable=False,
+        ),
+        sa.Column("price_min", sa.Integer(), nullable=False),
+        sa.Column("price_max", sa.Integer(), nullable=False),
+        sa.Column("area_min", sa.Numeric(), nullable=False),
+        sa.Column("area_max", sa.Numeric(), nullable=False),
+        sa.Column(
+            "property_type",
+            sa.Enum(
+                "RESIDENTIAL",
+                "COMMERCIAL",
+                "INDUSTRIAL",
+                "LAND",
+                name="filter_property_type_enum",
+            ),
+            nullable=False,
+        ),
+        sa.Column(
+            "billing_options",
+            sa.Enum(
+                "MORTGAGE",
+                "CASH",
+                "INSTALLMENT",
+                "LEASING",
+                "STATE_PROGRAM",
+                name="filter_billing_options_enum",
+            ),
+            nullable=False,
+        ),
+        sa.Column(
+            "finishing",
+            sa.Enum(
+                "NO_FINISHING",
+                "ROUGH",
+                "PARTIALLY",
+                "PRE",
+                "FULLY",
+                name="filter_finishing_enum",
+            ),
+            nullable=False,
+        ),
+        sa.Column(
+            "id", sa.BigInteger().with_variant(sa.Integer(), "sqlite"), nullable=False
+        ),
+        sa.Column(
+            "created_at",
+            advanced_alchemy.types.datetime.DateTimeUTC(timezone=True),
+            nullable=False,
+        ),
+        sa.Column(
+            "updated_at",
+            advanced_alchemy.types.datetime.DateTimeUTC(timezone=True),
+            nullable=False,
+        ),
+        sa.ForeignKeyConstraint(
+            ["user_id"],
+            ["users.id"],
+            name=op.f("fk_filters_user_id_users"),
+            ondelete="CASCADE",
+        ),
+        sa.PrimaryKeyConstraint("id", name=op.f("pk_filters")),
     )
     op.create_table(
         "notification_settings",
@@ -923,6 +1027,91 @@ def upgrade():
         sa.PrimaryKeyConstraint("id", name=op.f("pk_apartments")),
     )
     op.create_table(
+        "add_to_complex_requests",
+        sa.Column(
+            "apartment_id",
+            sa.BigInteger().with_variant(sa.Integer(), "sqlite"),
+            nullable=False,
+        ),
+        sa.Column(
+            "floor_id",
+            sa.BigInteger().with_variant(sa.Integer(), "sqlite"),
+            nullable=False,
+        ),
+        sa.Column(
+            "riser_id",
+            sa.BigInteger().with_variant(sa.Integer(), "sqlite"),
+            nullable=False,
+        ),
+        sa.Column(
+            "id", sa.BigInteger().with_variant(sa.Integer(), "sqlite"), nullable=False
+        ),
+        sa.Column(
+            "created_at",
+            advanced_alchemy.types.datetime.DateTimeUTC(timezone=True),
+            nullable=False,
+        ),
+        sa.Column(
+            "updated_at",
+            advanced_alchemy.types.datetime.DateTimeUTC(timezone=True),
+            nullable=False,
+        ),
+        sa.ForeignKeyConstraint(
+            ["apartment_id"],
+            ["apartments.id"],
+            name=op.f("fk_add_to_complex_requests_apartment_id_apartments"),
+            ondelete="CASCADE",
+        ),
+        sa.ForeignKeyConstraint(
+            ["floor_id"],
+            ["floors.id"],
+            name=op.f("fk_add_to_complex_requests_floor_id_floors"),
+            ondelete="CASCADE",
+        ),
+        sa.ForeignKeyConstraint(
+            ["riser_id"],
+            ["risers.id"],
+            name=op.f("fk_add_to_complex_requests_riser_id_risers"),
+            ondelete="CASCADE",
+        ),
+        sa.PrimaryKeyConstraint("id", name=op.f("pk_add_to_complex_requests")),
+        sa.UniqueConstraint(
+            "apartment_id", "floor_id", "riser_id", name="uq_apartment_floor_riser"
+        ),
+    )
+    op.create_table(
+        "announcements",
+        sa.Column(
+            "apartment_id",
+            sa.BigInteger().with_variant(sa.Integer(), "sqlite"),
+            nullable=False,
+        ),
+        sa.Column("is_relevant", sa.Boolean(), nullable=True),
+        sa.Column("viewing_time", sa.Time(), nullable=True),
+        sa.Column("is_approved", sa.Boolean(), nullable=True),
+        sa.Column(
+            "id", sa.BigInteger().with_variant(sa.Integer(), "sqlite"), nullable=False
+        ),
+        sa.Column(
+            "created_at",
+            advanced_alchemy.types.datetime.DateTimeUTC(timezone=True),
+            nullable=False,
+        ),
+        sa.Column(
+            "updated_at",
+            advanced_alchemy.types.datetime.DateTimeUTC(timezone=True),
+            nullable=False,
+        ),
+        sa.ForeignKeyConstraint(
+            ["apartment_id"],
+            ["apartments.id"],
+            name=op.f("fk_announcements_apartment_id_apartments"),
+            ondelete="CASCADE",
+        ),
+        sa.PrimaryKeyConstraint("id", name=op.f("pk_announcements")),
+        sa.UniqueConstraint("apartment_id", name=op.f("uq_announcements_apartment_id")),
+    )
+    op.create_table(
         "apartments_gallery",
         sa.Column(
             "apartment_id",
@@ -953,12 +1142,192 @@ def upgrade():
         sa.PrimaryKeyConstraint("id", name=op.f("pk_apartments_gallery")),
         sa.UniqueConstraint("apartment_id", "order", name="uq_apartment_order"),
     )
+    op.create_table(
+        "complaints",
+        sa.Column(
+            "announcement_id",
+            sa.BigInteger().with_variant(sa.Integer(), "sqlite"),
+            nullable=False,
+        ),
+        sa.Column(
+            "user_id",
+            sa.BigInteger().with_variant(sa.Integer(), "sqlite"),
+            nullable=False,
+        ),
+        sa.Column("is_incorrect_price", sa.Boolean(), nullable=False),
+        sa.Column("is_incorrect_photo", sa.Boolean(), nullable=False),
+        sa.Column("is_incorrect_description", sa.Boolean(), nullable=False),
+        sa.Column(
+            "id", sa.BigInteger().with_variant(sa.Integer(), "sqlite"), nullable=False
+        ),
+        sa.Column(
+            "created_at",
+            advanced_alchemy.types.datetime.DateTimeUTC(timezone=True),
+            nullable=False,
+        ),
+        sa.Column(
+            "updated_at",
+            advanced_alchemy.types.datetime.DateTimeUTC(timezone=True),
+            nullable=False,
+        ),
+        sa.ForeignKeyConstraint(
+            ["announcement_id"],
+            ["announcements.id"],
+            name=op.f("fk_complaints_announcement_id_announcements"),
+            ondelete="CASCADE",
+        ),
+        sa.ForeignKeyConstraint(
+            ["user_id"],
+            ["users.id"],
+            name=op.f("fk_complaints_user_id_users"),
+            ondelete="CASCADE",
+        ),
+        sa.PrimaryKeyConstraint("id", name=op.f("pk_complaints")),
+    )
+    op.create_table(
+        "favourite_announcements",
+        sa.Column(
+            "announcement_id",
+            sa.BigInteger().with_variant(sa.Integer(), "sqlite"),
+            nullable=False,
+        ),
+        sa.Column(
+            "user_id",
+            sa.BigInteger().with_variant(sa.Integer(), "sqlite"),
+            nullable=False,
+        ),
+        sa.Column(
+            "id", sa.BigInteger().with_variant(sa.Integer(), "sqlite"), nullable=False
+        ),
+        sa.Column(
+            "created_at",
+            advanced_alchemy.types.datetime.DateTimeUTC(timezone=True),
+            nullable=False,
+        ),
+        sa.Column(
+            "updated_at",
+            advanced_alchemy.types.datetime.DateTimeUTC(timezone=True),
+            nullable=False,
+        ),
+        sa.ForeignKeyConstraint(
+            ["announcement_id"],
+            ["announcements.id"],
+            name=op.f("fk_favourite_announcements_announcement_id_announcements"),
+            ondelete="CASCADE",
+        ),
+        sa.ForeignKeyConstraint(
+            ["user_id"],
+            ["users.id"],
+            name=op.f("fk_favourite_announcements_user_id_users"),
+            ondelete="CASCADE",
+        ),
+        sa.PrimaryKeyConstraint("id", name=op.f("pk_favourite_announcements")),
+    )
+    op.create_table(
+        "promotions",
+        sa.Column(
+            "announcement_id",
+            sa.BigInteger().with_variant(sa.Integer(), "sqlite"),
+            nullable=False,
+        ),
+        sa.Column("is_highlighted", sa.Boolean(), nullable=True),
+        sa.Column(
+            "highlight_colour", sa.Enum("RED", "GREEN", name="colour"), nullable=True
+        ),
+        sa.Column("highlight_expiry_date", sa.DateTime(), nullable=True),
+        sa.Column("is_phrase_added", sa.Boolean(), nullable=True),
+        sa.Column(
+            "phrase",
+            sa.Enum(
+                "PURCHASE_GIFT",
+                "BARGAIN_IS_POSSIBLE",
+                "NEAR_THE_SEA",
+                "IN_RESIDENTIAL_AREA",
+                "LUCKY_WITH_THE_PRICE",
+                "FOR_A_LARGE_FAMILY",
+                "FAMILY_HOME",
+                "PRIVATE_PARKING",
+                name="phrase",
+            ),
+            nullable=True,
+        ),
+        sa.Column("phrase_expiry_date", sa.DateTime(), nullable=True),
+        sa.Column("is_big_advert", sa.Boolean(), nullable=True),
+        sa.Column("big_advert_expiry_date", sa.DateTime(), nullable=True),
+        sa.Column("is_boosted", sa.Boolean(), nullable=True),
+        sa.Column("boost_expiry_date", sa.DateTime(), nullable=True),
+        sa.Column(
+            "id", sa.BigInteger().with_variant(sa.Integer(), "sqlite"), nullable=False
+        ),
+        sa.Column(
+            "created_at",
+            advanced_alchemy.types.datetime.DateTimeUTC(timezone=True),
+            nullable=False,
+        ),
+        sa.Column(
+            "updated_at",
+            advanced_alchemy.types.datetime.DateTimeUTC(timezone=True),
+            nullable=False,
+        ),
+        sa.ForeignKeyConstraint(
+            ["announcement_id"],
+            ["announcements.id"],
+            name=op.f("fk_promotions_announcement_id_announcements"),
+            ondelete="CASCADE",
+        ),
+        sa.PrimaryKeyConstraint("id", name=op.f("pk_promotions")),
+    )
+    op.create_table(
+        "views",
+        sa.Column(
+            "announcement_id",
+            sa.BigInteger().with_variant(sa.Integer(), "sqlite"),
+            nullable=False,
+        ),
+        sa.Column(
+            "user_id",
+            sa.BigInteger().with_variant(sa.Integer(), "sqlite"),
+            nullable=False,
+        ),
+        sa.Column(
+            "id", sa.BigInteger().with_variant(sa.Integer(), "sqlite"), nullable=False
+        ),
+        sa.Column(
+            "created_at",
+            advanced_alchemy.types.datetime.DateTimeUTC(timezone=True),
+            nullable=False,
+        ),
+        sa.Column(
+            "updated_at",
+            advanced_alchemy.types.datetime.DateTimeUTC(timezone=True),
+            nullable=False,
+        ),
+        sa.ForeignKeyConstraint(
+            ["announcement_id"],
+            ["announcements.id"],
+            name=op.f("fk_views_announcement_id_announcements"),
+            ondelete="CASCADE",
+        ),
+        sa.ForeignKeyConstraint(
+            ["user_id"],
+            ["users.id"],
+            name=op.f("fk_views_user_id_users"),
+            ondelete="CASCADE",
+        ),
+        sa.PrimaryKeyConstraint("id", name=op.f("pk_views")),
+    )
     # ### end Alembic commands ###
 
 
 def downgrade():
     # ### commands auto generated by Alembic - please adjust! ###
+    op.drop_table("views")
+    op.drop_table("promotions")
+    op.drop_table("favourite_announcements")
+    op.drop_table("complaints")
     op.drop_table("apartments_gallery")
+    op.drop_table("announcements")
+    op.drop_table("add_to_complex_requests")
     op.drop_table("apartments")
     op.drop_table("risers")
     op.drop_table("sections")
@@ -972,6 +1341,7 @@ def downgrade():
     op.drop_table("advantages")
     op.drop_table("subscriptions")
     op.drop_table("notification_settings")
+    op.drop_table("filters")
     op.drop_table("contacts")
     op.drop_table("complexes")
     op.drop_table("blacklist")

@@ -192,7 +192,7 @@ def generate_news(complexes: Sequence[Complex]) -> List[CreateNewsSchema]:
                 CreateNewsSchema(
                     complex_id=building.id,
                     title=fake.sentence(nb_words=5).rstrip("."),
-                    description=fake.paragraph(nb_sentences=3),
+                    description=fake.paragraph(nb_sentences=5),
                 )
             )
 

@@ -48,10 +48,10 @@ def generate_apartments(
         block_floors = floors_by_block[block_id]
         block_risers = risers_by_block[block_id]
 
-        for floor, riser in product(block_floors, block_risers):
+        for i, (floor, riser) in enumerate(product(block_floors, block_risers)):
             apartments.append(
                 CreateApartmentWithUserSchema(
-                    user_id=fake.random_element(users).id,
+                    user_id=users[i % len(users)].id,
                     floor_id=floor.id,
                     riser_id=riser.id,
                     address=fake.street_address(),

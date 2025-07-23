@@ -2,6 +2,8 @@ import os
 import random
 import re
 
+from datetime import datetime, time, timedelta
+
 from faker import Faker
 from faker.providers import DynamicProvider, BaseProvider
 
@@ -110,6 +112,15 @@ class CustomEmailProvider(BaseProvider):
         return f"{name.replace(' ', '_').lower()}@gmail.com"
 
 
+class CustomTimeProvider(BaseProvider):
+    @staticmethod
+    def custom_time(start: time, end: time) -> time:
+        start_seconds = start.hour * 3600 + start.minute * 60 + start.second
+        end_seconds = end.hour * 3600 + end.minute * 60 + end.second
+        random_seconds = random.randint(start_seconds, end_seconds)
+        return (datetime.min + timedelta(seconds=random_seconds)).time()
+
+
 fake.add_provider(avatar_path_provider)
 fake.add_provider(document_path_provider)
 fake.add_provider(building_path_provider)
@@ -118,3 +129,4 @@ fake.add_provider(scheme_path_provider)
 fake.add_provider(UkrainianPhoneProvider)
 fake.add_provider(CustomEmailProvider)
 fake.add_provider(CustomNameProvider)
+fake.add_provider(CustomTimeProvider)

@@ -11,6 +11,8 @@ TEST_BUILDER_EMAIL = "builder_swipe_2025@gmail.com"
 
 BUILDERS_TOTAL = 5
 
+NOTARIES_TOTAL = 20
+
 __all__ = [
     "COMMON_PASSWORD",
     "TEST_USER_NAME",
@@ -19,4 +21,5 @@ __all__ = [
     "TEST_BUILDER_NAME",
     "TEST_BUILDER_EMAIL",
     "BUILDERS_TOTAL",
+    "NOTARIES_TOTAL",
 ]
