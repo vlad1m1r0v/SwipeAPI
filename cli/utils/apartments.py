@@ -6,11 +6,12 @@ from dishka import AsyncContainer
 
 from sqlalchemy import orm
 
-from .faker import fake
-from .media import save_file_from_dataset
+from cli.utils.faker import fake
+from cli.utils.media import save_file_from_dataset
+
+from cli.schemas import CreateApartmentSchema, CreateApartmentImageSchema
 
 from src.apartments.models import Apartment
-from src.apartments.schemas import CreateApartmentWithUserSchema, CreateImageSchema
 from src.apartments.services import ApartmentService, ApartmentGalleryService
 from src.apartments.enums import (
     OwnershipType,
@@ -32,8 +33,8 @@ from src.user.models import User
 
 def generate_apartments(
     users: Sequence[User], floors: Sequence[Floor], risers: Sequence[Riser]
-) -> List[CreateApartmentWithUserSchema]:
-    apartments: List[CreateApartmentWithUserSchema] = []
+) -> List[CreateApartmentSchema]:
+    apartments: List[CreateApartmentSchema] = []
 
     floors_by_block = defaultdict(list)
     risers_by_block = defaultdict(list)
@@ -50,7 +51,7 @@ def generate_apartments(
 
         for i, (floor, riser) in enumerate(product(block_floors, block_risers)):
             apartments.append(
-                CreateApartmentWithUserSchema(
+                CreateApartmentSchema(
                     user_id=users[i % len(users)].id,
                     floor_id=floor.id,
                     riser_id=riser.id,
@@ -86,13 +87,15 @@ def generate_apartments(
     return apartments
 
 
-def generate_gallery(apartments: Sequence[Apartment]) -> List[CreateImageSchema]:
-    gallery: List[CreateImageSchema] = []
+def generate_gallery(
+    apartments: Sequence[Apartment],
+) -> List[CreateApartmentImageSchema]:
+    gallery: List[CreateApartmentImageSchema] = []
 
     for apartment in apartments:
         for i in range(3):
             gallery.append(
-                CreateImageSchema(
+                CreateApartmentImageSchema(
                     apartment_id=apartment.id,
                     photo=save_file_from_dataset(fake.room_path()),
                     order=i + 1,

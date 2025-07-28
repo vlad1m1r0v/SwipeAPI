@@ -55,12 +55,6 @@ class CreateApartmentSchema(BaseModel):
     gallery: List[Base64Item]
 
 
-class CreateApartmentWithUserSchema(CreateApartmentSchema):
-    user_id: int
-    floor_id: int
-    riser_id: int
-
-
 class UpdateApartmentSchema(BaseModel):
     address: Optional[str] = Field(default=None)
     longitude: Optional[float] = Field(default=None)

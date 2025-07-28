@@ -12,17 +12,7 @@ from .balance import GetBalanceSchema
 
 from src.user.enums import Role
 
-from src.auth.schemas import PasswordMixin
-
 from src.core.constants import PHONE_NUMBER
-
-
-class CreateUserSchema(PasswordMixin):
-    name: str = Field(min_length=3, max_length=100)
-    phone: str = Field(pattern=PHONE_NUMBER)
-    email: EmailStr
-    photo: Optional[str] = None
-    role: Optional[Role] = Field(default=Role.USER)
 
 
 class UpdateUserAccountSchema(BaseModel):

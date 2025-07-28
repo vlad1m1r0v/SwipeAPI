@@ -6,10 +6,11 @@ from pydantic import EmailStr
 
 from cli.contstants import COMMON_PASSWORD, TEST_ADMIN_NAME, TEST_ADMIN_EMAIL
 
-from .faker import fake
+from cli.schemas import CreateUserSchema
+
+from cli.utils.faker import fake
 
 from src.user.enums import Role
-from src.user.schemas import CreateUserSchema
 from src.user.services import UserService
 
 

@@ -6,7 +6,18 @@ from dishka import AsyncContainer
 
 from pydantic import EmailStr
 
-from .faker import fake
+from cli.schemas import (
+    CreateUserSchema,
+    CreateContactSchema,
+    CreateComplexSchema,
+    CreateInfrastructureSchema,
+    CreateAdvantagesSchema,
+    CreateFormalizationAndPaymentSettingsSchema,
+    CreateBuildingImageSchema,
+    CreateBlockSchema,
+)
+
+from cli.utils.faker import fake
 
 from cli.contstants import (
     COMMON_PASSWORD,
@@ -15,7 +26,7 @@ from cli.contstants import (
     BUILDERS_TOTAL,
 )
 
-from .media import save_file_from_dataset
+from cli.utils.media import save_file_from_dataset
 
 from src.builder.enums import (
     Status,
@@ -33,16 +44,10 @@ from src.builder.enums import (
     SumInContract,
 )
 from src.builder.schemas import (
-    CreateComplexSchema,
-    CreateInfrastructureSchema,
-    CreateFormalizationAndPaymentSettingsSchema,
-    CreateAdvantagesSchema,
-    CreateBlockWithComplexSchema,
     CreateSectionSchema,
     CreateFloorSchema,
     CreateRiserSchema,
     CreateNewsSchema,
-    CreateImageSchema,
     CreateDocumentSchema,
 )
 from src.builder.models import Complex, Block, Section, Floor
@@ -61,7 +66,6 @@ from src.builder.services import (
 )
 
 from src.user.enums import Role
-from src.user.schemas import CreateUserSchema, CreateContactSchema
 from src.user.models import User
 from src.user.services import UserService, ContactService
 
@@ -199,13 +203,13 @@ def generate_news(complexes: Sequence[Complex]) -> List[CreateNewsSchema]:
     return news
 
 
-def generate_gallery(complexes: Sequence[Complex]) -> List[CreateImageSchema]:
-    images: List[CreateImageSchema] = []
+def generate_gallery(complexes: Sequence[Complex]) -> List[CreateBuildingImageSchema]:
+    images: List[CreateBuildingImageSchema] = []
 
     for building in complexes:
         for i in range(3):
             images.append(
-                CreateImageSchema(
+                CreateBuildingImageSchema(
                     complex_id=building.id,
                     photo=save_file_from_dataset(fake.building_path()),
                     order=i + 1,
@@ -256,14 +260,12 @@ def generate_advantages(complexes: Sequence[Complex]) -> List[CreateAdvantagesSc
     return advantages
 
 
-def generate_blocks(complexes: Sequence[Complex]) -> List[CreateBlockWithComplexSchema]:
-    blocks: List[CreateBlockWithComplexSchema] = []
+def generate_blocks(complexes: Sequence[Complex]) -> List[CreateBlockSchema]:
+    blocks: List[CreateBlockSchema] = []
 
     for building in complexes:
         for i in range(3):
-            blocks.append(
-                CreateBlockWithComplexSchema(complex_id=building.id, no=i + 1)
-            )
+            blocks.append(CreateBlockSchema(complex_id=building.id, no=i + 1))
 
     return blocks
 

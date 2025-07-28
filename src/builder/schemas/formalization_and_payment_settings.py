@@ -16,14 +16,6 @@ class BaseFormalizationAndPaymentSettingsSchema(BaseModel):
     sum_in_contract: Optional[SumInContract] = Field(default=None)
 
 
-class CreateFormalizationAndPaymentSettingsSchema(BaseModel):
-    complex_id: int
-    formalization: Formalization
-    billing_options: BillingOptions
-    property_type: PropertyType
-    sum_in_contract: SumInContract
-
-
 class UpdateFormalizationAndPaymentSettingsSchema(
     BaseFormalizationAndPaymentSettingsSchema
 ):

@@ -17,22 +17,6 @@ class BaseAdvantagesSchema(BaseModel):
     is_close_to_transport: Optional[bool] = Field(default=None)
 
 
-class CreateAdvantagesSchema(BaseModel):
-    complex_id: int
-    has_children_playground: bool
-    has_sports_field: bool
-    has_parking: bool
-    has_landscaped_area: bool
-    has_on_site_shops: bool
-    has_individual_heating: bool
-    has_balcony_or_loggia: bool
-    has_bicycle_field: bool
-    has_panoramic_windows: bool
-    is_close_to_sea: bool
-    is_close_to_school: bool
-    is_close_to_transport: bool
-
-
 class UpdateAdvantagesSchema(BaseAdvantagesSchema):
     pass
 

@@ -30,22 +30,6 @@ class BaseInfrastructureSchema(BaseModel):
     water_supply: Optional[WaterSupply] = Field(default=None)
 
 
-class CreateInfrastructureSchema(BaseModel):
-    complex_id: int
-    status: Status
-    type: Type
-    infrastructure_class: Class
-    technology: Technology
-    territory: Territory
-    sea_distance: Decimal
-    utility_bills: UtilityBills
-    ceiling_height: Decimal
-    has_gas: bool
-    heating: Heating
-    sewerage: Sewerage
-    water_supply: WaterSupply
-
-
 class UpdateInfrastructureSchema(BaseInfrastructureSchema):
     pass
 

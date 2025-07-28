@@ -7,8 +7,8 @@ from pydantic import EmailStr
 from src.notaries.services import NotaryService
 from src.notaries.schemas import CreateNotarySchema
 
-from .faker import fake
-from .media import save_file_from_dataset
+from cli.utils.faker import fake
+from cli.utils.media import save_file_from_dataset
 from cli.contstants import NOTARIES_TOTAL
 
 

@@ -21,15 +21,6 @@ class BaseComplexSchema(BaseModel):
     latitude: Optional[Decimal]
 
 
-class CreateComplexSchema(BaseModel):
-    user_id: int
-    name: str
-    address: str
-    description: str
-    longitude: Decimal
-    latitude: Decimal
-
-
 class UpdateComplexSchema(BaseComplexSchema):
     pass
 

@@ -5,14 +5,6 @@ from pydantic import BaseModel, Field, EmailStr
 from src.core.constants import PHONE_NUMBER
 
 
-class CreateContactSchema(BaseModel):
-    user_id: int
-    first_name: str
-    last_name: str
-    phone: str
-    email: str
-
-
 class UpdateContactSchema(BaseModel):
     first_name: Optional[str] = Field(min_length=3, max_length=100, default=None)
     last_name: Optional[str] = Field(min_length=3, max_length=100, default=None)

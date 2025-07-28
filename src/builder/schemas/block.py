@@ -7,10 +7,6 @@ class CreateBlockSchema(BaseModel):
     no: int = Field(ge=1, le=255)
 
 
-class CreateBlockWithComplexSchema(CreateBlockSchema):
-    complex_id: int
-
-
 class UpdateBlockSchema(BaseModel):
     no: int = Field(ge=1, le=255)
 
