@@ -6,7 +6,7 @@ from datetime import time, datetime, timedelta
 
 from dishka import AsyncContainer
 
-from .faker_instance import fake
+from .faker import fake
 
 from src.announcements.enums import Colour, Phrase
 from src.announcements.models import Announcement

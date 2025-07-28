@@ -1,6 +1,6 @@
 from typing import Sequence
 
-from advanced_alchemy.filters import LimitOffset, SearchFilter
+from advanced_alchemy.filters import LimitOffset, SearchFilter, ComparisonFilter
 from advanced_alchemy.repository import SQLAlchemyAsyncRepository
 
 from sqlalchemy import orm, select, insert
@@ -158,4 +158,25 @@ class UserRepository(SQLAlchemyAsyncRepository[User]):
             statement=stmt.options(orm.joinedload(User.blacklist)),
         )
 
+        return results, total
+
+    async def get_users(
+        self, limit: int, offset: int, search: str
+    ) -> tuple[Sequence[User], int]:
+        limit_offset = LimitOffset(limit=limit, offset=offset)
+        search_filter = SearchFilter(
+            field_name={"name", "email", "phone"},
+            value=search,
+            ignore_case=True,
+        )
+
+        role_filter = ComparisonFilter(
+            field_name="role",
+            operator="eq",
+            value=Role.USER,
+        )
+
+        results, total = await self.list_and_count(
+            limit_offset, search_filter, role_filter
+        )
         return results, total

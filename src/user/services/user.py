@@ -36,6 +36,13 @@ class UserService(SQLAlchemyAsyncRepositoryService[User, UserRepository]):
             limit=limit, offset=offset, search=search
         )
 
+    async def get_users(
+        self, limit: int, offset: int, search: str
+    ) -> tuple[Sequence[User], int]:
+        return await self.repository.get_users(
+            limit=limit, offset=offset, search=search
+        )
+
     async def authenticate(self, data: ModelDictT) -> User:
         user = await self.get_one_or_none(email=data.email)
 

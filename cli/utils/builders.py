@@ -6,16 +6,16 @@ from dishka import AsyncContainer
 
 from pydantic import EmailStr
 
-from .faker_instance import fake
+from .faker import fake
 
-from .contstants import (
+from cli.contstants import (
     COMMON_PASSWORD,
     TEST_BUILDER_NAME,
     TEST_BUILDER_EMAIL,
     BUILDERS_TOTAL,
 )
 
-from .media_utils import save_file_from_dataset
+from .media import save_file_from_dataset
 
 from src.builder.enums import (
     Status,

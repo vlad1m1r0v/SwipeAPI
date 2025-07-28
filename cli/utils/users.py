@@ -6,9 +6,9 @@ from pydantic import EmailStr
 
 from dishka import AsyncContainer
 
-from .faker_instance import fake
-from .media_utils import save_file_from_dataset
-from .contstants import COMMON_PASSWORD, TEST_USER_NAME, TEST_USER_EMAIL, USERS_TOTAL
+from .faker import fake
+from .media import save_file_from_dataset
+from cli.contstants import COMMON_PASSWORD, TEST_USER_NAME, TEST_USER_EMAIL, USERS_TOTAL
 
 from src.user.enums import NotificationType
 from src.user.schemas import (

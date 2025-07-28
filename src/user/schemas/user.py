@@ -21,7 +21,7 @@ class CreateUserSchema(PasswordMixin):
     name: str = Field(min_length=3, max_length=100)
     phone: str = Field(pattern=PHONE_NUMBER)
     email: EmailStr
-    photo: str
+    photo: Optional[str] = None
     role: Optional[Role] = Field(default=Role.USER)
 
 

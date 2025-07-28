@@ -4,12 +4,12 @@ from dishka import AsyncContainer
 
 from pydantic import EmailStr
 
-from src.admin.services import NotaryService
-from src.admin.schemas import CreateNotarySchema
+from src.notaries.services import NotaryService
+from src.notaries.schemas import CreateNotarySchema
 
-from .faker_instance import fake
-from .media_utils import save_file_from_dataset
-from .contstants import NOTARIES_TOTAL
+from .faker import fake
+from .media import save_file_from_dataset
+from cli.contstants import NOTARIES_TOTAL
 
 
 def generate_notaries() -> List[CreateNotarySchema]:

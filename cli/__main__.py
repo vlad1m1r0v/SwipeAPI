@@ -3,7 +3,7 @@ import anyio
 import click
 
 from cli.ioc_container import container
-from cli.faker_utils import create_records, clear_records
+from cli.commands import create_records, clear_records
 
 
 @click.group()

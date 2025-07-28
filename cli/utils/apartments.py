@@ -6,8 +6,8 @@ from dishka import AsyncContainer
 
 from sqlalchemy import orm
 
-from .faker_instance import fake
-from .media_utils import save_file_from_dataset
+from .faker import fake
+from .media import save_file_from_dataset
 
 from src.apartments.models import Apartment
 from src.apartments.schemas import CreateApartmentWithUserSchema, CreateImageSchema

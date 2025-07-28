@@ -8,7 +8,7 @@ from src.core.constants import MEDIA_DIR
 
 from src.user.services import UserService
 
-from src.admin.services import NotaryService
+from src.notaries.services import NotaryService
 
 
 async def clear_records(container: AsyncContainer) -> None:
