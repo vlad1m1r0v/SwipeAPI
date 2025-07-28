@@ -12,6 +12,7 @@ from src.admin.ioc import AdminProvider
 from src.builder.ioc import BuilderProvider
 from src.apartments.ioc import ApartmentsProvider
 from src.announcements.ioc import AnnouncementsProvider
+from src.notaries.ioc import NotaryProvider
 
 
 def setup_containers(app: FastAPI) -> None:
@@ -25,6 +26,7 @@ def setup_containers(app: FastAPI) -> None:
         BuilderProvider(),
         ApartmentsProvider(),
         AnnouncementsProvider(),
+        NotaryProvider(),
         context={Config: config},
     )
 

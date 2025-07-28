@@ -8,6 +8,7 @@ from src.admin.ioc import AdminProvider
 from src.builder.ioc import BuilderProvider
 from src.apartments.ioc import ApartmentsProvider
 from src.announcements.ioc import AnnouncementsProvider
+from src.notaries.ioc import NotaryProvider
 
 container = make_async_container(
     ConfigProvider(),
@@ -17,5 +18,6 @@ container = make_async_container(
     BuilderProvider(),
     ApartmentsProvider(),
     AnnouncementsProvider(),
+    NotaryProvider(),
     context={Config: config},
 )

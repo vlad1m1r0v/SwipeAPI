@@ -3,7 +3,7 @@ from typing import Sequence
 from advanced_alchemy.filters import LimitOffset, SearchFilter
 from advanced_alchemy.repository import SQLAlchemyAsyncRepository
 
-from src.admin.models import Notary
+from src.notaries.models import Notary
 
 
 class NotaryRepository(SQLAlchemyAsyncRepository[Notary]):

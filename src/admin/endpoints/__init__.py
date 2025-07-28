@@ -1,5 +1,11 @@
-from .admin import router as admin_router
-from .notaries import notaries as notaries_router
+from fastapi import APIRouter
 
+from src.admin.endpoints.blacklist import router as blacklist_router
+from src.admin.endpoints.profile import router as profile_router
 
-__all__ = ["admin_router", "notaries_router"]
+router = APIRouter(prefix="/admin")
+
+router.include_router(profile_router)
+router.include_router(blacklist_router)
+
+__all__ = ["router"]

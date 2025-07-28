@@ -1,6 +1,6 @@
 from src.auth.endpoints import router as auth_router
 from src.user.endpoints import router as user_router
-from src.admin.endpoints import admin_router, notaries_router
+from src.admin.endpoints import router as admin_router
 from src.builder.endpoints import (
     builder_router,
     complexes_router,
@@ -10,6 +10,7 @@ from src.builder.endpoints import (
     risers_router,
 )
 from src.apartments.endpoints import router as apartments_router
+from src.notaries.endpoints import router as notaries_router
 
 from fastapi import FastAPI
 

@@ -2,7 +2,7 @@ from src.core.utils import attach_file_cleanup
 
 from src.user.models import User
 
-from src.admin.models import Notary
+from src.notaries.models import Notary
 
 from src.builder.models import ComplexGallery, Document
 

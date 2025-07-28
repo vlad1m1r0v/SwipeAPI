@@ -2,8 +2,8 @@ from typing import Sequence
 
 from advanced_alchemy.service import SQLAlchemyAsyncRepositoryService
 
-from src.admin.models import Notary
-from src.admin.repositories import NotaryRepository
+from src.notaries.models import Notary
+from src.notaries.repositories import NotaryRepository
 
 
 class NotaryService(SQLAlchemyAsyncRepositoryService[Notary, NotaryRepository]):
