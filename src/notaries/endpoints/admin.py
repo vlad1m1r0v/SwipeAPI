@@ -27,7 +27,7 @@ from src.notaries.schemas import (
     UpdateNotarySchema,
 )
 
-router = APIRouter(prefix="/notaries", tags=["Admin: Notaries"])
+router = APIRouter(prefix="/admin/notaries", tags=["Admin: Notaries"])
 
 
 @router.post(

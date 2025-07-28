@@ -20,7 +20,6 @@ router = APIRouter()
     response_model=SuccessResponse[GetContactSchema],
     status_code=status.HTTP_200_OK,
     responses=generate_examples(auth=True, role=True, user=True),
-    tags=["User: Profile"],
 )
 @inject
 async def update_contact(

@@ -24,7 +24,6 @@ router = APIRouter()
     response_model=SuccessResponse[GetNotificationSettingsSchema],
     responses=generate_examples(auth=True, role=True, user=True),
     status_code=status.HTTP_200_OK,
-    tags=["User: Profile"],
 )
 @inject
 async def update_notification_settings(

@@ -19,7 +19,7 @@ from src.user.schemas import (
     UpdateSubscriptionSchema,
 )
 
-router = APIRouter(prefix="/subscription", tags=["User: Subscription"])
+router = APIRouter(prefix="/subscription")
 
 
 @router.patch(
