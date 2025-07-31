@@ -7,10 +7,6 @@ from .formalization_and_payment_settings import (
 from .news import NewsRepository
 from .document import DocumentRepository
 from .gallery import GalleryRepository
-from .block import BlockRepository
-from .section import SectionRepository
-from .floor import FloorRepository
-from .riser import RiserRepository
 
 __all__ = [
     "ComplexRepository",
@@ -20,8 +16,4 @@ __all__ = [
     "NewsRepository",
     "DocumentRepository",
     "GalleryRepository",
-    "BlockRepository",
-    "SectionRepository",
-    "FloorRepository",
-    "RiserRepository",
 ]

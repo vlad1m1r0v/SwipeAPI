@@ -4,7 +4,6 @@ from pydantic import BaseModel, Field
 
 
 class CreateNewsSchema(BaseModel):
-    complex_id: int
     title: str = Field(min_length=5, max_length=50)
     description: str = Field(min_length=20, max_length=500)
 

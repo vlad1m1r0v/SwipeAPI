@@ -16,8 +16,9 @@ if TYPE_CHECKING:
         News,
         Document,
         ComplexGallery,
-        Block,
     )
+
+    from src.buildings.models import Block
 
 
 class Complex(BigIntAuditBase):

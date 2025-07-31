@@ -5,6 +5,7 @@ from fastapi import APIRouter, Depends, Query
 from starlette import status
 
 from advanced_alchemy.service import OffsetPagination
+from advanced_alchemy.filters import LimitOffset
 
 from src.core.schemas import SuccessResponse
 from src.core.utils import generate_examples
@@ -36,6 +37,9 @@ async def get_notaries(
     results, total = await notary_service.get_notaries(limit, offset, search)
     return SuccessResponse(
         data=notary_service.to_schema(
-            data=results, total=total, schema_type=GetNotarySchema
+            data=results,
+            total=total,
+            filters=[LimitOffset(limit=limit, offset=offset)],
+            schema_type=GetNotarySchema,
         )
     )

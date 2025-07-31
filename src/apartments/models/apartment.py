@@ -19,14 +19,16 @@ from src.apartments.enums import (
     CallMethod,
 )
 
+from src.requests.models import AddToComplexRequest
+
 if TYPE_CHECKING:
     from src.user.models import User
 
-    from src.builder.models import Riser, Floor
-
-    from src.apartments.models import ApartmentGallery, AddToComplexRequest
+    from src.buildings.models import Riser, Floor
 
     from src.announcements.models import Announcement
+
+    from src.apartments.models import ApartmentGallery
 
 
 class Apartment(BigIntAuditBase):
@@ -81,7 +83,7 @@ class Apartment(BigIntAuditBase):
     rooms: orm.Mapped[Rooms] = orm.mapped_column(
         sa.Enum(Rooms, name="apartment_rooms_enum")
     )
-    area: orm.Mapped[Decimal] = orm.mapped_column(sa.Numeric(precision=4, scale=1))
+    area: orm.Mapped[Decimal] = orm.mapped_column(sa.Numeric(precision=5, scale=1))
     call_method: orm.Mapped[CallMethod] = orm.mapped_column(
         sa.Enum(CallMethod, name="apartment_call_method_enum")
     )
@@ -98,9 +100,10 @@ class Apartment(BigIntAuditBase):
         cascade="all, delete-orphan",
         order_by="ApartmentGallery.order",
     )
-    add_to_complex_requests: orm.Mapped[List["AddToComplexRequest"]] = orm.relationship(
-        back_populates="apartment",
+    requests: orm.Mapped[List["AddToComplexRequest"]] = orm.relationship(
+        "AddToComplexRequest",
         uselist=True,
+        back_populates="apartment",
         cascade="all, delete-orphan",
     )
     announcement: orm.Mapped["Announcement"] = orm.relationship(

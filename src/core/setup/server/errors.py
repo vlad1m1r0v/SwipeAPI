@@ -33,9 +33,9 @@ def default_http_exception_handler(request: Request, exc: DefaultHTTPException):
 async def database_exception_handler(request: Request, exc: Exception):
     if isinstance(exc, IntegrityError):
         raise IntegrityErrorException()
-    elif isinstance(exc, DuplicateKeyError):
+    if isinstance(exc, DuplicateKeyError):
         raise DuplicateKeyException()
-    elif isinstance(exc, NotFoundError):
+    if isinstance(exc, NotFoundError):
         raise NotFoundException()
 
 

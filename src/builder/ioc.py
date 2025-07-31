@@ -12,10 +12,6 @@ from src.builder.services import (
     NewsService,
     DocumentService,
     GalleryService,
-    BlockService,
-    SectionService,
-    FloorService,
-    RiserService,
 )
 
 
@@ -76,32 +72,4 @@ class BuilderProvider(di.Provider):
         session: sa.AsyncSession,
     ) -> AsyncIterator[GalleryService]:
         async with GalleryService.new(session=session) as service:
-            yield service
-
-    @di.provide(scope=di.Scope.REQUEST)
-    async def provide_block_service(
-        self, session: sa.AsyncSession
-    ) -> AsyncIterator[BlockService]:
-        async with BlockService.new(session=session) as service:
-            yield service
-
-    @di.provide(scope=di.Scope.REQUEST)
-    async def provide_section_service(
-        self, session: sa.AsyncSession
-    ) -> AsyncIterator[SectionService]:
-        async with SectionService.new(session=session) as service:
-            yield service
-
-    @di.provide(scope=di.Scope.REQUEST)
-    async def provide_floor_service(
-        self, session: sa.AsyncSession
-    ) -> AsyncIterator[FloorService]:
-        async with FloorService.new(session=session) as service:
-            yield service
-
-    @di.provide(scope=di.Scope.REQUEST)
-    async def provide_riser_service(
-        self, session: sa.AsyncSession
-    ) -> AsyncIterator[RiserService]:
-        async with RiserService.new(session=session) as service:
             yield service

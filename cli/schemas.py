@@ -11,7 +11,10 @@ from src.auth.schemas import PasswordMixin
 
 from src.user.enums import Role, NotificationType
 
-from src.builder.schemas import CreateBlockSchema as _CreateBlockSchema
+from src.builder.schemas import (
+    CreateDocumentSchema as _CreateDocumentSchema,
+    CreateNewsSchema as _CreateNewsSchema,
+)
 from src.builder.enums import (
     Status,
     Type,
@@ -29,6 +32,11 @@ from src.builder.enums import (
 )
 
 from src.apartments.schemas import CreateApartmentSchema as _CreateApartmentSchema
+
+from src.announcements.schemas import (
+    CreateFavouriteAnnouncementSchema as _CreateFavouriteAnnouncementSchema,
+    CreateFilterSchema as _CreateFilterSchema,
+)
 
 
 class CreateUserSchema(PasswordMixin):
@@ -121,7 +129,31 @@ class CreateFormalizationAndPaymentSettingsSchema(BaseModel):
     sum_in_contract: SumInContract
 
 
-class CreateBlockSchema(_CreateBlockSchema):
+class CreateBlockSchema(BaseModel):
+    complex_id: int
+    no: int
+
+
+class CreateFloorSchema(BaseModel):
+    block_id: int
+    no: int
+
+
+class CreateSectionSchema(BaseModel):
+    block_id: int
+    no: int
+
+
+class CreateRiserSchema(BaseModel):
+    section_id: int
+    no: int
+
+
+class CreateDocumentSchema(_CreateDocumentSchema):
+    complex_id: int
+
+
+class CreateNewsSchema(_CreateNewsSchema):
     complex_id: int
 
 
@@ -133,11 +165,24 @@ class CreateBuildingImageSchema(BaseModel):
 
 class CreateApartmentSchema(_CreateApartmentSchema):
     user_id: int
-    floor_id: int
-    riser_id: int
+    floor_id: Optional[int] = Field(default=None)
+    riser_id: Optional[int] = Field(default=None)
 
 
 class CreateApartmentImageSchema(BaseModel):
     apartment_id: int
     photo: str
     order: int
+
+
+class CreateFavouriteAnnouncementSchema(_CreateFavouriteAnnouncementSchema):
+    user_id: int
+
+
+class CreateFilterSchema(_CreateFilterSchema):
+    user_id: int
+
+
+class CreateViewSchema(BaseModel):
+    announcement_id: int
+    user_id: int

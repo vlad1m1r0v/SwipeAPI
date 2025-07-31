@@ -10,9 +10,11 @@ from src.auth.ioc import AuthProvider
 from src.user.ioc import UsersProvider
 from src.admin.ioc import AdminProvider
 from src.builder.ioc import BuilderProvider
+from src.buildings.ioc import BuildingsProvider
 from src.apartments.ioc import ApartmentsProvider
 from src.announcements.ioc import AnnouncementsProvider
 from src.notaries.ioc import NotaryProvider
+from src.requests.ioc import RequestsProvider
 
 
 def setup_containers(app: FastAPI) -> None:
@@ -24,9 +26,11 @@ def setup_containers(app: FastAPI) -> None:
         UsersProvider(),
         AdminProvider(),
         BuilderProvider(),
+        BuildingsProvider(),
         ApartmentsProvider(),
         AnnouncementsProvider(),
         NotaryProvider(),
+        RequestsProvider(),
         context={Config: config},
     )
 

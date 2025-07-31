@@ -5,10 +5,6 @@ from .formalization_and_payment_settings import FormalizationAndPaymentSettingsS
 from .news import NewsService
 from .document import DocumentService
 from .gallery import GalleryService
-from .block import BlockService
-from .section import SectionService
-from .floor import FloorService
-from .riser import RiserService
 
 __all__ = [
     "ComplexService",
@@ -18,8 +14,4 @@ __all__ = [
     "NewsService",
     "DocumentService",
     "GalleryService",
-    "BlockService",
-    "SectionService",
-    "FloorService",
-    "RiserService",
 ]

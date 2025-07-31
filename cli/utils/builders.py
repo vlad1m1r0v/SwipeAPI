@@ -15,6 +15,11 @@ from cli.schemas import (
     CreateFormalizationAndPaymentSettingsSchema,
     CreateBuildingImageSchema,
     CreateBlockSchema,
+    CreateSectionSchema,
+    CreateFloorSchema,
+    CreateRiserSchema,
+    CreateNewsSchema,
+    CreateDocumentSchema,
 )
 
 from cli.utils.faker import fake
@@ -43,14 +48,8 @@ from src.builder.enums import (
     PropertyType,
     SumInContract,
 )
-from src.builder.schemas import (
-    CreateSectionSchema,
-    CreateFloorSchema,
-    CreateRiserSchema,
-    CreateNewsSchema,
-    CreateDocumentSchema,
-)
-from src.builder.models import Complex, Block, Section, Floor
+
+from src.builder.models import Complex
 from src.builder.services import (
     ComplexService,
     InfrastructureService,
@@ -59,6 +58,10 @@ from src.builder.services import (
     NewsService,
     GalleryService,
     DocumentService,
+)
+
+from src.buildings.models import Block, Section, Floor
+from src.buildings.services import (
     BlockService,
     SectionService,
     FloorService,
@@ -81,6 +84,7 @@ def generate_builders() -> List[CreateUserSchema]:
             password=COMMON_PASSWORD,
             photo=photo,
             phone=phone,
+            role=Role.BUILDER,
         )
     ]
 
@@ -227,7 +231,7 @@ def generate_documents(complexes: Sequence[Complex]) -> List[CreateDocumentSchem
             documents.append(
                 CreateDocumentSchema(
                     complex_id=building.id,
-                    name=fake.sentence(nb_words=5).rstrip("."),
+                    name=fake.sentence(nb_words=3).rstrip("."),
                     file=save_file_from_dataset(fake.document_path()),
                 )
             )

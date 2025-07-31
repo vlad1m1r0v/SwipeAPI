@@ -3,7 +3,7 @@ from typing import Sequence
 from advanced_alchemy.filters import LimitOffset, SearchFilter, ComparisonFilter
 from advanced_alchemy.repository import SQLAlchemyAsyncRepository
 
-from sqlalchemy import orm, select, insert
+from sqlalchemy import orm, select, func, insert
 
 from src.auth.utils import hash_password
 from src.auth.schemas import RegisterSchema
@@ -26,6 +26,10 @@ from src.builder.models import (
     Advantages,
     FormalizationAndPaymentSettings,
 )
+
+from src.apartments.models import Apartment
+
+from src.buildings.models import Riser, Section, Block, Floor
 
 
 class UserRepository(SQLAlchemyAsyncRepository[User]):
@@ -138,7 +142,48 @@ class UserRepository(SQLAlchemyAsyncRepository[User]):
         )
 
         result = await self.session.execute(stmt)
-        return result.scalar_one_or_none()
+        builder: User = result.scalar_one_or_none()
+
+        agg_stmt = (
+            select(
+                func.min(Apartment.price).label("min_price"),
+                (func.sum(Apartment.price) / func.sum(Apartment.area)).label(
+                    "avg_price_per_m2"
+                ),
+                func.min(Apartment.area).label("min_area"),
+                func.max(Apartment.area).label("max_area"),
+            )
+            .join(Riser, Riser.id == Apartment.riser_id)
+            .join(Section, Section.id == Riser.section_id)
+            .join(Block, Block.id == Section.block_id)
+            .join(Floor, Floor.id == Apartment.floor_id)
+            .where(Block.complex_id == builder.complex.id, Floor.block_id == Block.id)
+        )
+
+        result = await self.session.execute(agg_stmt)
+        agg = result.first()
+
+        builder.complex.min_price = agg.min_price
+        builder.complex.avg_price_per_m2 = agg.avg_price_per_m2
+        builder.complex.min_area = agg.min_area
+        builder.complex.max_area = agg.max_area
+
+        stmt = (
+            select(
+                Block.id, Block.no, func.count(Apartment.id).label("apartments_count")
+            )
+            .join(Section, Section.block_id == Block.id)
+            .join(Riser, Riser.section_id == Section.id)
+            .join(Apartment, Apartment.riser_id == Riser.id)
+            .where(Block.complex_id == builder.complex.id)
+            .group_by(Block.id)
+            .order_by(Block.no)
+        )
+
+        result = await self.session.execute(stmt)
+        builder.complex.apartments_per_block = result.all()
+
+        return builder
 
     async def get_blacklisted_users(
         self, limit: int, offset: int, search: str

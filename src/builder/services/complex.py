@@ -9,7 +9,7 @@ from src.builder.repositories import ComplexRepository
 class ComplexService(SQLAlchemyAsyncRepositoryService[Complex, ComplexRepository]):
     repository_type = ComplexRepository
 
-    async def get_complexes_for_filters(
+    async def get_complexes_for_requests(
         self, limit: int, offset: int, search: str
     ) -> tuple[Sequence[Complex], int]:
-        return await self.repository.get_complexes_for_filters(limit, offset, search)
+        return await self.repository.get_complexes_for_requests(limit, offset, search)

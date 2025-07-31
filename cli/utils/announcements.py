@@ -8,15 +8,15 @@ from dishka import AsyncContainer
 
 from .faker import fake
 
-from src.announcements.enums import Colour, Phrase
-from src.announcements.models import Announcement
-from src.announcements.schemas import (
-    CreateAnnouncementSchema,
-    CreatePromotionSchema,
+from cli.schemas import (
     CreateViewSchema,
     CreateFavouriteAnnouncementSchema,
     CreateFilterSchema,
 )
+
+from src.announcements.enums import Colour, Phrase
+from src.announcements.models import Announcement
+from src.announcements.schemas import CreateAnnouncementSchema, CreatePromotionSchema
 from src.announcements.services import (
     AnnouncementService,
     AnnouncementPromotionService,

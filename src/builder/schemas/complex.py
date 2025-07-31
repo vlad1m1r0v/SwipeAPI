@@ -1,6 +1,6 @@
 from typing import Optional
 from decimal import Decimal
-from pydantic import BaseModel
+from pydantic import BaseModel, field_validator
 
 from .infrastructure import GetInfrastructureSchema
 from .advantages import GetAdvantagesSchema
@@ -25,8 +25,19 @@ class UpdateComplexSchema(BaseComplexSchema):
     pass
 
 
+class BlockWithApartmentsCountSchema(BaseModel):
+    id: int
+    no: int
+    apartments_count: int
+
+
 class GetComplexSchema(BaseComplexSchema):
     id: int
+    min_price: int
+    avg_price_per_m2: float
+    min_area: float
+    max_area: float
+    apartments_per_block: Optional[list[BlockWithApartmentsCountSchema]] = []
     infrastructure: GetInfrastructureSchema
     advantages: GetAdvantagesSchema
     formalization_and_payment_settings: GetFormalizationAndPaymentSettingsSchema
@@ -34,10 +45,9 @@ class GetComplexSchema(BaseComplexSchema):
     documents: Optional[list[GetDocumentSchema]] = []
     gallery: Optional[list[GetGalleryImageSchema]] = []
 
-
-class GetComplexIdAndNoSchema(BaseModel):
-    id: int
-    name: str
+    @field_validator("avg_price_per_m2", mode="before")
+    def round_avg_price(cls, v):
+        return round(v)
 
 
 class GetBuilderSchema(GetUserAccountSchema):

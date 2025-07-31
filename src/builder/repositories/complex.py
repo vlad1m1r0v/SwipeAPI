@@ -9,7 +9,7 @@ from src.builder.models import Complex
 class ComplexRepository(SQLAlchemyAsyncRepository[Complex]):
     model_type = Complex
 
-    async def get_complexes_for_filters(
+    async def get_complexes_for_requests(
         self, limit: int, offset: int, search: str
     ) -> tuple[Sequence[Complex], int]:
         limit_offset = LimitOffset(limit=limit, offset=offset)

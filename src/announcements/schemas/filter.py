@@ -14,7 +14,6 @@ from src.apartments.enums import Rooms, Finishing
 
 
 class CreateFilterSchema(BaseModel):
-    user_id: int
     type: Optional[Type] = None
     status: Optional[Status] = None
     district: Optional[str] = None
