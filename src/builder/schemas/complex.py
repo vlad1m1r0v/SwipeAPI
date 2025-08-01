@@ -1,6 +1,6 @@
 from typing import Optional
 from decimal import Decimal
-from pydantic import BaseModel, field_validator
+from pydantic import BaseModel, Field, field_validator, computed_field
 
 from .infrastructure import GetInfrastructureSchema
 from .advantages import GetAdvantagesSchema
@@ -53,3 +53,21 @@ class GetComplexSchema(BaseComplexSchema):
 class GetBuilderSchema(GetUserAccountSchema):
     contact: GetContactSchema
     complex: GetComplexSchema
+
+
+class GetComplexFeedListItemSchema(BaseModel):
+    id: int
+    name: str
+    address: str
+    min_price: int
+    min_area: float
+    gallery: Optional[list[GetGalleryImageSchema]] = Field(exclude=True)
+
+    @computed_field
+    @property
+    def preview_url(self) -> Optional[str]:
+        return self.gallery[0].photo_url if len(self.gallery) else None
+
+
+class GetComplexFeedDetailSchema(GetComplexSchema):
+    phone: str

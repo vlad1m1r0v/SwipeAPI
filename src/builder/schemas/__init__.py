@@ -17,6 +17,8 @@ from .complex import (
     GetComplexSchema,
     UpdateComplexSchema,
     GetBuilderSchema,
+    GetComplexFeedListItemSchema,
+    GetComplexFeedDetailSchema,
 )
 
 from .news import GetNewsSchema, CreateNewsSchema, UpdateNewsSchema
@@ -33,6 +35,8 @@ __all__ = [
     "GetComplexSchema",
     "UpdateComplexSchema",
     "GetBuilderSchema",
+    "GetComplexFeedListItemSchema",
+    "GetComplexFeedDetailSchema",
     "GetNewsSchema",
     "CreateNewsSchema",
     "UpdateNewsSchema",

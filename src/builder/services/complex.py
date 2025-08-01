@@ -13,3 +13,11 @@ class ComplexService(SQLAlchemyAsyncRepositoryService[Complex, ComplexRepository
         self, limit: int, offset: int, search: str
     ) -> tuple[Sequence[Complex], int]:
         return await self.repository.get_complexes_for_requests(limit, offset, search)
+
+    async def get_complexes_for_feed_list(
+        self, limit: int, offset: int
+    ) -> tuple[Sequence[Complex], int]:
+        return await self.repository.get_complexes_for_feed_list(limit, offset)
+
+    async def get_complex_detail(self, complex_id: int) -> Complex:
+        return await self.repository.get_complex_detail(complex_id)
