@@ -25,6 +25,12 @@ from .news import GetNewsSchema, CreateNewsSchema, UpdateNewsSchema
 
 from .document import GetDocumentSchema, CreateDocumentSchema, UpdateDocumentSchema
 
+from .favourite import (
+    CreateFavouriteComplexSchema,
+    GetFavouriteComplexListItemSchema,
+    GetFavouriteComplexDetailSchema,
+)
+
 __all__ = [
     "GetFormalizationAndPaymentSettingsSchema",
     "UpdateFormalizationAndPaymentSettingsSchema",
@@ -43,4 +49,7 @@ __all__ = [
     "GetDocumentSchema",
     "CreateDocumentSchema",
     "UpdateDocumentSchema",
+    "CreateFavouriteComplexSchema",
+    "GetFavouriteComplexListItemSchema",
+    "GetFavouriteComplexDetailSchema",
 ]

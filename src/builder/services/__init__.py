@@ -5,6 +5,7 @@ from .formalization_and_payment_settings import FormalizationAndPaymentSettingsS
 from .news import NewsService
 from .document import DocumentService
 from .gallery import GalleryService
+from .favourite import FavouriteComplexService
 
 __all__ = [
     "ComplexService",
@@ -14,4 +15,5 @@ __all__ = [
     "NewsService",
     "DocumentService",
     "GalleryService",
+    "FavouriteComplexService",
 ]

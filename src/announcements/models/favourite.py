@@ -13,6 +13,9 @@ if TYPE_CHECKING:
 
 class FavouriteAnnouncement(BigIntAuditBase):
     __tablename__ = "favourite_announcements"
+    __table_args__ = (
+        sa.UniqueConstraint("user_id", "announcement_id", name="uq_user_announcement"),
+    )
 
     announcement_id: orm.Mapped[int] = orm.mapped_column(
         sa.ForeignKey("announcements.id", ondelete="CASCADE"),

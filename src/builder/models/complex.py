@@ -16,6 +16,7 @@ if TYPE_CHECKING:
         News,
         Document,
         ComplexGallery,
+        FavouriteComplex,
     )
 
     from src.buildings.models import Block
@@ -63,4 +64,9 @@ class Complex(BigIntAuditBase):
     )
     blocks: orm.Mapped[List["Block"]] = orm.relationship(
         back_populates="complex", uselist=True, cascade="all, delete-orphan"
+    )
+    favourite_complexes: orm.Mapped[List["FavouriteComplex"]] = orm.relationship(
+        back_populates="complex",
+        uselist=True,
+        cascade="all, delete-orphan",
     )

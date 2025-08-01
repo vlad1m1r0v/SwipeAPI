@@ -12,6 +12,7 @@ from src.builder.services import (
     NewsService,
     DocumentService,
     GalleryService,
+    FavouriteComplexService,
 )
 
 
@@ -72,4 +73,12 @@ class BuilderProvider(di.Provider):
         session: sa.AsyncSession,
     ) -> AsyncIterator[GalleryService]:
         async with GalleryService.new(session=session) as service:
+            yield service
+
+    @di.provide(scope=di.Scope.REQUEST)
+    async def provide_favourite_complex_service(
+        self,
+        session: sa.AsyncSession,
+    ) -> AsyncIterator[FavouriteComplexService]:
+        async with FavouriteComplexService.new(session=session) as service:
             yield service

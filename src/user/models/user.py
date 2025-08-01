@@ -18,7 +18,7 @@ if TYPE_CHECKING:
 
     from src.admin.models import Blacklist
 
-    from src.builder.models import Complex
+    from src.builder.models import Complex, FavouriteComplex
 
     from src.apartments.models import Apartment
 
@@ -87,5 +87,10 @@ class User(BigIntAuditBase):
     complaints: orm.Mapped[List["Complaint"]] = orm.relationship(
         uselist=True,
         back_populates="user",
+        cascade="all, delete-orphan",
+    )
+    favourite_complexes: orm.Mapped[List["FavouriteComplex"]] = orm.relationship(
+        back_populates="user",
+        uselist=True,
         cascade="all, delete-orphan",
     )

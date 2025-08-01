@@ -5,6 +5,7 @@ from .advantages import Advantages
 from .news import News
 from .document import Document
 from .gallery import ComplexGallery
+from .favourite import FavouriteComplex
 
 __all__ = [
     "Complex",
@@ -14,4 +15,5 @@ __all__ = [
     "News",
     "Document",
     "ComplexGallery",
+    "FavouriteComplex",
 ]
