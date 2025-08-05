@@ -13,7 +13,7 @@ from src.builder.enums import (
 from src.apartments.enums import Rooms, Finishing
 
 
-class CreateFilterSchema(BaseModel):
+class BaseFilterSchema(BaseModel):
     type: Optional[Type] = None
     status: Optional[Status] = None
     district: Optional[str] = None
@@ -26,3 +26,15 @@ class CreateFilterSchema(BaseModel):
     property_type: Optional[PropertyType] = None
     billing_options: Optional[BillingOptions] = None
     finishing: Optional[Finishing] = None
+
+
+class CreateFilterSchema(BaseFilterSchema):
+    pass
+
+
+class UpdateFilterSchema(BaseFilterSchema):
+    pass
+
+
+class GetFilterSchema(BaseFilterSchema):
+    id: int
