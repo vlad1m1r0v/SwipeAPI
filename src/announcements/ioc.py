@@ -1,10 +1,12 @@
-from typing import AsyncIterator
+from typing import AsyncIterator, Iterator
 
 import dishka as di
 from sqlalchemy.ext import asyncio as sa
+from sqlalchemy.orm import Session
 
 from src.announcements.services import (
     AnnouncementService,
+    AnnouncementStatusChangeService,
     AnnouncementViewService,
     AnnouncementFilterService,
     AnnouncementPromotionService,
@@ -61,3 +63,10 @@ class AnnouncementsProvider(di.Provider):
     ) -> AsyncIterator[AnnouncementComplaintService]:
         async with AnnouncementComplaintService.new(session=session) as service:
             yield service
+
+    @di.provide(scope=di.Scope.REQUEST)
+    def provide_announcement_status_change_service(
+        self,
+        session: Session,
+    ) -> Iterator[AnnouncementStatusChangeService]:
+        yield AnnouncementStatusChangeService(session=session)

@@ -7,6 +7,8 @@ from config import Config, config
 
 from src.user.ioc import UsersProvider
 
+from src.announcements.ioc import AnnouncementsProvider
+
 from src.core.ioc import (
     ConfigProvider,
     SessionProvider,
@@ -22,6 +24,7 @@ def setup_containers(celery: Celery) -> None:
         FastMailProvider(),
         JinjaProvider(),
         UsersProvider(),
+        AnnouncementsProvider(),
         context={Config: config},
     )
 

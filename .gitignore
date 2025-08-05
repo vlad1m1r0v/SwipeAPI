@@ -3,4 +3,4 @@ certs
 .idea/
 __pycache__/
 media
-celerybeat-schedule
+celerybeat-schedule.*

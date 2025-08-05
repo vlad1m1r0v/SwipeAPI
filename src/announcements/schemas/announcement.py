@@ -21,6 +21,7 @@ class CreateAnnouncementSchema(BaseModel):
 
 class UpdateAnnouncementSchema(BaseModel):
     viewing_time: time
+    is_relevant: Optional[bool] = None
 
 
 class GetAnnouncementUserListSchema(BaseModel):

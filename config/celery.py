@@ -1,4 +1,4 @@
-from datetime import timedelta
+from celery.schedules import crontab
 
 from pydantic import BaseModel, Field, Json
 
@@ -9,6 +9,10 @@ class CeleryConfig(BaseModel):
     beat_schedule: Json = {
         "daily_withdrawal": {
             "task": "daily_withdrawal",
-            "schedule": timedelta(days=1),
-        }
+            "schedule": crontab(hour=0, minute=0),
+        },
+        "daily_announcement_status_change": {
+            "task": "daily_announcement_status_change",
+            "schedule": crontab(hour=0, minute=0),
+        },
     }

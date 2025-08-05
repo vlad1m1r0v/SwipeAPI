@@ -1,4 +1,8 @@
+from datetime import timedelta
+
 FILTERS_MAX = 5
+
+RELEVANCE_PERIOD = timedelta(days=7)
 
 HIGHLIGHT_PRICE = 200
 PHRASE_PRICE = 200
