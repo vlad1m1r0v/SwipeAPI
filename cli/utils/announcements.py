@@ -94,7 +94,7 @@ def generate_views(
     views: List[CreateViewSchema] = []
 
     for user in users:
-        for _ in range(fake.pyint(min_value=10, max_value=30)):
+        for _ in range(fake.pyint(min_value=100, max_value=300)):
             views.append(
                 CreateViewSchema(
                     user_id=user.id,

@@ -5,8 +5,8 @@ from dishka.integrations.fastapi import inject
 
 from sqlalchemy import orm
 
-from src.requests.models import AddToComplexRequest
-from src.requests.services import AddToComplexRequestService
+from src.announcements.models import Announcement
+from src.announcements.services import AnnouncementService
 
 from src.auth.dependencies import user_from_token
 
@@ -15,16 +15,16 @@ from src.core.exceptions import IsNotOwnerException
 
 
 @inject
-async def check_user_owns_request(
-    request_id: int,
-    request_service: FromDishka[AddToComplexRequestService],
+async def check_user_owns_announcement(
+    announcement_id: int,
+    announcement_service: FromDishka[AnnouncementService],
     user: GetUserSchema = Depends(user_from_token),
 ) -> GetUserSchema:
-    request = await request_service.get(
-        request_id, load=[orm.joinedload(AddToComplexRequest.apartment)]
+    announcement = await announcement_service.get(
+        announcement_id, load=[orm.joinedload(Announcement.apartment)]
     )
 
-    if request.apartment.user_id != user.id:
+    if announcement.apartment.user_id != user.id:
         raise IsNotOwnerException()
 
     return user

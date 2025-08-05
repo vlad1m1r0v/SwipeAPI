@@ -6,6 +6,7 @@ from src.buildings.endpoints import router as buildings_router
 from src.apartments.endpoints import router as apartments_router
 from src.notaries.endpoints import router as notaries_router
 from src.requests.endpoints import router as requests_router
+from src.announcements.endpoints import router as announcements_router
 
 from fastapi import FastAPI
 
@@ -19,6 +20,7 @@ def setup_routers(app: FastAPI) -> None:
     app.include_router(apartments_router)
     app.include_router(buildings_router)
     app.include_router(requests_router)
+    app.include_router(announcements_router)
 
 
 __all__ = ["setup_routers"]

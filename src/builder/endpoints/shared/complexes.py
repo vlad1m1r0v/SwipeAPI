@@ -18,7 +18,7 @@ from src.auth.enums import TokenType
 from src.builder.services import ComplexService
 from src.builder.schemas import GetComplexFeedListItemSchema, GetComplexFeedDetailSchema
 
-router = APIRouter(prefix="/complexes", tags=["Shared: Complexes Feed"])
+router = APIRouter(prefix="/complexes", tags=["Shared: Complexes"])
 
 
 @router.get(
