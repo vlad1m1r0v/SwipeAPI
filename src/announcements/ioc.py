@@ -9,6 +9,7 @@ from src.announcements.services import (
     AnnouncementFilterService,
     AnnouncementPromotionService,
     AnnouncementFavouriteService,
+    AnnouncementComplaintService,
 )
 
 
@@ -51,4 +52,12 @@ class AnnouncementsProvider(di.Provider):
         session: sa.AsyncSession,
     ) -> AsyncIterator[AnnouncementFavouriteService]:
         async with AnnouncementFavouriteService.new(session=session) as service:
+            yield service
+
+    @di.provide(scope=di.Scope.REQUEST)
+    async def provide_announcement_complaint_service(
+        self,
+        session: sa.AsyncSession,
+    ) -> AsyncIterator[AnnouncementComplaintService]:
+        async with AnnouncementComplaintService.new(session=session) as service:
             yield service

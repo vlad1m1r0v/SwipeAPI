@@ -14,6 +14,7 @@ from src.user.enums import Role, NotificationType
 from src.builder.schemas import (
     CreateDocumentSchema as _CreateDocumentSchema,
     CreateNewsSchema as _CreateNewsSchema,
+    CreateFavouriteComplexSchema as _CreateFavouriteComplexSchema,
 )
 from src.builder.enums import (
     Status,
@@ -36,6 +37,8 @@ from src.apartments.schemas import CreateApartmentSchema as _CreateApartmentSche
 from src.announcements.schemas import (
     CreateFavouriteAnnouncementSchema as _CreateFavouriteAnnouncementSchema,
     CreateFilterSchema as _CreateFilterSchema,
+    CreateAnnouncementSchema as _CreateAnnouncementSchema,
+    CreateComplaintSchema as _CreateComplaintSchema,
 )
 
 
@@ -163,6 +166,10 @@ class CreateBuildingImageSchema(BaseModel):
     order: int
 
 
+class CreateFavouriteComplexSchema(_CreateFavouriteComplexSchema):
+    user_id: int
+
+
 class CreateApartmentSchema(_CreateApartmentSchema):
     user_id: int
     floor_id: Optional[int] = Field(default=None)
@@ -175,6 +182,11 @@ class CreateApartmentImageSchema(BaseModel):
     order: int
 
 
+class CreateAnnouncementSchema(_CreateAnnouncementSchema):
+    is_relevant: bool
+    is_approved: bool
+
+
 class CreateFavouriteAnnouncementSchema(_CreateFavouriteAnnouncementSchema):
     user_id: int
 
@@ -185,4 +197,8 @@ class CreateFilterSchema(_CreateFilterSchema):
 
 class CreateViewSchema(BaseModel):
     announcement_id: int
+    user_id: int
+
+
+class CreateComplaintSchema(_CreateComplaintSchema):
     user_id: int

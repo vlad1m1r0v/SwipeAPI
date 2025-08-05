@@ -14,9 +14,9 @@ async def create_records(
     container: AsyncContainer,
 ):
     async with container(scope=Scope.REQUEST) as container:
-        await create_admin(container)
         await create_notaries(container)
         users = await create_users(container)
-        complexes, floors = await create_builders(container)
+        complexes, floors = await create_builders(container, users)
         apartments = await create_apartments(container, users, floors)
-        await create_announcements(container, apartments, users)
+        announcements = await create_announcements(container, apartments, users)
+        await create_admin(container, announcements)

@@ -3,6 +3,7 @@ from .view import AnnouncementViewService
 from .filter import AnnouncementFilterService
 from .promotion import AnnouncementPromotionService
 from .favourite import AnnouncementFavouriteService
+from .complaint import AnnouncementComplaintService
 
 __all__ = [
     "AnnouncementService",
@@ -10,4 +11,5 @@ __all__ = [
     "AnnouncementFilterService",
     "AnnouncementPromotionService",
     "AnnouncementFavouriteService",
+    "AnnouncementComplaintService",
 ]

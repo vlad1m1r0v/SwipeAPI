@@ -2,6 +2,8 @@ from typing import List, Sequence, cast
 
 from decimal import Decimal
 
+import itertools
+
 from dishka import AsyncContainer
 
 from pydantic import EmailStr
@@ -20,6 +22,7 @@ from cli.schemas import (
     CreateRiserSchema,
     CreateNewsSchema,
     CreateDocumentSchema,
+    CreateFavouriteComplexSchema,
 )
 
 from cli.utils.faker import fake
@@ -58,6 +61,7 @@ from src.builder.services import (
     NewsService,
     GalleryService,
     DocumentService,
+    FavouriteComplexService,
 )
 
 from src.buildings.models import Block, Section, Floor
@@ -207,6 +211,31 @@ def generate_news(complexes: Sequence[Complex]) -> List[CreateNewsSchema]:
     return news
 
 
+def generate_advantages(complexes: Sequence[Complex]) -> List[CreateAdvantagesSchema]:
+    advantages: List[CreateAdvantagesSchema] = []
+
+    for building in complexes:
+        advantages.append(
+            CreateAdvantagesSchema(
+                complex_id=building.id,
+                has_children_playground=fake.boolean(),
+                has_sports_field=fake.boolean(),
+                has_parking=fake.boolean(),
+                has_landscaped_area=fake.boolean(),
+                has_on_site_shops=fake.boolean(),
+                has_individual_heating=fake.boolean(),
+                has_balcony_or_loggia=fake.boolean(),
+                has_bicycle_field=fake.boolean(),
+                has_panoramic_windows=fake.boolean(),
+                is_close_to_sea=fake.boolean(),
+                is_close_to_school=fake.boolean(),
+                is_close_to_transport=fake.boolean(),
+            )
+        )
+
+    return advantages
+
+
 def generate_gallery(complexes: Sequence[Complex]) -> List[CreateBuildingImageSchema]:
     images: List[CreateBuildingImageSchema] = []
 
@@ -231,37 +260,12 @@ def generate_documents(complexes: Sequence[Complex]) -> List[CreateDocumentSchem
             documents.append(
                 CreateDocumentSchema(
                     complex_id=building.id,
-                    name=fake.sentence(nb_words=3).rstrip("."),
+                    name=fake.sentence(nb_words=4).rstrip("."),
                     file=save_file_from_dataset(fake.document_path()),
                 )
             )
 
     return documents
-
-
-def generate_advantages(complexes: Sequence[Complex]) -> List[CreateAdvantagesSchema]:
-    advantages: List[CreateAdvantagesSchema] = []
-
-    for building in complexes:
-        advantages.append(
-            CreateAdvantagesSchema(
-                complex_id=building.id,
-                has_children_playground=fake.boolean(),
-                has_sports_field=fake.boolean(),
-                has_parking=fake.boolean(),
-                has_landscaped_area=fake.boolean(),
-                has_on_site_shops=fake.boolean(),
-                has_individual_heating=fake.boolean(),
-                has_balcony_or_loggia=fake.boolean(),
-                has_bicycle_field=fake.boolean(),
-                has_panoramic_windows=fake.boolean(),
-                is_close_to_sea=fake.boolean(),
-                is_close_to_school=fake.boolean(),
-                is_close_to_transport=fake.boolean(),
-            )
-        )
-
-    return advantages
 
 
 def generate_blocks(complexes: Sequence[Complex]) -> List[CreateBlockSchema]:
@@ -304,8 +308,24 @@ def generate_risers(sections: Sequence[Section]) -> List[CreateRiserSchema]:
     return risers
 
 
+def generate_favourite_complexes(
+    complexes: Sequence[Complex], users: Sequence[User]
+) -> List[CreateFavouriteComplexSchema]:
+    favourite_complexes: List[CreateFavouriteComplexSchema] = []
+
+    pairs = itertools.product(complexes, users)
+
+    for i, pair in enumerate(pairs):
+        if i % 3 == 0:
+            favourite_complexes.append(
+                CreateFavouriteComplexSchema(complex_id=pair[0].id, user_id=pair[1].id)
+            )
+
+    return favourite_complexes
+
+
 async def create_builders(
-    container: AsyncContainer,
+    container: AsyncContainer, users: Sequence[User]
 ) -> tuple[Sequence[Complex], Sequence[Floor]]:
     builders_to_create = generate_builders()
     user_service = await container.get(UserService)
@@ -358,5 +378,9 @@ async def create_builders(
     risers_to_create = generate_risers(sections)
     riser_service = await container.get(RiserService)
     await riser_service.create_many(risers_to_create)
+
+    favourite_complexes_to_create = generate_favourite_complexes(complexes, users)
+    favourite_complex_service = await container.get(FavouriteComplexService)
+    await favourite_complex_service.create_many(favourite_complexes_to_create)
 
     return complexes, floors
