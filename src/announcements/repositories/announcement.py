@@ -11,6 +11,7 @@ from src.announcements.models import (
     Promotion,
     FavouriteAnnouncement,
     AnnouncementView,
+    Complaint,
 )
 
 from src.apartments.models import Apartment
@@ -58,6 +59,62 @@ class AnnouncementRepository(SQLAlchemyAsyncRepository[Announcement]):
                 total_floors_subquery, Block.id == total_floors_subquery.c.block_id
             )
             .where(Apartment.user_id == user_id)
+            .options(
+                joinedload(Announcement.apartment).selectinload(Apartment.gallery),
+                joinedload(Announcement.promotion),
+            )
+        )
+
+        limit_offset = LimitOffset(limit=limit, offset=offset)
+        results, total = await self._custom_list_and_count(
+            statement=stmt, limit_offset=limit_offset
+        )
+
+        announcements: list[Announcement] = []
+        for announcement, floor_no, total_floors in results:
+            announcement.apartment.floor_no = floor_no
+            announcement.apartment.total_floors = total_floors
+            announcements.append(announcement)
+
+        return announcements, total
+
+    async def get_announcements_for_admin(
+        self, limit: int, offset: int
+    ) -> tuple[Sequence[Announcement], int]:
+        total_floors_subquery = (
+            select(
+                Floor.block_id.label("block_id"),
+                func.count(Floor.id).label("total_floors"),
+            )
+            .group_by(Floor.block_id)
+            .subquery()
+        )
+
+        complained_announcements_subquery = (
+            select(Complaint.announcement_id).distinct().subquery()
+        )
+
+        stmt = (
+            select(
+                Announcement,
+                Floor.no.label("floor_no"),
+                total_floors_subquery.c.total_floors,
+            )
+            .join(Apartment, Announcement.apartment_id == Apartment.id)
+            .outerjoin(Floor, Apartment.floor_id == Floor.id)
+            .outerjoin(Riser, Apartment.riser_id == Riser.id)
+            .outerjoin(Section, Riser.section_id == Section.id)
+            .outerjoin(Block, Section.block_id == Block.id)
+            .outerjoin(
+                total_floors_subquery, Block.id == total_floors_subquery.c.block_id
+            )
+            .outerjoin(
+                complained_announcements_subquery,
+                Announcement.id == complained_announcements_subquery.c.announcement_id,
+            )
+            .where(
+                complained_announcements_subquery.c.announcement_id.is_(None)
+            )  # Без скарг
             .options(
                 joinedload(Announcement.apartment).selectinload(Apartment.gallery),
                 joinedload(Announcement.promotion),

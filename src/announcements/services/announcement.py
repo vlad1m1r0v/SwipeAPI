@@ -19,6 +19,11 @@ class AnnouncementService(
     ) -> tuple[Sequence[Announcement], int]:
         return await self.repository.get_announcements_for_user(user_id, limit, offset)
 
+    async def get_announcements_for_admin(
+        self, limit: int, offset: int
+    ) -> tuple[Sequence[Announcement], int]:
+        return await self.repository.get_announcements_for_admin(limit, offset)
+
     async def get_announcement_detail_for_shared(
         self, user_id: int, announcement_id: int
     ) -> Announcement:

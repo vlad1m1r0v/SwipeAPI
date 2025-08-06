@@ -18,7 +18,7 @@ from .favourite import (
     GetFavouriteAnnouncementUserDetailSchema,
 )
 from .filter import CreateFilterSchema, UpdateFilterSchema, GetFilterSchema
-from .complaint import CreateComplaintSchema
+from .complaint import CreateComplaintSchema, GetComplaintSchema
 from .promotion import GetPromotionSchema
 
 __all__ = [
@@ -38,5 +38,6 @@ __all__ = [
     "UpdateFilterSchema",
     "GetFilterSchema",
     "CreateComplaintSchema",
+    "GetComplaintSchema",
     "GetPromotionSchema",
 ]
