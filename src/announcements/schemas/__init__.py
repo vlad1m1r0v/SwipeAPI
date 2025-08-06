@@ -6,7 +6,11 @@ from .announcement import (
     GetAnnouncementSharedDetailSchema,
 )
 
-from .promotion import CreatePromotionSchema
+from .promotion import (
+    CreatePromotionSchema,
+    UpdatePromotionSchema,
+    GetPromotionWithExpiryDatesSchema,
+)
 from .view import CreateViewSchema
 from .favourite import (
     CreateFavouriteAnnouncementSchema,
@@ -24,6 +28,8 @@ __all__ = [
     "GetAnnouncementUserDetailSchema",
     "GetAnnouncementSharedDetailSchema",
     "CreatePromotionSchema",
+    "UpdatePromotionSchema",
+    "GetPromotionWithExpiryDatesSchema",
     "CreateViewSchema",
     "CreateFavouriteAnnouncementSchema",
     "GetFavouriteAnnouncementUserListSchema",
