@@ -279,8 +279,6 @@ class AnnouncementRepository(SQLAlchemyAsyncRepository[Announcement]):
                 Promotion.boost_expiry_date.desc().nullslast(),
                 Announcement.created_at.desc(),
             )
-            .limit(limit)
-            .offset(offset)
         )
 
         limit_offset = LimitOffset(limit=limit, offset=offset)
@@ -441,6 +439,8 @@ class AnnouncementRepository(SQLAlchemyAsyncRepository[Announcement]):
         rows = result.all()
 
         count_result = await self.session.execute(count_stmt)
-        total = count_result.scalar() or 0
+        total = count_result.scalar()
+        if total is None:
+            total = 0
 
         return rows, total
