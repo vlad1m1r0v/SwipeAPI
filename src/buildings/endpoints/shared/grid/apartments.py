@@ -25,6 +25,7 @@ router = APIRouter(prefix="/apartments")
     response_model=SuccessResponse[OffsetPagination[GetApartmentGridListItem]],
     responses=generate_examples(auth=True, user=True),
     status_code=status.HTTP_200_OK,
+    response_model_exclude_none=True,
 )
 @inject
 async def get_apartments(
@@ -68,6 +69,7 @@ async def get_apartments(
     response_model=SuccessResponse[GetApartmentGridDetail],
     responses=generate_examples(auth=True, user=True),
     status_code=status.HTTP_200_OK,
+    response_model_exclude_none=True,
 )
 @inject
 async def get_apartment(

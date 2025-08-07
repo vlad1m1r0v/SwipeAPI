@@ -29,6 +29,7 @@ router = APIRouter(prefix="/users", tags=["Admin: Users"])
     response_model=SuccessResponse[OffsetPagination[GetUserAccountSchema]],
     responses=generate_examples(auth=True, role=True),
     status_code=status.HTTP_200_OK,
+    response_model_exclude_none=True,
 )
 @inject
 async def get_users(

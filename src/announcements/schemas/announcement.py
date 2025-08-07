@@ -28,7 +28,6 @@ class GetAnnouncementUserListSchema(BaseModel):
     id: int
     viewing_time: time
     is_relevant: bool
-    is_approved: Optional[bool] = None
     apartment: GetApartmentUserListSchema
     promotion: GetPromotionSchema
 
@@ -41,7 +40,6 @@ class GetAnnouncementSharedDetailSchema(BaseModel):
     id: int
     viewing_time: time
     is_relevant: bool
-    is_approved: Optional[bool] = None
     apartment: GetApartmentDetailSchema
     promotion: GetPromotionSchema
 

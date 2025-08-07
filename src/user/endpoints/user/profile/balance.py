@@ -20,6 +20,7 @@ router = APIRouter()
     status_code=status.HTTP_200_OK,
     response_model=SuccessResponse[GetBalanceSchema],
     responses=generate_examples(auth=True, role=True, user=True),
+    response_model_exclude_none=True,
 )
 @inject
 async def deposit_money(

@@ -31,6 +31,7 @@ router = APIRouter()
     status_code=status.HTTP_200_OK,
     responses=generate_examples(auth=True, user=True),
     tags=["Auth: Common"],
+    response_model_exclude_none=True,
 )
 @inject
 def refresh_tokens(
@@ -46,6 +47,7 @@ def refresh_tokens(
     status_code=status.HTTP_200_OK,
     responses=generate_examples(auth=True, user=True),
     tags=["Auth: Common"],
+    response_model_exclude_none=True,
 )
 @inject
 async def update_password(
@@ -63,6 +65,7 @@ async def update_password(
     status_code=status.HTTP_200_OK,
     responses=generate_examples(UserDoesNotExistException),
     tags=["Auth: Common"],
+    response_model_exclude_none=True,
 )
 @inject
 async def forgot_password(
@@ -79,6 +82,7 @@ async def forgot_password(
     status_code=status.HTTP_200_OK,
     responses=generate_examples(SignatureExpiredException, BadSignatureException),
     tags=["Auth: Common"],
+    response_model_exclude_none=True,
 )
 @inject
 @inject

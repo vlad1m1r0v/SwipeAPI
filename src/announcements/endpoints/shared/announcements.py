@@ -60,7 +60,7 @@ async def get_announcements(
     complex_status: Status | None = Query(alias="status", default=None),
     property_type: PropertyType | None = Query(default=None),
     billing_options: BillingOptions | None = Query(default=None),
-    user: GetUserSchema = Depends(user_from_token),
+    _: GetUserSchema = Depends(user_from_token),
 ) -> SuccessResponse[OffsetPagination[GetAnnouncementUserListSchema]]:
     results, total = await announcement_service.get_announcements_for_shared(
         limit=limit,
@@ -94,6 +94,7 @@ async def get_announcements(
     response_model=SuccessResponse[GetAnnouncementSharedDetailSchema],
     responses=generate_examples(NotFoundException, auth=True, role=True, user=True),
     status_code=status.HTTP_200_OK,
+    response_model_exclude_none=True,
 )
 @inject
 async def get_announcement(

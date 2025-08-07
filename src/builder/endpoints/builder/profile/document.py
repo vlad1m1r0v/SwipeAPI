@@ -34,6 +34,7 @@ router = APIRouter(prefix="/documents")
     response_model=SuccessResponse[GetDocumentSchema],
     responses=generate_examples(IntegrityErrorException, auth=True, role=True),
     status_code=status.HTTP_201_CREATED,
+    response_model_exclude_none=True,
 )
 @inject
 async def create_document(
@@ -63,6 +64,7 @@ async def create_document(
         role=True,
     ),
     status_code=status.HTTP_200_OK,
+    response_model_exclude_none=True,
 )
 @inject
 async def update_document(
@@ -95,6 +97,7 @@ async def update_document(
         role=True,
     ),
     status_code=status.HTTP_200_OK,
+    response_model_exclude_none=True,
 )
 @inject
 async def delete_document(

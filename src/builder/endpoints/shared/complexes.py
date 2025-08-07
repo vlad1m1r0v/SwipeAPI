@@ -26,6 +26,7 @@ router = APIRouter(prefix="/complexes", tags=["Shared: Complexes"])
     response_model=SuccessResponse[OffsetPagination[GetComplexFeedListItemSchema]],
     responses=generate_examples(auth=True, user=True),
     status_code=status.HTTP_200_OK,
+    response_model_exclude_none=True,
 )
 @inject
 async def get_complexes_for_feed_list(
@@ -50,6 +51,7 @@ async def get_complexes_for_feed_list(
     response_model=SuccessResponse[GetComplexFeedDetailSchema],
     responses=generate_examples(NotFoundException, auth=True, role=True, user=True),
     status_code=status.HTTP_200_OK,
+    response_model_exclude_none=True,
 )
 @inject
 async def get_complex_detail(

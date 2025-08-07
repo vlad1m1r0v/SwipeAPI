@@ -23,6 +23,7 @@ router = APIRouter(prefix="/admin", tags=["Auth: Admin"])
     response_model=SuccessResponse[TokensSchema],
     status_code=status.HTTP_201_CREATED,
     responses=generate_examples(UserAlreadyExistsException),
+    response_model_exclude_none=True,
 )
 @inject
 async def register_admin(
@@ -39,6 +40,7 @@ async def register_admin(
     responses=generate_examples(
         UserDoesNotExistException, IncorrectPasswordException, role=True
     ),
+    response_model_exclude_none=True,
 )
 @inject
 async def login_admin(

@@ -37,6 +37,7 @@ router = APIRouter(prefix="/admin/notaries", tags=["Admin: Notaries"])
     responses=generate_examples(
         IntegrityErrorException, DuplicateKeyException, auth=True, role=True
     ),
+    response_model_exclude_none=True,
 )
 @inject
 async def create_notary(
@@ -69,6 +70,7 @@ async def create_notary(
         IntegrityErrorException, DuplicateKeyException, auth=True, role=True
     ),
     status_code=status.HTTP_200_OK,
+    response_model_exclude_none=True,
 )
 @inject
 async def update_notary(
@@ -102,6 +104,7 @@ async def update_notary(
     response_model=SuccessResponse,
     responses=generate_examples(NotFoundException, auth=True, role=True),
     status_code=status.HTTP_200_OK,
+    response_model_exclude_none=True,
 )
 @inject
 async def delete_notary(

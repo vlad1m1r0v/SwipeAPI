@@ -25,6 +25,7 @@ router = APIRouter(prefix="/blocks")
     response_model=SuccessResponse[OffsetPagination[GetBlockSchema]],
     responses=generate_examples(auth=True, role=True, user=True),
     status_code=status.HTTP_200_OK,
+    response_model_exclude_none=True,
 )
 @inject
 async def get_blocks_for_requests(

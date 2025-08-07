@@ -37,7 +37,7 @@ class GetPromotionSchema(BaseModel):
     @property
     def is_big_advert(self) -> bool:
         now = datetime.now()
-        if self.big_advert_expiry_date and self.big_advert_expiry_date < now:
+        if self.big_advert_expiry_date and self.big_advert_expiry_date > now:
             return True
         return False
 
@@ -45,17 +45,17 @@ class GetPromotionSchema(BaseModel):
     @property
     def is_boosted(self) -> bool:
         now = datetime.now()
-        if self.boost_expiry_date and self.boost_expiry_date < now:
+        if self.boost_expiry_date and self.boost_expiry_date > now:
             return True
         return False
 
     def model_post_init(self, __context):
         now = datetime.now()
 
-        if self.highlight_expiry_date and self.highlight_expiry_date < now:
+        if self.highlight_expiry_date is None or self.highlight_expiry_date < now:
             self.highlight_colour = None
 
-        if self.phrase_expiry_date and self.phrase_expiry_date < now:
+        if self.phrase_expiry_date is None or self.phrase_expiry_date < now:
             self.phrase = None
 
 

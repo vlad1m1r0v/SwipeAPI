@@ -36,6 +36,7 @@ router = APIRouter(
     response_model=SuccessResponse[OffsetPagination[GetFavouriteComplexListItemSchema]],
     responses=generate_examples(auth=True, role=True, user=True),
     status_code=status.HTTP_200_OK,
+    response_model_exclude_none=True,
 )
 @inject
 async def get_favourite_complexes(
@@ -64,6 +65,7 @@ async def get_favourite_complexes(
         IntegrityErrorException, auth=True, role=True, user=True
     ),
     response_model=SuccessResponse[GetFavouriteComplexDetailSchema],
+    response_model_exclude_none=True,
 )
 @inject
 async def create_favourite_complex(
@@ -96,6 +98,7 @@ async def create_favourite_complex(
         user=True,
     ),
     status_code=status.HTTP_200_OK,
+    response_model_exclude_none=True,
 )
 @inject
 async def delete_favourite_complex(

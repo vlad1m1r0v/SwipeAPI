@@ -34,6 +34,7 @@ router = APIRouter(prefix="/user/requests", tags=["User: Requests"])
     response_model=SuccessResponse[OffsetPagination[GetAddToComplexRequestUserSchema]],
     responses=generate_examples(auth=True, role=True, user=True),
     status_code=status.HTTP_200_OK,
+    response_model_exclude_none=True,
 )
 @inject
 async def get_requests_for_user(
@@ -62,6 +63,7 @@ async def get_requests_for_user(
         IntegrityErrorException, auth=True, role=True, user=True
     ),
     response_model=SuccessResponse[GetAddToComplexRequestUserSchema],
+    response_model_exclude_none=True,
 )
 @inject
 async def create_add_to_complex_request(
@@ -90,6 +92,7 @@ async def create_add_to_complex_request(
         user=True,
     ),
     status_code=status.HTTP_200_OK,
+    response_model_exclude_none=True,
 )
 @inject
 async def delete_apartment(

@@ -32,6 +32,7 @@ router = APIRouter(prefix="/news")
     response_model=SuccessResponse[GetNewsSchema],
     responses=generate_examples(IntegrityErrorException, auth=True, role=True),
     status_code=status.HTTP_201_CREATED,
+    response_model_exclude_none=True,
 )
 @inject
 async def create_news(
@@ -59,6 +60,7 @@ async def create_news(
         role=True,
     ),
     status_code=status.HTTP_200_OK,
+    response_model_exclude_none=True,
 )
 @inject
 async def update_news(
@@ -86,6 +88,7 @@ async def update_news(
         role=True,
     ),
     status_code=status.HTTP_200_OK,
+    response_model_exclude_none=True,
 )
 @inject
 async def delete_news(

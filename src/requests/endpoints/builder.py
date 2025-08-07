@@ -27,6 +27,7 @@ router = APIRouter(prefix="/builder/requests", tags=["Builder: Requests"])
     ],
     responses=generate_examples(auth=True, role=True),
     status_code=status.HTTP_200_OK,
+    response_model_exclude_none=True,
 )
 @inject
 async def get_requests_for_builder(
@@ -53,6 +54,7 @@ async def get_requests_for_builder(
     response_model=SuccessResponse,
     responses=generate_examples(auth=True, role=True),
     status_code=status.HTTP_200_OK,
+    response_model_exclude_none=True,
 )
 @inject
 async def approve_add_to_complex_requests(
@@ -71,6 +73,7 @@ async def approve_add_to_complex_requests(
     response_model=SuccessResponse,
     responses=generate_examples(auth=True, role=True),
     status_code=status.HTTP_200_OK,
+    response_model_exclude_none=True,
 )
 @inject
 async def reject_add_to_complex_requests(

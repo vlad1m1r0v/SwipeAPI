@@ -69,6 +69,7 @@ async def get_filters(
         user=True,
     ),
     response_model=SuccessResponse[GetFilterSchema],
+    response_model_exclude_none=True,
 )
 @inject
 async def create_filter(
@@ -91,6 +92,7 @@ async def create_filter(
         IntegrityErrorException, auth=True, role=True, user=True
     ),
     response_model=SuccessResponse[GetFilterSchema],
+    response_model_exclude_none=True,
 )
 @inject
 async def update_filter(
@@ -119,6 +121,7 @@ async def update_filter(
         user=True,
     ),
     status_code=status.HTTP_200_OK,
+    response_model_exclude_none=True,
 )
 @inject
 async def delete_filter(

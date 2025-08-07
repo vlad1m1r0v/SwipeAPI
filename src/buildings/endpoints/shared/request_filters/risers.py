@@ -26,6 +26,7 @@ router = APIRouter(prefix="/risers")
     response_model=SuccessResponse[OffsetPagination[GetRiserSchema]],
     responses=generate_examples(auth=True, role=True, user=True),
     status_code=status.HTTP_200_OK,
+    response_model_exclude_none=True,
 )
 @inject
 async def get_risers_for_requests(

@@ -37,6 +37,7 @@ router = APIRouter()
         role=True,
     ),
     status_code=status.HTTP_200_OK,
+    response_model_exclude_none=True,
 )
 @inject
 async def update_formalization_and_payment_settings(

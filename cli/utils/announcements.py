@@ -9,7 +9,6 @@ from dishka import AsyncContainer
 from .faker import fake
 
 from cli.schemas import (
-    CreateAnnouncementSchema,
     CreateViewSchema,
     CreateFavouriteAnnouncementSchema,
     CreateFilterSchema,
@@ -17,7 +16,7 @@ from cli.schemas import (
 
 from src.announcements.enums import Colour, Phrase
 from src.announcements.models import Announcement
-from src.announcements.schemas import CreatePromotionSchema
+from src.announcements.schemas import CreateAnnouncementSchema, CreatePromotionSchema
 from src.announcements.services import (
     AnnouncementService,
     AnnouncementPromotionService,
@@ -48,8 +47,6 @@ def generate_announcements(
         announcements.append(
             CreateAnnouncementSchema(
                 apartment_id=apartment.id,
-                is_approved=True,
-                is_relevant=True,
                 viewing_time=fake.custom_time(time(8, 0), time(21, 0)),
             )
         )

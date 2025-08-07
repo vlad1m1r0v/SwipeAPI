@@ -31,6 +31,7 @@ router = APIRouter(prefix="/promotions", tags=["User: Promotions"])
         IsNotOwnerException, NotFoundException, auth=True, role=True, user=True
     ),
     status_code=status.HTTP_200_OK,
+    response_model_exclude_none=True,
 )
 @inject
 async def get_promotion(
@@ -53,6 +54,7 @@ async def get_promotion(
         IntegrityErrorException, auth=True, role=True, user=True
     ),
     response_model=SuccessResponse[GetPromotionWithExpiryDatesSchema],
+    response_model_exclude_none=True,
 )
 @inject
 async def update_promotion(

@@ -23,6 +23,7 @@ router = APIRouter(prefix="/user", tags=["Auth: User"])
     response_model=SuccessResponse[TokensSchema],
     status_code=status.HTTP_201_CREATED,
     responses=generate_examples(UserAlreadyExistsException),
+    response_model_exclude_none=True,
 )
 @inject
 async def register_user(
@@ -40,6 +41,7 @@ async def register_user(
     responses=generate_examples(
         UserDoesNotExistException, IncorrectPasswordException, user=True, role=True
     ),
+    response_model_exclude_none=True,
 )
 @inject
 async def login_user(

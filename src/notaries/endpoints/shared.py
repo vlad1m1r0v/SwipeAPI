@@ -25,6 +25,7 @@ router = APIRouter(prefix="/notaries", tags=["Shared: Notaries"])
     response_model=SuccessResponse[OffsetPagination[GetNotarySchema]],
     responses=generate_examples(auth=True, user=True),
     status_code=status.HTTP_200_OK,
+    response_model_exclude_none=True,
 )
 @inject
 async def get_notaries(

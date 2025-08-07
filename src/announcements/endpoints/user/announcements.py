@@ -65,6 +65,7 @@ async def get_announcements(
         IsNotOwnerException, NotFoundException, auth=True, role=True, user=True
     ),
     status_code=status.HTTP_200_OK,
+    response_model_exclude_none=True,
 )
 @inject
 async def get_announcement(
@@ -89,6 +90,7 @@ async def get_announcement(
         IntegrityErrorException, auth=True, role=True, user=True
     ),
     response_model=SuccessResponse[GetAnnouncementUserDetailSchema],
+    response_model_exclude_none=True,
 )
 @inject
 async def create_announcement(
@@ -114,6 +116,7 @@ async def create_announcement(
         IntegrityErrorException, auth=True, role=True, user=True
     ),
     response_model=SuccessResponse[GetAnnouncementUserDetailSchema],
+    response_model_exclude_none=True,
 )
 @inject
 async def update_announcement(
@@ -147,6 +150,7 @@ async def update_announcement(
         user=True,
     ),
     status_code=status.HTTP_200_OK,
+    response_model_exclude_none=True,
 )
 @inject
 async def delete_announcement(

@@ -35,6 +35,7 @@ router = APIRouter(prefix="/blacklist", tags=["Admin: Blacklist"])
     response_model=SuccessResponse[OffsetPagination[GetUserAccountSchema]],
     responses=generate_examples(auth=True, role=True),
     status_code=status.HTTP_200_OK,
+    response_model_exclude_none=True,
 )
 @inject
 async def get_blacklist(
@@ -64,6 +65,7 @@ async def get_blacklist(
         IntegrityErrorException, DuplicateKeyException, auth=True, role=True
     ),
     status_code=status.HTTP_201_CREATED,
+    response_model_exclude_none=True,
 )
 @inject
 async def blacklist_user(
@@ -80,6 +82,7 @@ async def blacklist_user(
     response_model=SuccessResponse,
     responses=generate_examples(NotFoundException, auth=True, role=True),
     status_code=status.HTTP_200_OK,
+    response_model_exclude_none=True,
 )
 @inject
 async def remove_user_from_blacklist(

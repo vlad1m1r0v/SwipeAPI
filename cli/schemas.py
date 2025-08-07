@@ -37,7 +37,6 @@ from src.apartments.schemas import CreateApartmentSchema as _CreateApartmentSche
 from src.announcements.schemas import (
     CreateFavouriteAnnouncementSchema as _CreateFavouriteAnnouncementSchema,
     CreateFilterSchema as _CreateFilterSchema,
-    CreateAnnouncementSchema as _CreateAnnouncementSchema,
     CreateComplaintSchema as _CreateComplaintSchema,
 )
 
@@ -180,11 +179,6 @@ class CreateApartmentImageSchema(BaseModel):
     apartment_id: int
     photo: str
     order: int
-
-
-class CreateAnnouncementSchema(_CreateAnnouncementSchema):
-    is_relevant: bool
-    is_approved: bool
 
 
 class CreateFavouriteAnnouncementSchema(_CreateFavouriteAnnouncementSchema):

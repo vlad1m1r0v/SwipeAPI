@@ -36,6 +36,7 @@ router = APIRouter(prefix="/user/apartments", tags=["User: Apartments"])
     response_model=SuccessResponse[OffsetPagination[GetApartmentUserListSchema]],
     responses=generate_examples(auth=True, role=True, user=True),
     status_code=status.HTTP_200_OK,
+    response_model_exclude_none=True,
 )
 @inject
 async def get_apartments(
@@ -62,6 +63,7 @@ async def get_apartments(
     response_model=SuccessResponse[GetApartmentUserDetail],
     responses=generate_examples(NotFoundException, auth=True, role=True, user=True),
     status_code=status.HTTP_200_OK,
+    response_model_exclude_none=True,
 )
 @inject
 async def get_apartment(
@@ -84,6 +86,7 @@ async def get_apartment(
         IntegrityErrorException, auth=True, role=True, user=True
     ),
     response_model=SuccessResponse[GetApartmentUserDetail],
+    response_model_exclude_none=True,
 )
 @inject
 async def create_apartment(
@@ -106,6 +109,7 @@ async def create_apartment(
         IntegrityErrorException, auth=True, role=True, user=True
     ),
     response_model=SuccessResponse[GetApartmentUserDetail],
+    response_model_exclude_none=True,
 )
 @inject
 async def update_apartment(
@@ -136,6 +140,7 @@ async def update_apartment(
         user=True,
     ),
     status_code=status.HTTP_200_OK,
+    response_model_exclude_none=True,
 )
 @inject
 async def delete_apartment(
