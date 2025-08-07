@@ -128,9 +128,7 @@ class AnnouncementRepository(SQLAlchemyAsyncRepository[Announcement]):
                 complained_announcements_subquery,
                 Announcement.id == complained_announcements_subquery.c.announcement_id,
             )
-            .where(
-                complained_announcements_subquery.c.announcement_id.is_(None)
-            )  # Без скарг
+            .where(complained_announcements_subquery.c.announcement_id.is_(None))
             .options(
                 joinedload(Announcement.apartment).selectinload(Apartment.gallery),
                 joinedload(Announcement.promotion),
@@ -265,6 +263,7 @@ class AnnouncementRepository(SQLAlchemyAsyncRepository[Announcement]):
             .where(
                 and_(
                     not_(complaint_exists),
+                    Announcement.is_relevant.is_(True),
                     *string_filters,
                     *numeric_filters,
                     *complex_filters,
