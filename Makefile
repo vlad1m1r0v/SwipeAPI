@@ -17,3 +17,13 @@ seed:
 	python -m cli seed
 clear:
 	python -m cli clear
+certificates:
+	@echo "Deleting old certificates directory (if it exists)..."
+	@rm -rf certs
+	@echo "Creating certificates directory..."
+	@mkdir -p certs
+	@echo "Generating private key..."
+	@openssl genrsa -out certs/jwt-private.pem 2048
+	@echo "Generating public key..."
+	@openssl rsa -in certs/jwt-private.pem -pubout -out certs/jwt-public.pem
+	@echo "Certificates created successfully in the 'certs' directory."
