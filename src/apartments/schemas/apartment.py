@@ -143,6 +143,8 @@ class GetApartmentUserListSchema(BaseModel):
     floor_no: Optional[int] = None
     total_floors: Optional[int] = None
     address: str
+    longitude: float
+    latitude: float
 
     @computed_field
     @property
