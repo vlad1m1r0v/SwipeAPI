@@ -2,9 +2,7 @@
 name = "swipeapi"
 version = "0.1.0"
 description = ""
-authors = [
-    { name = "ant100pshnik", email = "mypochtav@gmail.com" }
-]
+authors = ["ant100pshnik <mypochtav@gmail.com>"]
 readme = "README.md"
 
 [tool.poetry.dependencies]
