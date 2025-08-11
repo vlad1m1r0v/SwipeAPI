@@ -23,6 +23,7 @@ router = APIRouter(prefix="/profile", tags=["User: Profile"])
     path="",
     response_model=SuccessResponse[GetUserSchema],
     responses=generate_examples(auth=True, user=True, role=True),
+    response_model_exclude_none=True,
 )
 def get_profile(
     user: GetUserSchema = Depends(user_from_token),

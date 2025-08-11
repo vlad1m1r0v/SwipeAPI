@@ -26,6 +26,7 @@ router = APIRouter(prefix="/profile", tags=["Builder: Profile"])
     path="",
     response_model=SuccessResponse[GetBuilderSchema],
     responses=generate_examples(auth=True, role=True),
+    response_model_exclude_none=True,
 )
 def get_profile(
     builder: GetBuilderSchema = Depends(builder_from_token),
