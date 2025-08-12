@@ -9,10 +9,7 @@ from src.core.schemas import SuccessResponse
 
 from src.auth.dependencies import user_from_token
 
-from src.user.services import (
-    SubscriptionService,
-    SubscriptionRenewalService,
-)
+from src.user.services import SubscriptionService
 from src.user.schemas import (
     GetUserSchema,
     GetSubscriptionSchema,
@@ -55,10 +52,9 @@ async def update_subscription(
 @inject
 async def renew_subscription(
     subscription_service: FromDishka[SubscriptionService],
-    subscription_renewal_service: FromDishka[SubscriptionRenewalService],
     user: GetUserSchema = Depends(user_from_token),
 ) -> SuccessResponse[GetSubscriptionSchema]:
-    result = await subscription_renewal_service.renew_user_subscription(item_id=user.id)
+    result = await subscription_service.renew_user_subscription(item_id=user.id)
     return SuccessResponse(
         data=subscription_service.to_schema(
             data=result, schema_type=GetSubscriptionSchema

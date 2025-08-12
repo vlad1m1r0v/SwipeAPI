@@ -8,3 +8,6 @@ class SubscriptionService(
     SQLAlchemyAsyncRepositoryService[Subscription, SubscriptionRepository]
 ):
     repository_type = SubscriptionRepository
+
+    async def renew_user_subscription(self, item_id: int) -> Subscription:
+        return await self.repository.renew_user_subscription(item_id)

@@ -67,8 +67,8 @@ class UsersProvider(di.Provider):
 
     @di.provide(scope=di.Scope.REQUEST)
     def provide_subscription_renewal_service(
-        self, sync_session: Session, async_session: sa.AsyncSession
+        self, session: Session
     ) -> Iterator[SubscriptionRenewalService]:
         yield SubscriptionRenewalService(
-            session=sync_session, async_session=async_session
+            session=session,
         )
